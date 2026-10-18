@@ -1,0 +1,2 @@
+cd flaps-configurator-app
+npx lint-staged

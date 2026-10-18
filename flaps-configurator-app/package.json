@@ -9,16 +9,20 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "lint:fix": "ng lint --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "cd .. && husky flaps-configurator-app/.husky"
   },
   "private": true,
   "dependencies": {
-    "@angular/common": "22.1.7",
-    "@angular/compiler": "22.1.7",
-    "@angular/core": "22.1.7",
-    "@angular/forms": "22.1.7",
-    "@angular/platform-browser": "22.1.7",
-    "@angular/router": "22.1.7",
+    "@angular/common": "22.2.3",
+    "@angular/compiler": "22.2.3",
+    "@angular/core": "22.2.3",
+    "@angular/forms": "22.2.3",
+    "@angular/platform-browser": "22.2.3",
+    "@angular/router": "22.2.3",
     "@capacitor-community/bluetooth-le": "^8.3.0",
     "@capacitor/android": "^8.5.3",
     "@capacitor/app": "8.1.2",
@@ -33,18 +37,38 @@
     "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "@angular/build": "22.1.8",
-    "@angular/cli": "22.1.8",
-    "@angular/compiler-cli": "22.1.7",
-    "@angular/language-service": "22.1.7",
+    "@angular/build": "22.2.3",
+    "@angular/cli": "22.2.3",
+    "@angular/compiler-cli": "22.2.3",
+    "@angular/language-service": "22.2.3",
     "@capacitor/cli": "8.5.3",
+    "@eslint/js": "^10.0.1",
     "@ionic/angular-toolkit": "^13.0.0",
-    "angular-eslint": "22.5.0",
+    "angular-eslint": "22.6.0",
     "eslint": "^10.10.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.7",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "husky": "^9.1.7",
     "jsdom": "^30.1.1",
+    "lint-staged": "^17.6.0",
+    "prettier": "3.9.10",
     "typescript": "~6.0.0",
     "typescript-eslint": "^8.61.0",
-    "vitest": "~4.0.18"
+    "vitest": "~4.1.12"
   },
-  "description": "An Ionic project"
+  "description": "An Ionic project",
+  "lint-staged": {
+    "src/**/*.{ts,html}": [
+      "eslint --fix"
+    ],
+    "*.{js,json,scss,css,md}": [
+      "prettier --write"
+    ]
+  },
+  "overrides": {
+    "xcode": {
+      "uuid": "11.1.1"
+    }
+  }
 }

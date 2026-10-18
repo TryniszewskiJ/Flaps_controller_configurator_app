@@ -1,0 +1,18 @@
+{
+  // Projekt jest w podkatalogu — ESLint musi stamtąd czytać konfigurację
+  "eslint.workingDirectories": ["./flaps-configurator-app"],
+  "eslint.validate": ["typescript", "html"],
+  "prettier.configPath": "flaps-configurator-app/.prettierrc.json",
+
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // Zob. komentarz w flaps-configurator-app/.vscode/settings.json (ionic-team/starters#1873)
+  "typescript.preferences.autoImportFileExcludePatterns": [
+    "@ionic/angular/types/ionic-angular-lazy.d.ts",
+    "@ionic/angular/types/ionic-angular-common.d.ts"
+  ]
+}

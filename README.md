@@ -88,11 +88,41 @@ Otwarcie projektu w Android Studio:
 npx cap open android
 ```
 
+## Jakość kodu
+
+ESLint (flat config, [`eslint.config.js`](flaps-configurator-app/eslint.config.js)) z Prettierem
+zintegrowanym jako reguła `prettier/prettier` — błędy formatowania zgłasza linter.
+
+Najważniejsze zasady (wszystkie jako `error`):
+
+- jawny typ zwracany funkcji i metod (`@typescript-eslint/explicit-function-return-type`);
+  callbacki przekazywane jako argument mają typ z kontekstu i go nie wymagają
+- nieużywane importy (`unused-imports/no-unused-imports`, usuwane przez `--fix`) i zmienne;
+  celowo nieużywane nazywaj z prefiksem `_`
+- obsługa Promise'ów: `no-floating-promises`, `no-misused-promises`, `await-thenable`, `require-await`
+  — nieobsłużony Promise oznacz `void` albo dodaj `.catch()`
+- zalecane reguły ESLint, `typescript-eslint` (recommended + stylistic) i Angulara
+- dostępność w szablonach HTML (`templateAccessibility`)
+- komponenty: sufiks `Page`/`Component`, selektor `app-xxx`
+
+Formatowanie: [`.prettierrc.json`](flaps-configurator-app/.prettierrc.json) — 100 znaków,
+pojedyncze cudzysłowy, przecinki na końcu.
+
+**Pre-commit hook** (husky + lint-staged) uruchamia `eslint --fix` na zmienionych plikach `src/**/*.{ts,html}`
+i `prettier --write` na pozostałych. Commit z błędami lintera zostanie zablokowany.
+Hook instaluje się automatycznie przy `npm install`.
+
+**VS Code:** zainstaluj rekomendowane rozszerzenia (ESLint, Prettier) — formatowanie
+i poprawki ESLint wykonują się przy zapisie pliku.
+
 ## Pozostałe komendy
 
-| Komenda          | Opis                    |
-|------------------|-------------------------|
-| `npm start`      | serwer deweloperski     |
-| `npm run build`  | build produkcyjny do `www/` |
-| `npm test`       | testy jednostkowe (Vitest) |
-| `npm run lint`   | ESLint                  |
+| Komenda                | Opis                              |
+|------------------------|-----------------------------------|
+| `npm start`            | serwer deweloperski               |
+| `npm run build`        | build produkcyjny do `www/`       |
+| `npm test`             | testy jednostkowe (Vitest)        |
+| `npm run lint`         | ESLint + Prettier                 |
+| `npm run lint:fix`     | ESLint z automatycznymi poprawkami |
+| `npm run format`       | formatowanie całego projektu      |
+| `npm run format:check` | sprawdzenie formatowania          |
