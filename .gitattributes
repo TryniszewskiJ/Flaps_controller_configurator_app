@@ -1,0 +1,8 @@
+* text=auto
+
+# Skrypty shell muszą mieć LF, inaczej nie działają na Linux/macOS
+*.sh text eol=lf
+gradlew text eol=lf
+
+*.bat text eol=crlf
+*.cmd text eol=crlf
