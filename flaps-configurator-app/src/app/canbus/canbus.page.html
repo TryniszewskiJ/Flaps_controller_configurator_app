@@ -1,0 +1,46 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="page-toolbar">
+    <h1 slot="start" class="page-title">CAN bus</h1>
+    <ion-buttons slot="end">
+      <ion-button
+        class="icon-btn"
+        fill="solid"
+        color="success"
+        aria-label="Start nasłuchu"
+        [disabled]="!connected()"
+      >
+        <ion-icon slot="icon-only" name="play"></ion-icon>
+      </ion-button>
+      <ion-button
+        class="icon-btn btn-pause"
+        fill="outline"
+        color="medium"
+        aria-label="Pauza"
+        [disabled]="!connected()"
+      >
+        <ion-icon slot="icon-only" name="pause"></ion-icon>
+      </ion-button>
+      <ion-button
+        class="icon-btn"
+        fill="solid"
+        color="primary"
+        aria-label="Dodaj ramkę"
+        [disabled]="!connected()"
+      >
+        <ion-icon slot="icon-only" name="add"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="page page--fill">
+    <app-connection-banner />
+
+    <div class="empty-state">
+      <ion-icon name="pulse-outline" aria-hidden="true"></ion-icon>
+      <h2>Brak danych z magistrali</h2>
+      <p>Ramki CAN pojawią się tutaj po połączeniu z urządzeniem.</p>
+    </div>
+  </div>
+</ion-content>

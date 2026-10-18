@@ -1,0 +1,18 @@
+.drive-mode {
+  margin: 0;
+  font-size: 18px;
+  color: var(--app-muted);
+}
+
+.flaps-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 120px;
+  border: 1px dashed var(--app-border);
+  border-radius: 8px;
+  background: var(--app-code-bg);
+  font-family: var(--app-font-mono);
+  font-size: 12px;
+  color: var(--app-muted);
+}

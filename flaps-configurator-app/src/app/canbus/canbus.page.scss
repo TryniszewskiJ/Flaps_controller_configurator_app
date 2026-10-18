@@ -1,0 +1,39 @@
+.page--fill {
+  min-height: 100%;
+}
+
+.btn-pause {
+  --background: var(--app-card-bg);
+  --border-color: var(--app-border);
+  --border-width: 1px;
+}
+
+.empty-state {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+
+  ion-icon {
+    font-size: 28px;
+    color: var(--app-text);
+  }
+
+  h2 {
+    margin: 12px 0 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--app-text);
+  }
+
+  p {
+    max-width: 220px;
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--app-muted);
+  }
+}

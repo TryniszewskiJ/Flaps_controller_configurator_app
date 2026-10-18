@@ -1,0 +1,24 @@
+.btn-read {
+  --background: var(--app-card-bg);
+  --border-color: var(--app-border);
+  --border-width: 1px;
+  --border-radius: 8px;
+  height: 34px;
+  margin: 0;
+  font-size: 12px;
+  text-transform: none;
+}
+
+.code-block {
+  padding: 10px 12px;
+  background: var(--app-code-bg);
+  border-radius: 8px;
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--app-muted);
+}
+
+.code-keyword {
+  font-weight: 600;
+  color: var(--ion-color-primary);
+}

@@ -1,0 +1,55 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="page-toolbar">
+    <h1 slot="start" class="page-title">Dashboard</h1>
+    <ion-buttons slot="end">
+      <ion-button
+        class="icon-btn"
+        fill="solid"
+        color="primary"
+        aria-label="Dodaj widget"
+        [disabled]="!connected()"
+      >
+        <ion-icon slot="icon-only" name="add"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="page">
+    <app-connection-banner />
+
+    <section class="card">
+      <h2 class="card-label">Tryb jazdy</h2>
+      <p class="drive-mode mono">{{ driveMode }}</p>
+    </section>
+
+    <section class="card">
+      <h2 class="card-label">Stan klap</h2>
+      <div class="flaps-placeholder">[wizualizacja stanu klap]</div>
+    </section>
+
+    <section class="card">
+      <h2 class="card-label">Stan zmiennych</h2>
+      @for (variable of variables; track variable.name) {
+        <div class="kv-row mono">
+          <span>{{ variable.name }}</span>
+          <span>{{ variable.value }}</span>
+        </div>
+      }
+    </section>
+
+    <section class="card">
+      <h2 class="card-label">Akcje</h2>
+      <ion-button expand="block" color="warning" [disabled]="!connected()" (click)="toggleFlaps()">
+        {{ flapsOpen() ? 'Zamknij klapy' : 'Otwórz klapy' }}
+      </ion-button>
+      <ion-button expand="block" [disabled]="!connected()">Wyślij ramkę CAN</ion-button>
+      <ion-button expand="block" fill="outline" [disabled]="!connected()">
+        Override zmiennej
+      </ion-button>
+    </section>
+
+    <div class="card card--placeholder">+ kolejne widgety</div>
+  </div>
+</ion-content>

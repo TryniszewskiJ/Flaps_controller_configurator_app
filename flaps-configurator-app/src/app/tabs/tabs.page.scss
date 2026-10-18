@@ -1,0 +1,21 @@
+ion-tab-bar {
+  --background: var(--app-card-bg);
+  --border: 1px solid var(--app-border);
+  --color: var(--app-muted);
+  --color-selected: var(--ion-color-primary);
+  height: 56px;
+}
+
+ion-tab-button {
+  --ripple-color: var(--ion-color-primary);
+
+  ion-icon {
+    font-size: 20px;
+  }
+
+  ion-label {
+    margin-top: 4px;
+    font-size: 10px;
+    font-weight: 500;
+  }
+}

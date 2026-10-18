@@ -1,0 +1,52 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="page-toolbar">
+    <h1 slot="start" class="page-title">Config</h1>
+    <ion-buttons slot="end">
+      <ion-button class="btn-read" fill="outline" color="medium" [disabled]="!connected()">
+        <ion-icon slot="start" name="download-outline"></ion-icon>
+        Odczytaj
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="page">
+    <app-connection-banner />
+
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-label">Zmienne i stany</h2>
+        <ion-button class="btn-tint" [disabled]="!connected()">+ Nowa</ion-button>
+      </div>
+      @for (variable of variables; track variable.name) {
+        <div class="kv-row list-row mono">
+          <span>{{ variable.name }}</span>
+          <span class="text-muted">{{ variable.kind }}</span>
+        </div>
+      }
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-label">Warunki logiczne</h2>
+        <ion-button class="btn-tint" [disabled]="!connected()">+ Warunek</ion-button>
+      </div>
+      <div class="code-block mono">
+        @for (line of rule; track $index) {
+          <div>
+            <span class="code-keyword">{{ line.keyword }}</span> {{ line.expression }}
+          </div>
+        }
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="card-label">Konfiguracja</h2>
+      <div class="btn-row">
+        <ion-button fill="outline" [disabled]="!connected()">Testuj</ion-button>
+        <ion-button [disabled]="!connected()">Zapisz</ion-button>
+      </div>
+    </section>
+  </div>
+</ion-content>
