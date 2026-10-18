@@ -1,0 +1,53 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="page-toolbar">
+    <h1 slot="start" class="page-title">Dev console</h1>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [scrollY]="false">
+  <div class="page console-page">
+    <app-connection-banner />
+
+    <section class="card">
+      <h2 class="card-label">Komenda</h2>
+      <ion-textarea
+        class="command-input mono"
+        aria-label="Komenda do wysłania"
+        placeholder="Wpisz komendę…"
+        [rows]="3"
+        [value]="command()"
+        (ionInput)="onCommandInput($event.detail.value)"
+        (keydown)="onKeydown($event)"
+      ></ion-textarea>
+      <div class="btn-row">
+        <ion-button fill="outline" [disabled]="!command()" (click)="clearCommand()">
+          Wyczyść
+        </ion-button>
+        <ion-button [disabled]="!connected() || !command().trim()" (click)="send()">
+          Wyślij
+        </ion-button>
+      </div>
+    </section>
+
+    <section class="card log-card">
+      <div class="card-header">
+        <h2 class="card-label">Komunikacja</h2>
+        <ion-button class="btn-tint" [disabled]="entries().length === 0" (click)="clearLog()">
+          Wyczyść
+        </ion-button>
+      </div>
+
+      <div #log class="log mono" role="log" aria-live="polite">
+        @for (entry of entries(); track entry.id) {
+          <div class="log-line" [class.log-line--rx]="entry.direction === 'rx'">
+            <span class="log-time">{{ entry.time }}</span>
+            <span class="log-dir">{{ entry.direction === 'tx' ? 'TX' : 'RX' }}</span>
+            <span class="log-data">{{ entry.data }}</span>
+          </div>
+        } @empty {
+          <p class="log-empty">Wysłane i odebrane dane pojawią się tutaj.</p>
+        }
+      </div>
+    </section>
+  </div>
+</ion-content>

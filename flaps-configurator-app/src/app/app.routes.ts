@@ -17,6 +17,10 @@ export const routes: Routes = [
         path: 'canbus',
         loadComponent: () => import('./canbus/canbus.page').then((m) => m.CanbusPage),
       },
+      {
+        path: 'console',
+        loadComponent: () => import('./dev-console/dev-console.page').then((m) => m.DevConsolePage),
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },

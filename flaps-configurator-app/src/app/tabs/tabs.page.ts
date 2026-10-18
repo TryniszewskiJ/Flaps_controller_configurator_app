@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonIcon, IonLabel, IonTabBar, IonTabButton, IonTabs } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { gridOutline, optionsOutline, pulseOutline } from 'ionicons/icons';
+import { gridOutline, optionsOutline, pulseOutline, terminalOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-tabs',
@@ -12,6 +12,6 @@ import { gridOutline, optionsOutline, pulseOutline } from 'ionicons/icons';
 })
 export class TabsPage {
   constructor() {
-    addIcons({ gridOutline, optionsOutline, pulseOutline });
+    addIcons({ gridOutline, optionsOutline, pulseOutline, terminalOutline });
   }
 }

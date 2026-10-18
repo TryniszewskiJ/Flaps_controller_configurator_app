@@ -1,0 +1,66 @@
+// Strona na całą wysokość: log zajmuje resztę miejsca i przewija się sam
+.console-page {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.command-input {
+  --background: var(--app-code-bg);
+  --padding-start: 10px;
+  --padding-end: 10px;
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+  --placeholder-color: var(--app-muted);
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.log-card {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.log {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 10px;
+  background: var(--app-code-bg);
+  border-radius: 8px;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.log-line {
+  display: flex;
+  gap: 8px;
+}
+
+.log-time {
+  flex: none;
+  color: var(--app-muted);
+}
+
+.log-dir {
+  flex: none;
+  font-weight: 700;
+  color: var(--ion-color-primary);
+}
+
+.log-line--rx .log-dir {
+  color: var(--ion-color-success);
+}
+
+.log-data {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  color: var(--app-text);
+}
+
+.log-empty {
+  margin: 0;
+  color: var(--app-muted);
+}
