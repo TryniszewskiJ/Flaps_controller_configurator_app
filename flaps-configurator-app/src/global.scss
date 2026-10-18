@@ -32,6 +32,9 @@
  * https://ionicframework.com/docs/theming/dark-mode
  */
 
+/* Dark mode wyłączony — projekt UI jest tylko w jasnej wersji */
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+/* @import '@ionic/angular/css/palettes/dark.system.css'; */
+
+/* Wspólne elementy UI aplikacji: src/theme/components.scss (dołączony w angular.json) */

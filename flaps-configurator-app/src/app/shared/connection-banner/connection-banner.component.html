@@ -1,0 +1,19 @@
+@if (connection.deviceName(); as deviceName) {
+  <div class="banner banner--connected" role="status">
+    <span class="banner__dot" aria-hidden="true"></span>
+    <div class="banner__text">
+      <strong>Połączono</strong>
+      <span>{{ deviceName }}</span>
+    </div>
+    <ion-button color="success" (click)="disconnect()">Rozłącz</ion-button>
+  </div>
+} @else {
+  <div class="banner banner--disconnected" role="status">
+    <span class="banner__dot" aria-hidden="true"></span>
+    <div class="banner__text">
+      <strong>Brak połączenia</strong>
+      <span>Połącz się z urządzeniem, aby korzystać z aplikacji</span>
+    </div>
+    <ion-button color="danger" (click)="connect()">Połącz</ion-button>
+  </div>
+}
