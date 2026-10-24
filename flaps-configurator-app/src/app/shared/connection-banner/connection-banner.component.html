@@ -1,19 +1,53 @@
-@if (connection.deviceName(); as deviceName) {
-  <div class="banner banner--connected" role="status">
-    <span class="banner__dot" aria-hidden="true"></span>
-    <div class="banner__text">
-      <strong>Połączono</strong>
-      <span>{{ deviceName }}</span>
+@switch (connection.status()) {
+  @case ('connected') {
+    <div class="banner banner--connected" role="status">
+      <span class="banner__dot" aria-hidden="true"></span>
+      <div class="banner__text">
+        <strong>Połączono</strong>
+        <span>
+          {{ connection.deviceName() }}
+          @if (connection.deviceInfo(); as info) {
+            · FW {{ info.firmwareVersion }}
+          }
+        </span>
+      </div>
+      <ion-button color="success" (click)="disconnect()">Rozłącz</ion-button>
     </div>
-    <ion-button color="success" (click)="disconnect()">Rozłącz</ion-button>
-  </div>
-} @else {
-  <div class="banner banner--disconnected" role="status">
-    <span class="banner__dot" aria-hidden="true"></span>
-    <div class="banner__text">
-      <strong>Brak połączenia</strong>
-      <span>Połącz się z urządzeniem, aby korzystać z aplikacji</span>
+  }
+  @case ('connecting') {
+    <div class="banner banner--pending" role="status">
+      <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+      <div class="banner__text">
+        <strong>Łączenie z {{ connection.deviceName() }}…</strong>
+        <span>Jeśli telefon poprosi o kod parowania, wpisz kod urządzenia</span>
+      </div>
+      <ion-button color="warning" (click)="disconnect()">Anuluj</ion-button>
     </div>
-    <ion-button color="danger" (click)="connect()">Połącz</ion-button>
-  </div>
+  }
+  @case ('reconnecting') {
+    <div class="banner banner--pending" role="status">
+      <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+      <div class="banner__text">
+        <strong>Utracono połączenie</strong>
+        <span>Ponowne łączenie z {{ connection.deviceName() }}…</span>
+      </div>
+      <ion-button color="warning" (click)="disconnect()">Rozłącz</ion-button>
+    </div>
+  }
+  @default {
+    <div class="banner banner--disconnected" role="status">
+      <span class="banner__dot" aria-hidden="true"></span>
+      <div class="banner__text">
+        <strong>Brak połączenia</strong>
+        <span>
+          {{
+            pickerError() ??
+              connection.error() ??
+              'Połącz się z urządzeniem, aby korzystać z aplikacji'
+          }}
+        </span>
+      </div>
+      <ion-button color="danger" (click)="connect()">Połącz</ion-button>
+    </div>
+  }
 }

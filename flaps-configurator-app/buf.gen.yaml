@@ -1,0 +1,9 @@
+# Generowanie modeli protokołu z flaps.proto (repozytorium firmware STM32).
+# Uruchom: npm run proto:gen  — wynik trafia do src/app/core/protocol/gen (commitowany).
+version: v2
+inputs:
+  - directory: ../../exhaust_flaps_controller/proto
+plugins:
+  - local: protoc-gen-es
+    out: src/app/core/protocol/gen
+    opt: target=ts

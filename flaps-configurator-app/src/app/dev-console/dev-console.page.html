@@ -10,20 +10,30 @@
 
     <section class="card">
       <h2 class="card-label">Komenda</h2>
+      <div class="chips" role="group" aria-label="Wstaw komendę">
+        @for (item of requestCommands; track item.command) {
+          <button type="button" class="chip" (click)="insertTemplate(item.command)">
+            {{ item.name }}
+          </button>
+        }
+      </div>
       <ion-textarea
         class="command-input mono"
         aria-label="Komenda do wysłania"
-        placeholder="Wpisz komendę…"
-        [rows]="3"
+        placeholder='np. PING albo START_SESSION {"appId": 1179402576}'
+        [rows]="2"
         [value]="command()"
         (ionInput)="onCommandInput($event.detail.value)"
         (keydown)="onKeydown($event)"
       ></ion-textarea>
+      @if (sendError(); as error) {
+        <p class="send-error">{{ error }}</p>
+      }
       <div class="btn-row">
         <ion-button fill="outline" [disabled]="!command()" (click)="clearCommand()">
           Wyczyść
         </ion-button>
-        <ion-button [disabled]="!connected() || !command().trim()" (click)="send()">
+        <ion-button [disabled]="!connected() || !command().trim() || sending()" (click)="send()">
           Wyślij
         </ion-button>
       </div>
@@ -31,21 +41,59 @@
 
     <section class="card log-card">
       <div class="card-header">
-        <h2 class="card-label">Komunikacja</h2>
+        <h2 class="card-label">Ramki BLE</h2>
         <ion-button class="btn-tint" [disabled]="entries().length === 0" (click)="clearLog()">
           Wyczyść
         </ion-button>
       </div>
 
+      <div class="filter-row">
+        <ion-select
+          class="filter-select mono"
+          aria-label="Filtr komend"
+          interface="popover"
+          placeholder="Wszystkie komendy"
+          cancelText="Anuluj"
+          okText="OK"
+          [multiple]="true"
+          [value]="selectedCommands()"
+          [selectedText]="selectedText()"
+          (ionChange)="onFilterChange($event.detail.value)"
+        >
+          @for (filter of filters(); track filter.command) {
+            <ion-select-option [value]="filter.command">
+              {{ filter.name }} ({{ filter.count }})
+            </ion-select-option>
+          }
+        </ion-select>
+        @if (selectedCommands().length > 0) {
+          <ion-button class="btn-tint" (click)="showAll()">Wszystkie</ion-button>
+        }
+      </div>
+
       <div #log class="log mono" role="log" aria-live="polite">
         @for (entry of entries(); track entry.id) {
-          <div class="log-line" [class.log-line--rx]="entry.direction === 'rx'">
-            <span class="log-time">{{ entry.time }}</span>
-            <span class="log-dir">{{ entry.direction === 'tx' ? 'TX' : 'RX' }}</span>
-            <span class="log-data">{{ entry.data }}</span>
+          <div class="log-entry" [class.log-entry--rx]="entry.direction === 'rx'">
+            <div class="log-head">
+              <span class="log-time">{{ entry.time }}</span>
+              <span class="log-dir">{{ entry.direction === 'tx' ? 'TX' : 'RX' }}</span>
+              <span class="log-name" [class.log-name--error]="entry.name === 'ERROR'">
+                {{ entry.name }}
+              </span>
+              <span class="log-meta">{{ entry.code }} · seq {{ entry.seq }}</span>
+            </div>
+            <div class="log-payload" [class.log-payload--raw]="!entry.decoded">
+              {{ entry.payload }}
+            </div>
           </div>
         } @empty {
-          <p class="log-empty">Wysłane i odebrane dane pojawią się tutaj.</p>
+          <p class="log-empty">
+            {{
+              selectedCommands().length === 0
+                ? 'Wysłane i odebrane ramki pojawią się tutaj po połączeniu z urządzeniem.'
+                : 'Brak ramek wybranych komend.'
+            }}
+          </p>
         }
       </div>
     </section>

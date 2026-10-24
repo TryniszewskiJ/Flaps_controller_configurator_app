@@ -5,3 +5,4 @@ ios
 coverage
 .angular
 package-lock.json
+src/app/core/protocol/gen

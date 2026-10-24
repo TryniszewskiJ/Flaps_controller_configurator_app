@@ -13,7 +13,8 @@
     "lint:fix": "ng lint --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "prepare": "cd .. && husky flaps-configurator-app/.husky"
+    "prepare": "cd .. && husky flaps-configurator-app/.husky",
+    "proto:gen": "buf generate"
   },
   "private": true,
   "dependencies": {
@@ -23,6 +24,7 @@
     "@angular/forms": "22.2.3",
     "@angular/platform-browser": "22.2.3",
     "@angular/router": "22.2.3",
+    "@bufbuild/protobuf": "^2.16.0",
     "@capacitor-community/bluetooth-le": "^8.3.0",
     "@capacitor/android": "^8.5.3",
     "@capacitor/app": "8.1.2",
@@ -41,6 +43,8 @@
     "@angular/cli": "22.2.3",
     "@angular/compiler-cli": "22.2.3",
     "@angular/language-service": "22.2.3",
+    "@bufbuild/buf": "1.73.0",
+    "@bufbuild/protoc-gen-es": "^2.16.0",
     "@capacitor/cli": "8.5.3",
     "@eslint/js": "^10.0.1",
     "@ionic/angular-toolkit": "^13.0.0",

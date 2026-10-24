@@ -88,6 +88,52 @@ Otwarcie projektu w Android Studio:
 npx cap open android
 ```
 
+## Połączenie z urządzeniem
+
+Sterownik to STM32 ([`exhaust_flaps_controller`](https://github.com/TryniszewskiJ/exhaust_flaps_controller))
+z modułem nRF52832, który jest przezroczystym mostkiem BLE ↔ UART (`NRF52_UART_BLE_BRIDGE`).
+Protokół (ramki, sesja, komendy) opisuje README firmware STM32, a GATT — kod mostka nRF52.
+
+```
+UI (baner, wybór urządzenia)
+  └─ ConnectionService        core/connection.service.ts — sesja, ping, ponowne łączenie
+       ├─ ProtocolClient      core/protocol/protocol-client.ts — SEQ, timeout 500 ms, ponowienia, ERROR
+       │    └─ ramki          core/protocol/frame.ts — 0xA5 … CRC-16/CCITT-FALSE, parser kawałków
+       └─ BleLinkService      core/ble/ble-link.service.ts — skan, połączenie, notyfikacje, zapis
+```
+
+| GATT mostka nRF52 | UUID |
+|---|---|
+| Serwis (rozgłaszany — po nim filtrowane są „swoje” urządzenia) | `6a756861-9ef3-40e8-b49b-2c98a6bb47fb` |
+| RX — zapis aplikacja → STM32 | `63a1f737-d934-4d24-be30-92b242379fb3` |
+| TX — notyfikacje STM32 → aplikacja | `52fa30a9-0084-40f5-9782-ef6f0c91206d` |
+
+> README firmware STM32 wymienia Nordic UART Service — mostek używa jednak własnego serwisu
+> z tabeli wyżej (źródło: `ble_uart_bridge/src/ble.h`).
+
+Przebieg:
+
+1. **Połącz** otwiera listę sterowników w pobliżu (skan po UUID serwisu; w przeglądarce — okno
+   wyboru Web Bluetooth).
+2. Po wyborze: połączenie BLE, przy pierwszym połączeniu **parowanie z kluczem** (systemowe okno
+   Androida), `START_SESSION`, `GET_DEVICE_INFO`.
+3. `PING` co ⅓ `session_timeout_ms`. `ERROR(NO_SESSION)` (np. reset STM32) — sesja otwierana
+   ponownie; 3 pingi bez odpowiedzi — ponowne połączenie.
+4. Utrata połączenia bez kliknięcia **Rozłącz** — ponowne łączenie co 2 s, aż do skutku.
+5. **Rozłącz** wysyła `CLOSE_SESSION` i rozłącza BLE.
+
+Modele protokołu są generowane z `flaps.proto` firmware do
+[`src/app/core/protocol/gen`](flaps-configurator-app/src/app/core/protocol/gen) (plik w repo,
+build go nie generuje). Po zmianie `flaps.proto` — przy repozytorium firmware obok tego repo
+(`../exhaust_flaps_controller`):
+
+```bash
+npm run proto:gen
+```
+
+Android: skanowanie bez uprawnienia do lokalizacji (Android 12+, `neverForLocation`
+w `AndroidManifest.xml`). Emulator nie widzi prawdziwych urządzeń BLE — połączenie testuj na telefonie.
+
 ## Jakość kodu
 
 ESLint (flat config, [`eslint.config.js`](flaps-configurator-app/eslint.config.js)) z Prettierem
@@ -126,3 +172,4 @@ i poprawki ESLint wykonują się przy zapisie pliku.
 | `npm run lint:fix`     | ESLint z automatycznymi poprawkami |
 | `npm run format`       | formatowanie całego projektu      |
 | `npm run format:check` | sprawdzenie formatowania          |
+| `npm run proto:gen`    | generowanie modeli z `flaps.proto` |

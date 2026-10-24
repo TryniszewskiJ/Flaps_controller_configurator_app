@@ -123,6 +123,12 @@ ion-content {
 // --- Wiersze klucz / wartość ---
 .mono {
   font-family: var(--app-font-mono);
+
+  // Wewnętrzny textarea/input komponentów Ionic nie dziedziczy czcionki
+  textarea,
+  input {
+    font-family: inherit;
+  }
 }
 
 .kv-row {

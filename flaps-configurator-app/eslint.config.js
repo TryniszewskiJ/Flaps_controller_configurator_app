@@ -6,6 +6,8 @@ const unusedImports = require('eslint-plugin-unused-imports');
 const prettierRecommended = require('eslint-plugin-prettier/recommended');
 
 module.exports = tseslint.config(
+  // Kod generowany z flaps.proto (npm run proto:gen)
+  { ignores: ['src/app/core/protocol/gen/**'] },
   {
     files: ['**/*.ts'],
     ignores: ['projects/**/*'],

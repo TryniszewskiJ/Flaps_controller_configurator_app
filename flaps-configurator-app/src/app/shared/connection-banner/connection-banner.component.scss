@@ -26,6 +26,19 @@
   --banner-dot: var(--ion-color-success);
 }
 
+.banner--pending {
+  --banner-bg: var(--app-warning-bg);
+  --banner-border: var(--app-warning-border);
+  --banner-text: var(--app-warning-text);
+}
+
+ion-spinner {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--ion-color-warning);
+}
+
 .banner__dot {
   flex: none;
   width: 7px;

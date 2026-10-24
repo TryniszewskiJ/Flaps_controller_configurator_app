@@ -1,0 +1,61 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="page-toolbar">
+    <h1 slot="start" class="page-title">Wybierz urządzenie</h1>
+    <ion-buttons slot="end">
+      <ion-button
+        class="icon-btn btn-close"
+        fill="outline"
+        color="medium"
+        aria-label="Zamknij"
+        (click)="close()"
+      >
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="page">
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-label">Twoje sterowniki w pobliżu</h2>
+        @if (scanning()) {
+          <ion-spinner name="crescent" aria-label="Wyszukiwanie"></ion-spinner>
+        }
+      </div>
+
+      @for (device of devices(); track device.deviceId) {
+        <button type="button" class="device-row" (click)="select(device)">
+          <span class="device-icon" aria-hidden="true">
+            <ion-icon name="bluetooth"></ion-icon>
+          </span>
+          <span class="device-text">
+            <strong>{{ device.name || defaultName }}</strong>
+            <span class="mono">{{ device.deviceId }}</span>
+          </span>
+          @if (device.rssi !== undefined) {
+            <span class="device-rssi mono">
+              <ion-icon name="cellular" aria-hidden="true"></ion-icon>
+              {{ signalLabel(device.rssi) }}
+            </span>
+          }
+        </button>
+      } @empty {
+        <p class="picker-empty">
+          @if (error(); as message) {
+            {{ message }}
+          } @else if (scanning()) {
+            Szukam urządzeń…
+          } @else {
+            Nie znaleziono urządzeń. Upewnij się, że sterownik jest zasilony i w pobliżu.
+          }
+        </p>
+      }
+    </section>
+
+    <ion-button expand="block" fill="outline" [disabled]="scanning()" (click)="startScan()">
+      Szukaj ponownie
+    </ion-button>
+  </div>
+</ion-content>

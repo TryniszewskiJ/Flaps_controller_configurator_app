@@ -1,0 +1,90 @@
+.btn-close {
+  --background: var(--app-card-bg);
+  --border-color: var(--app-border);
+  --border-width: 1px;
+}
+
+ion-spinner {
+  width: 18px;
+  height: 18px;
+  color: var(--ion-color-primary);
+}
+
+.device-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 0;
+  border: 0;
+  border-bottom: 1px solid var(--app-border);
+  background: none;
+  font: inherit;
+  text-align: start;
+  color: var(--app-text);
+  cursor: pointer;
+
+  &:last-of-type {
+    border-bottom: 0;
+  }
+
+  &:active {
+    opacity: 0.6;
+  }
+}
+
+.device-icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(var(--ion-color-primary-rgb), 0.1);
+  color: var(--ion-color-primary);
+  font-size: 18px;
+}
+
+.device-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+
+  strong {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  span {
+    overflow: hidden;
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--app-muted);
+  }
+}
+
+.device-rssi {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--app-muted);
+}
+
+.picker-empty {
+  margin: 8px 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--app-muted);
+}
+
+ion-button[expand='block'] {
+  --border-radius: 8px;
+  margin: 0;
+  font-weight: 600;
+}
