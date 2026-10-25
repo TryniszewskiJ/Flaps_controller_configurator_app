@@ -122,6 +122,26 @@ Przebieg:
 4. Utrata połączenia bez kliknięcia **Rozłącz** — ponowne łączenie co 2 s, aż do skutku.
 5. **Rozłącz** wysyła `CLOSE_SESSION` i rozłącza BLE.
 
+### Konfiguracja (zakładka Config)
+
+`ConfigurationService` (`core/configuration.service.ts`) po połączeniu odczytuje konfigurację
+(`GET_CONFIGURATION`) i trzyma jej wersję roboczą. **Testuj** wysyła ją `SET_CONFIGURATION`
+(sterownik używa jej od razu, tylko w RAM), **Zapisz** — `SAVE_CONFIGURATION` (flash, timeout 5 s).
+
+- **Ramki CAN** — ID (hex), standard / extended, timeout (0 = ramka opcjonalna).
+- **Sygnały** — okno z siatką bitów 8 × 8 jak w SavvyCAN (wiersz = bajt, kolumny bit 7…0,
+  numeracja DBC). Pierwsze dotknięcie wybiera bit, drugie rozciąga zaznaczenie; bity innych
+  sygnałów tej ramki są kreskowane, nachodzenie na nie — na czerwono. Położenie liczy
+  [`core/can/signal-layout.ts`](flaps-configurator-app/src/app/core/can/signal-layout.ts) tak
+  samo jak `SignalExtractor` firmware (Motorola: bit startowy = MSB, Intel: = LSB).
+  Przełącznik **bez znaku / ze znakiem** (U2, znak = MSB sygnału) — `Signal.is_signed`,
+  protokół 1.5 (starszy firmware pomija to pole).
+- **Logiki** — opis, wartość selektora (gdy jest selektor), typ: stała (otwarte / zamknięte),
+  przełącznik (wartość otwarcia / zamknięcia) albo histereza (progi). Bez selektora sterownik
+  przyjmuje tylko jedną logikę. Ostatniej logiki nie da się usunąć.
+- **Ustawienia** — selektor, logika domyślna, stan bezpieczny, czas ruchu klapy (50–5000 ms),
+  terminator 120 Ω na CAN.
+
 Modele protokołu są generowane z `flaps.proto` firmware do
 [`src/app/core/protocol/gen`](flaps-configurator-app/src/app/core/protocol/gen) (plik w repo,
 build go nie generuje). Po zmianie `flaps.proto` — przy repozytorium firmware obok tego repo

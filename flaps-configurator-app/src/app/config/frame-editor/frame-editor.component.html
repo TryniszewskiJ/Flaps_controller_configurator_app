@@ -1,0 +1,74 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="page-toolbar">
+    <h1 slot="start" class="page-title">{{ index === null ? 'Nowa ramka' : 'Ramka CAN' }}</h1>
+    <ion-buttons slot="end">
+      <ion-button
+        class="icon-btn btn-close"
+        fill="outline"
+        color="medium"
+        aria-label="Zamknij"
+        (click)="close()"
+      >
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="page">
+    <section class="card form">
+      <div>
+        <ion-input
+          class="mono"
+          label="ID (hex)"
+          labelPlacement="stacked"
+          fill="outline"
+          placeholder="np. 180"
+          autocapitalize="characters"
+          [value]="idText()"
+          (ionInput)="onId($event.detail.value)"
+        ></ion-input>
+        @if (idError(); as error) {
+          <p class="field-error">{{ error }}</p>
+        }
+      </div>
+
+      <ion-toggle
+        labelPlacement="start"
+        justify="space-between"
+        [checked]="extended()"
+        (ionChange)="extended.set($event.detail.checked)"
+      >
+        Extended ID (29 bitów)
+      </ion-toggle>
+
+      <div>
+        <ion-input
+          class="mono"
+          inputmode="numeric"
+          label="Timeout [ms]"
+          labelPlacement="stacked"
+          fill="outline"
+          [value]="timeoutText()"
+          (ionInput)="onTimeout($event.detail.value)"
+        ></ion-input>
+        @if (timeoutError(); as error) {
+          <p class="field-error">{{ error }}</p>
+        } @else {
+          <p class="field-help">
+            0 = ramka opcjonalna. Powyżej 0 ramka jest wymagana: gdy milczy dłużej, klapy przechodzą
+            w stan bezpieczny.
+          </p>
+        }
+      </div>
+    </section>
+
+    <div class="btn-row">
+      @if (index !== null) {
+        <ion-button fill="outline" color="danger" (click)="remove()">Usuń</ion-button>
+      }
+      <ion-button [disabled]="!valid()" (click)="save()">Zapisz</ion-button>
+    </div>
+  </div>
+</ion-content>

@@ -1,5 +1,11 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { fromJson, JsonValue } from '@bufbuild/protobuf';
+import {
+  DescMessage,
+  fromJson,
+  JsonValue,
+  MessageInitShape,
+  MessageShape,
+} from '@bufbuild/protobuf';
 import { BleLinkService, FoundDevice } from './ble/ble-link.service';
 import { FrameLogService } from './frame-log.service';
 import { COMMAND_SCHEMAS } from './protocol/commands';
@@ -21,6 +27,7 @@ import {
   PROTOCOL_VERSION_MAJOR,
   PROTOCOL_VERSION_MINOR,
   ProtocolClient,
+  ProtocolClientOptions,
   ProtocolError,
   ProtocolTimeoutError,
 } from './protocol/protocol-client';
@@ -147,6 +154,21 @@ export class ConnectionService {
 
     const request = fromJson(schemas.request, payload);
     await client.request(command, schemas.request, request, schemas.response, { retries: 0 });
+  }
+
+  /** Komenda w aktywnej sesji (konfiguracja, stan). Bez połączenia — błąd. */
+  async request<Req extends DescMessage, Res extends DescMessage>(
+    command: Command,
+    requestSchema: Req,
+    request: MessageInitShape<Req>,
+    responseSchema: Res,
+    options?: ProtocolClientOptions,
+  ): Promise<MessageShape<Res>> {
+    const client = this.client;
+    if (!client || this._status() !== 'connected') {
+      throw new Error('Brak połączenia z urządzeniem.');
+    }
+    return client.request(command, requestSchema, request, responseSchema, options);
   }
 
   private async open(): Promise<void> {

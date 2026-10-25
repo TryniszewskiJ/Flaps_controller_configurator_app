@@ -1,0 +1,34 @@
+<div class="bit-grid mono" role="grid" aria-label="Bity ramki CAN">
+  <div class="grid-row" role="row">
+    <span class="corner" aria-hidden="true"></span>
+    @for (column of columns; track column) {
+      <span class="column-label" role="columnheader">{{ column }}</span>
+    }
+  </div>
+  @for (row of rows(); track $index) {
+    <div class="grid-row" role="row">
+      <span class="row-label" role="rowheader">{{ $index }}</span>
+      @for (cell of row; track cell.bit) {
+        <button
+          type="button"
+          role="gridcell"
+          class="bit"
+          [class.selected]="cell.selected"
+          [class.occupied]="cell.others.length > 0"
+          [class.overlap]="cell.selected && cell.others.length > 0"
+          [class.anchor]="cell.anchor"
+          [attr.aria-label]="label(cell)"
+          [attr.aria-selected]="cell.selected"
+          (click)="bitTap.emit(cell.bit)"
+        >
+          <span class="bit-number">{{ cell.bit }}</span>
+          @if (cell.msb) {
+            <span class="bit-tag">MSB</span>
+          } @else if (cell.lsb) {
+            <span class="bit-tag">LSB</span>
+          }
+        </button>
+      }
+    </div>
+  }
+</div>

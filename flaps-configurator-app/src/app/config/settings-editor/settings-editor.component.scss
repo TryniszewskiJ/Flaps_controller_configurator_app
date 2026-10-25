@@ -1,0 +1,22 @@
+@use '../editor-form';
+
+.card-label {
+  margin-bottom: 0;
+}
+
+.field-label {
+  margin: 0 0 6px;
+  font-size: 12px;
+  color: var(--app-muted);
+}
+
+ion-segment-button {
+  min-height: 34px;
+  font-size: 11px;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+ion-toggle {
+  font-size: 14px;
+}

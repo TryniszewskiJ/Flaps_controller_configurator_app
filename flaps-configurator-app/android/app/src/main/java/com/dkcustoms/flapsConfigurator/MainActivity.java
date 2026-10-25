@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package com.dkcustoms.flapsConfigurator;
 
 import com.getcapacitor.BridgeActivity;
 

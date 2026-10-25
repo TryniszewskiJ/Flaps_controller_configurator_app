@@ -1,0 +1,118 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="page-toolbar">
+    <h1 slot="start" class="page-title">Ustawienia</h1>
+    <ion-buttons slot="end">
+      <ion-button
+        class="icon-btn btn-close"
+        fill="outline"
+        color="medium"
+        aria-label="Zamknij"
+        (click)="close()"
+      >
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="page">
+    <section class="card form">
+      <h2 class="card-label">Wybór logiki</h2>
+      <div>
+        <ion-select
+          label="Selektor"
+          labelPlacement="stacked"
+          fill="outline"
+          interface="popover"
+          [value]="selector()"
+          (ionChange)="onSelector($event.detail.value)"
+        >
+          <ion-select-option [value]="NO_SELECTOR">Brak — jedna logika</ion-select-option>
+          @for (item of signals; track $index) {
+            <ion-select-option [value]="$index">{{ item.name }}</ion-select-option>
+          }
+        </ion-select>
+        @if (selectorError(); as error) {
+          <p class="field-error">{{ error }}</p>
+        } @else {
+          <p class="field-help">
+            Sygnał, którego wartość (zaokrąglona) wybiera logikę po jej wartości selektora, np. tryb
+            jazdy.
+          </p>
+        }
+      </div>
+
+      <div>
+        <ion-select
+          label="Logika domyślna"
+          labelPlacement="stacked"
+          fill="outline"
+          interface="popover"
+          [value]="defaultLogic()"
+          (ionChange)="onDefaultLogic($event.detail.value)"
+        >
+          @for (item of logics; track $index) {
+            <ion-select-option [value]="$index">{{ logicName($index) }}</ion-select-option>
+          }
+        </ion-select>
+        <p class="field-help">
+          Działa, zanim przyjdzie selektor, i dla wartości selektora, której nie ma żadna logika.
+        </p>
+      </div>
+    </section>
+
+    <section class="card form">
+      <h2 class="card-label">Klapy</h2>
+      <div>
+        <p class="field-label">Stan bezpieczny</p>
+        <ion-segment
+          [value]="failSafeState() === FlapsState.OPEN ? 'open' : 'closed'"
+          (ionChange)="onFailSafe($event.detail.value)"
+        >
+          <ion-segment-button value="closed">Zamknięte</ion-segment-button>
+          <ion-segment-button value="open">Otwarte</ion-segment-button>
+        </ion-segment>
+        <p class="field-help">
+          Pozycja klap, gdy brakuje wymaganej ramki albo sygnału wejściowego logiki.
+        </p>
+      </div>
+
+      <div>
+        <ion-input
+          class="mono"
+          inputmode="numeric"
+          label="Czas ruchu [ms]"
+          labelPlacement="stacked"
+          fill="outline"
+          [value]="moveTimeText()"
+          (ionInput)="onMoveTime($event.detail.value)"
+        ></ion-input>
+        @if (moveTimeError(); as error) {
+          <p class="field-error">{{ error }}</p>
+        } @else {
+          <p class="field-help">Jak długo silnik pracuje przy jednym ruchu klapy.</p>
+        }
+      </div>
+    </section>
+
+    <section class="card form">
+      <h2 class="card-label">CAN</h2>
+      <div>
+        <ion-toggle
+          labelPlacement="start"
+          justify="space-between"
+          [checked]="termination()"
+          (ionChange)="termination.set($event.detail.checked)"
+        >
+          Terminator 120 Ω
+        </ion-toggle>
+        <p class="field-help">Włącz, gdy sterownik jest na końcu magistrali CAN.</p>
+      </div>
+    </section>
+
+    <div class="btn-row">
+      <ion-button [disabled]="!valid()" (click)="save()">Zapisz</ion-button>
+    </div>
+  </div>
+</ion-content>
