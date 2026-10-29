@@ -11,10 +11,20 @@ import {
   CloseSessionResponseSchema,
   Command,
   ErrorResponseSchema,
+  GetConfigurationRequestSchema,
+  GetConfigurationResponseSchema,
   GetDeviceInfoRequestSchema,
   GetDeviceInfoResponseSchema,
+  GetStateRequestSchema,
+  GetStateResponseSchema,
   PingRequestSchema,
   PingResponseSchema,
+  SaveConfigurationRequestSchema,
+  SaveConfigurationResponseSchema,
+  SetConfigurationRequestSchema,
+  SetConfigurationResponseSchema,
+  SetDevModeRequestSchema,
+  SetDevModeResponseSchema,
   StartSessionRequestSchema,
   StartSessionResponseSchema,
 } from './gen/flaps_pb';
@@ -40,6 +50,23 @@ export const COMMAND_SCHEMAS: Partial<Record<Command, CommandSchemas>> = {
   [Command.CLOSE_SESSION]: {
     request: CloseSessionRequestSchema,
     response: CloseSessionResponseSchema,
+  },
+  [Command.GET_CONFIGURATION]: {
+    request: GetConfigurationRequestSchema,
+    response: GetConfigurationResponseSchema,
+  },
+  [Command.SET_CONFIGURATION]: {
+    request: SetConfigurationRequestSchema,
+    response: SetConfigurationResponseSchema,
+  },
+  [Command.SAVE_CONFIGURATION]: {
+    request: SaveConfigurationRequestSchema,
+    response: SaveConfigurationResponseSchema,
+  },
+  [Command.GET_STATE]: { request: GetStateRequestSchema, response: GetStateResponseSchema },
+  [Command.SET_DEV_MODE]: {
+    request: SetDevModeRequestSchema,
+    response: SetDevModeResponseSchema,
   },
 };
 

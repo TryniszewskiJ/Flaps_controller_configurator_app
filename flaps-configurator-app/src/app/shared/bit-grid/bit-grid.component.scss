@@ -1,0 +1,88 @@
+:host {
+  display: block;
+}
+
+.bit-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  user-select: none;
+}
+
+.grid-row {
+  display: grid;
+  grid-template-columns: 18px repeat(8, minmax(0, 1fr));
+  gap: 3px;
+}
+
+.corner,
+.column-label,
+.row-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: var(--app-muted);
+}
+
+.corner {
+  font-size: 8px;
+}
+
+.bit {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  min-width: 0;
+  padding: 0;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-card-bg);
+  font: inherit;
+  font-size: 11px;
+  color: var(--app-text);
+  cursor: pointer;
+
+  &:active {
+    opacity: 0.6;
+  }
+
+  // Inny sygnał tej ramki — kreskowanie jak w SavvyCAN
+  &.occupied {
+    background: repeating-linear-gradient(
+      135deg,
+      var(--app-code-bg),
+      var(--app-code-bg) 3px,
+      var(--app-border) 3px,
+      var(--app-border) 5px
+    );
+    color: var(--app-muted);
+  }
+
+  &.selected {
+    border-color: var(--ion-color-primary);
+    background: var(--ion-color-primary);
+    color: var(--ion-color-primary-contrast);
+  }
+
+  // Zaznaczenie nachodzi na inny sygnał
+  &.overlap {
+    border-color: var(--ion-color-danger);
+    background: var(--ion-color-danger);
+  }
+
+  &.anchor {
+    outline: 2px solid var(--ion-color-warning);
+    outline-offset: 1px;
+  }
+}
+
+.bit-tag {
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}

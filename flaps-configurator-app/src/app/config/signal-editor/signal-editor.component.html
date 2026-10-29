@@ -1,0 +1,147 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="page-toolbar">
+    <h1 slot="start" class="page-title">{{ index === null ? 'Nowy sygnał' : 'Sygnał' }}</h1>
+    <ion-buttons slot="end">
+      <ion-button
+        class="icon-btn btn-close"
+        fill="outline"
+        color="medium"
+        aria-label="Zamknij"
+        (click)="close()"
+      >
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="page">
+    <section class="card form">
+      <ion-input
+        label="Nazwa"
+        labelPlacement="stacked"
+        fill="outline"
+        placeholder="np. RPM"
+        [value]="name()"
+        (ionInput)="onName($event.detail.value)"
+      ></ion-input>
+      @if (nameError(); as error) {
+        <p class="field-error">{{ error }}</p>
+      }
+
+      <ion-select
+        class="mono"
+        label="Ramka"
+        labelPlacement="stacked"
+        fill="outline"
+        interface="popover"
+        [value]="frame()"
+        (ionChange)="onFrame($event.detail.value)"
+      >
+        @for (item of frames; track $index) {
+          <ion-select-option [value]="$index">{{ frameLabel(item) }}</ion-select-option>
+        }
+      </ion-select>
+    </section>
+
+    <section class="card">
+      <h2 class="card-label">Bity</h2>
+      <ion-segment
+        [value]="bigEndian() ? 'motorola' : 'intel'"
+        (ionChange)="onByteOrder($event.detail.value)"
+      >
+        <ion-segment-button value="motorola">Motorola (big endian)</ion-segment-button>
+        <ion-segment-button value="intel">Intel (little endian)</ion-segment-button>
+      </ion-segment>
+
+      <p class="hint">{{ hint() }}</p>
+      <app-bit-grid
+        [bits]="bits() ?? []"
+        [others]="others()"
+        [anchor]="anchor()"
+        (bitTap)="onBitTap($event)"
+      />
+
+      <div class="field-row">
+        <ion-input
+          class="mono"
+          inputmode="numeric"
+          label="Bit startowy"
+          labelPlacement="stacked"
+          fill="outline"
+          [value]="startText()"
+          (ionInput)="onNumber('start', $event.detail.value)"
+        ></ion-input>
+        <ion-input
+          class="mono"
+          inputmode="numeric"
+          label="Długość [bit]"
+          labelPlacement="stacked"
+          fill="outline"
+          [value]="lengthText()"
+          (ionInput)="onNumber('length', $event.detail.value)"
+        ></ion-input>
+      </div>
+      <p class="field-help">
+        Numeracja jak w DBC.
+        {{ bigEndian() ? 'Motorola: bit startowy to MSB.' : 'Intel: bit startowy to LSB.' }}
+      </p>
+      @if (layoutError(); as error) {
+        <p class="field-error">{{ error }}</p>
+      } @else if (overlaps().length > 0) {
+        <p class="field-warning">Nachodzi na: {{ overlaps().join(', ') }}.</p>
+      }
+    </section>
+
+    <section class="card">
+      <h2 class="card-label">Wartość</h2>
+      <ion-segment
+        [value]="signed() ? 'signed' : 'unsigned'"
+        (ionChange)="onSigned($event.detail.value)"
+      >
+        <ion-segment-button value="unsigned">Bez znaku</ion-segment-button>
+        <ion-segment-button value="signed">Ze znakiem (U2)</ion-segment-button>
+      </ion-segment>
+      <div class="field-row">
+        <ion-input
+          class="mono"
+          inputmode="decimal"
+          label="Skala"
+          labelPlacement="stacked"
+          fill="outline"
+          [value]="scaleText()"
+          (ionInput)="onNumber('scale', $event.detail.value)"
+        ></ion-input>
+        <ion-input
+          class="mono"
+          inputmode="decimal"
+          label="Offset"
+          labelPlacement="stacked"
+          fill="outline"
+          [value]="biasText()"
+          (ionInput)="onNumber('bias', $event.detail.value)"
+        ></ion-input>
+      </div>
+      <p class="field-help">
+        Wartość = surowa × skala + offset.
+        {{ signed() ? 'Surowa w kodzie U2 — znak to MSB sygnału.' : 'Surowa bez znaku.' }}
+      </p>
+      @if (scaleError(); as error) {
+        <p class="field-error">{{ error }}</p>
+      } @else if (!layoutError()) {
+        <div class="kv-row mono">
+          <span class="text-muted">Zakres</span>
+          <span>{{ range() }}</span>
+        </div>
+      }
+    </section>
+
+    <div class="btn-row">
+      @if (index !== null) {
+        <ion-button fill="outline" color="danger" (click)="remove()">Usuń</ion-button>
+      }
+      <ion-button [disabled]="!valid()" (click)="save()">Zapisz</ion-button>
+    </div>
+  </div>
+</ion-content>

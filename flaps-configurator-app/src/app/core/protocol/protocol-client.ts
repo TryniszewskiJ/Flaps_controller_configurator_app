@@ -13,7 +13,7 @@ import { Command, ErrorResponseSchema, Status } from './gen/flaps_pb';
 /** Stała aplikacji w StartSessionRequest ("FLAP"). */
 export const APP_ID = 0x464c4150;
 export const PROTOCOL_VERSION_MAJOR = 1;
-export const PROTOCOL_VERSION_MINOR = 1;
+export const PROTOCOL_VERSION_MINOR = 5;
 
 const UNSOLICITED_FIRST = 0x70;
 const UNSOLICITED_LAST = 0x7f;

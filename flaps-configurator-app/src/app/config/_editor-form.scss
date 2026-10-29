@@ -1,0 +1,54 @@
+// Wspólne style okien edycji konfiguracji (sygnał, ramka)
+
+.btn-close {
+  --background: var(--app-card-bg);
+  --border-color: var(--app-border);
+  --border-width: 1px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+ion-input,
+ion-select {
+  --border-radius: 8px;
+  --highlight-color-focused: var(--ion-color-primary);
+  min-height: 48px;
+  font-size: 14px;
+}
+
+.field-row {
+  display: flex;
+  gap: 8px;
+
+  > * {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.field-help,
+.field-error,
+.field-warning {
+  margin: 6px 0 0;
+  font-size: 11px;
+}
+
+.field-help {
+  color: var(--app-muted);
+}
+
+.field-error {
+  color: var(--app-danger-text);
+}
+
+.field-warning {
+  color: var(--app-warning-text);
+}
+
+.kv-row {
+  margin-top: 8px;
+}

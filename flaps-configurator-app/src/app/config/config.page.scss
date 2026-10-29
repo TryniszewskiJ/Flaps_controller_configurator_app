@@ -9,16 +9,103 @@
   text-transform: none;
 }
 
-.code-block {
-  padding: 10px 12px;
-  background: var(--app-code-bg);
-  border-radius: 8px;
+// Wiersz listy otwierający okno edycji
+.list-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border-top: 0;
+  border-right: 0;
+  border-left: 0;
+  background: none;
+  font: inherit;
+  text-align: start;
+  color: var(--app-text);
+  cursor: pointer;
+
+  &:active:not(:disabled) {
+    opacity: 0.6;
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+
+  ion-icon {
+    flex: none;
+    color: var(--app-muted);
+  }
+}
+
+.row-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  font-size: 13px;
+}
+
+.row-sub {
   font-size: 11px;
-  line-height: 1.7;
   color: var(--app-muted);
 }
 
-.code-keyword {
-  font-weight: 600;
-  color: var(--ion-color-primary);
+.row-side {
+  flex: none;
+  font-size: 11px;
+}
+
+.tag {
+  margin-left: 6px;
+  padding: 1px 6px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--app-muted);
+}
+
+.empty-text,
+.status-text {
+  margin: 4px 0;
+  font-size: 12px;
+  color: var(--app-muted);
+}
+
+.message {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  border: 1px solid;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.message--warning {
+  border-color: var(--app-warning-border);
+  background: var(--app-warning-bg);
+  color: var(--app-warning-text);
+}
+
+.message--danger {
+  border-color: var(--app-danger-border);
+  background: var(--app-danger-bg);
+  color: var(--app-danger-text);
+}
+
+.card--placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+
+  p {
+    margin: 0;
+  }
+}
+
+ion-spinner {
+  width: 18px;
+  height: 18px;
 }

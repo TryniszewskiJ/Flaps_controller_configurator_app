@@ -27,7 +27,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file flaps.proto.
  */
 export const file_flaps: GenFile = /*@__PURE__*/
-  fileDesc("CgtmbGFwcy5wcm90bxIFZmxhcHMiLgoNRXJyb3JSZXNwb25zZRIdCgZzdGF0dXMYASABKA4yDS5mbGFwcy5TdGF0dXMiZQoTU3RhcnRTZXNzaW9uUmVxdWVzdBIOCgZhcHBfaWQYASABKAcSHgoWcHJvdG9jb2xfdmVyc2lvbl9tYWpvchgCIAEoDRIeChZwcm90b2NvbF92ZXJzaW9uX21pbm9yGAMgASgNIpEBChRTdGFydFNlc3Npb25SZXNwb25zZRIdCgZzdGF0dXMYASABKA4yDS5mbGFwcy5TdGF0dXMSHgoWcHJvdG9jb2xfdmVyc2lvbl9tYWpvchgCIAEoDRIeChZwcm90b2NvbF92ZXJzaW9uX21pbm9yGAMgASgNEhoKEnNlc3Npb25fdGltZW91dF9tcxgEIAEoDSIWChRHZXREZXZpY2VJbmZvUmVxdWVzdCKLAQoVR2V0RGV2aWNlSW5mb1Jlc3BvbnNlEh4KFmZpcm13YXJlX3ZlcnNpb25fbWFqb3IYASABKA0SHgoWZmlybXdhcmVfdmVyc2lvbl9taW5vchgCIAEoDRIeChZmaXJtd2FyZV92ZXJzaW9uX3BhdGNoGAMgASgNEhIKCmRldmljZV91aWQYBCABKAwiDQoLUGluZ1JlcXVlc3QiIQoMUGluZ1Jlc3BvbnNlEhEKCXVwdGltZV9tcxgBIAEoDSIVChNDbG9zZVNlc3Npb25SZXF1ZXN0IhYKFENsb3NlU2Vzc2lvblJlc3BvbnNlKpsBCgdDb21tYW5kEhcKE0NPTU1BTkRfVU5TUEVDSUZJRUQQABIZChVDT01NQU5EX1NUQVJUX1NFU1NJT04QARIbChdDT01NQU5EX0dFVF9ERVZJQ0VfSU5GTxACEhAKDENPTU1BTkRfUElORxADEhkKFUNPTU1BTkRfQ0xPU0VfU0VTU0lPThAEEhIKDUNPTU1BTkRfRVJST1IQ/wEqswEKBlN0YXR1cxIWChJTVEFUVVNfVU5TUEVDSUZJRUQQABINCglTVEFUVVNfT0sQARIVChFTVEFUVVNfTk9fU0VTU0lPThACEh4KGlNUQVRVU19VTlNVUFBPUlRFRF9WRVJTSU9OEAMSFgoSU1RBVFVTX1VOS05PV05fQVBQEAQSFwoTU1RBVFVTX0RFQ09ERV9FUlJPUhAFEhoKFlNUQVRVU19VTktOT1dOX0NPTU1BTkQQBmIGcHJvdG8z");
+  fileDesc("CgtmbGFwcy5wcm90bxIFZmxhcHMiLgoNRXJyb3JSZXNwb25zZRIdCgZzdGF0dXMYASABKA4yDS5mbGFwcy5TdGF0dXMiZQoTU3RhcnRTZXNzaW9uUmVxdWVzdBIOCgZhcHBfaWQYASABKAcSHgoWcHJvdG9jb2xfdmVyc2lvbl9tYWpvchgCIAEoDRIeChZwcm90b2NvbF92ZXJzaW9uX21pbm9yGAMgASgNIpEBChRTdGFydFNlc3Npb25SZXNwb25zZRIdCgZzdGF0dXMYASABKA4yDS5mbGFwcy5TdGF0dXMSHgoWcHJvdG9jb2xfdmVyc2lvbl9tYWpvchgCIAEoDRIeChZwcm90b2NvbF92ZXJzaW9uX21pbm9yGAMgASgNEhoKEnNlc3Npb25fdGltZW91dF9tcxgEIAEoDSIWChRHZXREZXZpY2VJbmZvUmVxdWVzdCKLAQoVR2V0RGV2aWNlSW5mb1Jlc3BvbnNlEh4KFmZpcm13YXJlX3ZlcnNpb25fbWFqb3IYASABKA0SHgoWZmlybXdhcmVfdmVyc2lvbl9taW5vchgCIAEoDRIeChZmaXJtd2FyZV92ZXJzaW9uX3BhdGNoGAMgASgNEhIKCmRldmljZV91aWQYBCABKAwiDQoLUGluZ1JlcXVlc3QiIQoMUGluZ1Jlc3BvbnNlEhEKCXVwdGltZV9tcxgBIAEoDSIVChNDbG9zZVNlc3Npb25SZXF1ZXN0IhYKFENsb3NlU2Vzc2lvblJlc3BvbnNlIj8KCENhbkZyYW1lEgoKAmlkGAEgASgNEhMKC2V4dGVuZGVkX2lkGAIgASgIEhIKCnRpbWVvdXRfbXMYAyABKA0imgEKBlNpZ25hbBITCgtmcmFtZV9pbmRleBgBIAEoDRIUCgxzdGFydGluZ19iaXQYAiABKA0SEwoLbGVuZ3RoX2JpdHMYAyABKA0SEgoKYmlnX2VuZGlhbhgEIAEoCBINCgVzY2FsZRgFIAEoAhIMCgRiaWFzGAYgASgCEgwKBG5hbWUYByABKAkSEQoJaXNfc2lnbmVkGAggASgIIi4KCkZpeGVkTG9naWMSIAoFc3RhdGUYASABKA4yES5mbGFwcy5GbGFwc1N0YXRlIjwKEVNpbXBsZVN3aXRjaExvZ2ljEhIKCm9wZW5fdmFsdWUYASABKBESEwoLY2xvc2VfdmFsdWUYAiABKBEiOgoPSHlzdGVyZXNpc0xvZ2ljEhIKCm9wZW5fYWJvdmUYASABKAISEwoLY2xvc2VfYmVsb3cYAiABKAIi8wEKBUxvZ2ljEhYKDnNlbGVjdG9yX3ZhbHVlGAEgASgREhMKC2Rlc2NyaXB0aW9uGAIgASgJEhkKDGlucHV0X3NpZ25hbBgDIAEoDUgBiAEBEiIKBWZpeGVkGAQgASgLMhEuZmxhcHMuRml4ZWRMb2dpY0gAEjEKDXNpbXBsZV9zd2l0Y2gYBSABKAsyGC5mbGFwcy5TaW1wbGVTd2l0Y2hMb2dpY0gAEiwKCmh5c3RlcmVzaXMYBiABKAsyFi5mbGFwcy5IeXN0ZXJlc2lzTG9naWNIAEIMCgpwYXJhbWV0ZXJzQg8KDV9pbnB1dF9zaWduYWwimgIKDUNvbmZpZ3VyYXRpb24SGQoRZmRjYW5fdGVybWluYXRpb24YASABKAgSHwoGZnJhbWVzGAIgAygLMg8uZmxhcHMuQ2FuRnJhbWUSHgoHc2lnbmFscxgDIAMoCzINLmZsYXBzLlNpZ25hbBIcCgZsb2dpY3MYBCADKAsyDC5mbGFwcy5Mb2dpYxIcCg9zZWxlY3Rvcl9zaWduYWwYBSABKA1IAIgBARIbChNkZWZhdWx0X2xvZ2ljX2luZGV4GAYgASgNEioKD2ZhaWxfc2FmZV9zdGF0ZRgHIAEoDjIRLmZsYXBzLkZsYXBzU3RhdGUSFAoMbW92ZV90aW1lX21zGAggASgNQhIKEF9zZWxlY3Rvcl9zaWduYWwiGQoXR2V0Q29uZmlndXJhdGlvblJlcXVlc3QiYAoYR2V0Q29uZmlndXJhdGlvblJlc3BvbnNlEisKDWNvbmZpZ3VyYXRpb24YASABKAsyFC5mbGFwcy5Db25maWd1cmF0aW9uEhcKD3Vuc2F2ZWRfY2hhbmdlcxgCIAEoCCJGChdTZXRDb25maWd1cmF0aW9uUmVxdWVzdBIrCg1jb25maWd1cmF0aW9uGAEgASgLMhQuZmxhcHMuQ29uZmlndXJhdGlvbiJjChhTZXRDb25maWd1cmF0aW9uUmVzcG9uc2USHQoGc3RhdHVzGAEgASgOMg0uZmxhcHMuU3RhdHVzEigKBWVycm9yGAIgASgOMhkuZmxhcHMuQ29uZmlndXJhdGlvbkVycm9yIhoKGFNhdmVDb25maWd1cmF0aW9uUmVxdWVzdCI6ChlTYXZlQ29uZmlndXJhdGlvblJlc3BvbnNlEh0KBnN0YXR1cxgBIAEoDjINLmZsYXBzLlN0YXR1cyI6CgtTaWduYWxTdGF0ZRINCgVpbmRleBgBIAEoDRINCgV2YWx1ZRgCIAEoAhINCgVmcmVzaBgDIAEoCCKQAQoLRGV2aWNlU3RhdGUSIwoHc2lnbmFscxgBIAMoCzISLmZsYXBzLlNpZ25hbFN0YXRlEhQKDGFjdGl2ZV9sb2dpYxgCIAEoERIiCgVmbGFwMRgDIAEoDjITLmZsYXBzLkZsYXBQb3NpdGlvbhIiCgVmbGFwMhgEIAEoDjITLmZsYXBzLkZsYXBQb3NpdGlvbiIRCg9HZXRTdGF0ZVJlcXVlc3QiRwoQR2V0U3RhdGVSZXNwb25zZRIhCgVzdGF0ZRgBIAEoCzISLmZsYXBzLkRldmljZVN0YXRlEhAKCHNlcXVlbmNlGAIgASgNIlUKCVRlbGVtZXRyeRIQCghzZXF1ZW5jZRgBIAEoDRIRCgl1cHRpbWVfbXMYAiABKA0SIwoHc2lnbmFscxgDIAMoCzISLmZsYXBzLlNpZ25hbFN0YXRlIioKEkFjdGl2ZUxvZ2ljQ2hhbmdlZBIUCgxhY3RpdmVfbG9naWMYASABKBEiRgoPRmxhcE1vdmVTdGFydGVkEgwKBGZsYXAYASABKA0SJQoIcG9zaXRpb24YAiABKA4yEy5mbGFwcy5GbGFwUG9zaXRpb24iiwEKEEZsYXBNb3ZlRmluaXNoZWQSDAoEZmxhcBgBIAEoDRIlCghwb3NpdGlvbhgCIAEoDjITLmZsYXBzLkZsYXBQb3NpdGlvbhITCgtkdXJhdGlvbl9tcxgDIAEoDRIUCgxwZWFrX2FtcF9vdXQYBCABKA0SFwoPYW1wX291dF9hdF9zdG9wGAUgASgNItwBCgVFdmVudBIQCghzZXF1ZW5jZRgBIAEoDRIRCgl1cHRpbWVfbXMYAiABKA0SOQoUYWN0aXZlX2xvZ2ljX2NoYW5nZWQYAyABKAsyGS5mbGFwcy5BY3RpdmVMb2dpY0NoYW5nZWRIABIzChFmbGFwX21vdmVfc3RhcnRlZBgEIAEoCzIWLmZsYXBzLkZsYXBNb3ZlU3RhcnRlZEgAEjUKEmZsYXBfbW92ZV9maW5pc2hlZBgFIAEoCzIXLmZsYXBzLkZsYXBNb3ZlRmluaXNoZWRIAEIHCgVldmVudCJLChFTZXREZXZNb2RlUmVxdWVzdBIiCglsb2dfbGV2ZWwYASABKA4yDy5mbGFwcy5Mb2dMZXZlbBISCgpmbGFwX3RyYWNlGAIgASgIIjMKElNldERldk1vZGVSZXNwb25zZRIdCgZzdGF0dXMYASABKA4yDS5mbGFwcy5TdGF0dXMiSwoITG9nRW50cnkSEQoJdXB0aW1lX21zGAEgASgNEh4KBWxldmVsGAIgASgOMg8uZmxhcHMuTG9nTGV2ZWwSDAoEdGV4dBgDIAEoCSI4CgNMb2cSIAoHZW50cmllcxgBIAMoCzIPLmZsYXBzLkxvZ0VudHJ5Eg8KB2Ryb3BwZWQYAiABKA0iZgoJRmxhcFRyYWNlEgwKBGZsYXAYASABKA0SJQoIcG9zaXRpb24YAiABKA4yEy5mbGFwcy5GbGFwUG9zaXRpb24SEwoLaW50ZXJ2YWxfbXMYAyABKA0SDwoHc2FtcGxlcxgEIAMoDSr9AgoHQ29tbWFuZBIXChNDT01NQU5EX1VOU1BFQ0lGSUVEEAASGQoVQ09NTUFORF9TVEFSVF9TRVNTSU9OEAESGwoXQ09NTUFORF9HRVRfREVWSUNFX0lORk8QAhIQCgxDT01NQU5EX1BJTkcQAxIZChVDT01NQU5EX0NMT1NFX1NFU1NJT04QBBIdChlDT01NQU5EX0dFVF9DT05GSUdVUkFUSU9OEAUSHQoZQ09NTUFORF9TRVRfQ09ORklHVVJBVElPThAGEh4KGkNPTU1BTkRfU0FWRV9DT05GSUdVUkFUSU9OEAcSFQoRQ09NTUFORF9HRVRfU1RBVEUQCBIYChRDT01NQU5EX1NFVF9ERVZfTU9ERRAJEhUKEUNPTU1BTkRfVEVMRU1FVFJZEHASEQoNQ09NTUFORF9FVkVOVBBxEg8KC0NPTU1BTkRfTE9HEHISFgoSQ09NTUFORF9GTEFQX1RSQUNFEHMSEgoNQ09NTUFORF9FUlJPUhD/ASrtAQoGU3RhdHVzEhYKElNUQVRVU19VTlNQRUNJRklFRBAAEg0KCVNUQVRVU19PSxABEhUKEVNUQVRVU19OT19TRVNTSU9OEAISHgoaU1RBVFVTX1VOU1VQUE9SVEVEX1ZFUlNJT04QAxIWChJTVEFUVVNfVU5LTk9XTl9BUFAQBBIXChNTVEFUVVNfREVDT0RFX0VSUk9SEAUSGgoWU1RBVFVTX1VOS05PV05fQ09NTUFORBAGEiAKHFNUQVRVU19JTlZBTElEX0NPTkZJR1VSQVRJT04QBxIWChJTVEFUVVNfRkxBU0hfRVJST1IQCCpXCgpGbGFwc1N0YXRlEhsKF0ZMQVBTX1NUQVRFX1VOU1BFQ0lGSUVEEAASFgoSRkxBUFNfU1RBVEVfQ0xPU0VEEAESFAoQRkxBUFNfU1RBVEVfT1BFThACKq8HChJDb25maWd1cmF0aW9uRXJyb3ISIwofQ09ORklHVVJBVElPTl9FUlJPUl9VTlNQRUNJRklFRBAAEicKI0NPTkZJR1VSQVRJT05fRVJST1JfVE9PX01BTllfRlJBTUVTEAESKAokQ09ORklHVVJBVElPTl9FUlJPUl9JTlZBTElEX0ZSQU1FX0lEEAISJwojQ09ORklHVVJBVElPTl9FUlJPUl9EVVBMSUNBVEVfRlJBTUUQAxIoCiRDT05GSUdVUkFUSU9OX0VSUk9SX1RPT19NQU5ZX1NJR05BTFMQBBIsCihDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfU0lHTkFMX0ZSQU1FEAUSLQopQ09ORklHVVJBVElPTl9FUlJPUl9JTlZBTElEX1NJR05BTF9MQVlPVVQQBhIsCihDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfU0lHTkFMX1NDQUxFEAcSIAocQ09ORklHVVJBVElPTl9FUlJPUl9OT19MT0dJQxAIEicKI0NPTkZJR1VSQVRJT05fRVJST1JfVE9PX01BTllfTE9HSUNTEAkSLworQ09ORklHVVJBVElPTl9FUlJPUl9JTlZBTElEX1NFTEVDVE9SX1NJR05BTBAKEikKJUNPTkZJR1VSQVRJT05fRVJST1JfU0VMRUNUT1JfUkVRVUlSRUQQCxIwCixDT05GSUdVUkFUSU9OX0VSUk9SX0RVUExJQ0FURV9TRUxFQ1RPUl9WQUxVRRAMEi0KKUNPTkZJR1VSQVRJT05fRVJST1JfSU5WQUxJRF9ERUZBVUxUX0xPR0lDEA0SLworQ09ORklHVVJBVElPTl9FUlJPUl9JTlZBTElEX0ZBSUxfU0FGRV9TVEFURRAOEioKJkNPTkZJR1VSQVRJT05fRVJST1JfSU5WQUxJRF9MT0dJQ19UWVBFEA8SKwonQ09ORklHVVJBVElPTl9FUlJPUl9JTlZBTElEX0xPR0lDX0lOUFVUEBASKwonQ09ORklHVVJBVElPTl9FUlJPUl9JTlZBTElEX0ZJWEVEX1NUQVRFEBESLQopQ09ORklHVVJBVElPTl9FUlJPUl9JTlZBTElEX1NXSVRDSF9WQUxVRVMQEhIqCiZDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfSFlTVEVSRVNJUxATEikKJUNPTkZJR1VSQVRJT05fRVJST1JfSU5WQUxJRF9NT1ZFX1RJTUUQFCqwAQoMRmxhcFBvc2l0aW9uEh0KGUZMQVBfUE9TSVRJT05fVU5TUEVDSUZJRUQQABIZChVGTEFQX1BPU0lUSU9OX1VOS05PV04QARIZChVGTEFQX1BPU0lUSU9OX09QRU5JTkcQAhIWChJGTEFQX1BPU0lUSU9OX09QRU4QAxIZChVGTEFQX1BPU0lUSU9OX0NMT1NJTkcQBBIYChRGTEFQX1BPU0lUSU9OX0NMT1NFRBAFKm8KCExvZ0xldmVsEhEKDUxPR19MRVZFTF9PRkYQABITCg9MT0dfTEVWRUxfRVJST1IQARISCg5MT0dfTEVWRUxfV0FSThACEhIKDkxPR19MRVZFTF9JTkZPEAMSEwoPTE9HX0xFVkVMX0RFQlVHEARiBnByb3RvMw");
 
 /**
  * @generated from message flaps.ErrorResponse
@@ -228,6 +228,821 @@ export const CloseSessionResponseSchema: GenMessage<CloseSessionResponse> = /*@_
   messageDesc(file_flaps, 8);
 
 /**
+ * CAN frame to listen to (max 16), gets an FDCAN acceptance filter
+ *
+ * @generated from message flaps.CanFrame
+ */
+export type CanFrame = Message<"flaps.CanFrame"> & {
+  /**
+   * @generated from field: uint32 id = 1;
+   */
+  id: number;
+
+  /**
+   * @generated from field: bool extended_id = 2;
+   */
+  extendedId: boolean;
+
+  /**
+   * > 0: required frame, missing = fail-safe state (max 65535)
+   *
+   * @generated from field: uint32 timeout_ms = 3;
+   */
+  timeoutMs: number;
+};
+
+/**
+ * Describes the message flaps.CanFrame.
+ * Use `create(CanFrameSchema)` to create a new message.
+ */
+export const CanFrameSchema: GenMessage<CanFrame> = /*@__PURE__*/
+  messageDesc(file_flaps, 9);
+
+/**
+ * Value decoded from a frame (max 16), DBC bit numbering
+ *
+ * @generated from message flaps.Signal
+ */
+export type Signal = Message<"flaps.Signal"> & {
+  /**
+   * @generated from field: uint32 frame_index = 1;
+   */
+  frameIndex: number;
+
+  /**
+   * @generated from field: uint32 starting_bit = 2;
+   */
+  startingBit: number;
+
+  /**
+   * 1..64
+   *
+   * @generated from field: uint32 length_bits = 3;
+   */
+  lengthBits: number;
+
+  /**
+   * Motorola
+   *
+   * @generated from field: bool big_endian = 4;
+   */
+  bigEndian: boolean;
+
+  /**
+   * @generated from field: float scale = 5;
+   */
+  scale: number;
+
+  /**
+   * @generated from field: float bias = 6;
+   */
+  bias: number;
+
+  /**
+   * max 15 characters (UTF-8 bytes)
+   *
+   * @generated from field: string name = 7;
+   */
+  name: string;
+
+  /**
+   * two's complement, sign = MSB of the signal
+   *
+   * @generated from field: bool is_signed = 8;
+   */
+  isSigned: boolean;
+};
+
+/**
+ * Describes the message flaps.Signal.
+ * Use `create(SignalSchema)` to create a new message.
+ */
+export const SignalSchema: GenMessage<Signal> = /*@__PURE__*/
+  messageDesc(file_flaps, 10);
+
+/**
+ * @generated from message flaps.FixedLogic
+ */
+export type FixedLogic = Message<"flaps.FixedLogic"> & {
+  /**
+   * @generated from field: flaps.FlapsState state = 1;
+   */
+  state: FlapsState;
+};
+
+/**
+ * Describes the message flaps.FixedLogic.
+ * Use `create(FixedLogicSchema)` to create a new message.
+ */
+export const FixedLogicSchema: GenMessage<FixedLogic> = /*@__PURE__*/
+  messageDesc(file_flaps, 11);
+
+/**
+ * Input rounded to an integer: open_value -> open, close_value -> closed, other -> fail-safe
+ *
+ * @generated from message flaps.SimpleSwitchLogic
+ */
+export type SimpleSwitchLogic = Message<"flaps.SimpleSwitchLogic"> & {
+  /**
+   * @generated from field: sint32 open_value = 1;
+   */
+  openValue: number;
+
+  /**
+   * @generated from field: sint32 close_value = 2;
+   */
+  closeValue: number;
+};
+
+/**
+ * Describes the message flaps.SimpleSwitchLogic.
+ * Use `create(SimpleSwitchLogicSchema)` to create a new message.
+ */
+export const SimpleSwitchLogicSchema: GenMessage<SimpleSwitchLogic> = /*@__PURE__*/
+  messageDesc(file_flaps, 12);
+
+/**
+ * Open above open_above, close below close_below, keep the position in between
+ *
+ * @generated from message flaps.HysteresisLogic
+ */
+export type HysteresisLogic = Message<"flaps.HysteresisLogic"> & {
+  /**
+   * @generated from field: float open_above = 1;
+   */
+  openAbove: number;
+
+  /**
+   * @generated from field: float close_below = 2;
+   */
+  closeBelow: number;
+};
+
+/**
+ * Describes the message flaps.HysteresisLogic.
+ * Use `create(HysteresisLogicSchema)` to create a new message.
+ */
+export const HysteresisLogicSchema: GenMessage<HysteresisLogic> = /*@__PURE__*/
+  messageDesc(file_flaps, 13);
+
+/**
+ * Max 10. The type is the parameters set in `parameters`.
+ *
+ * @generated from message flaps.Logic
+ */
+export type Logic = Message<"flaps.Logic"> & {
+  /**
+   * selector value (rounded) that picks this logic
+   *
+   * @generated from field: sint32 selector_value = 1;
+   */
+  selectorValue: number;
+
+  /**
+   * max 31 characters (UTF-8 bytes)
+   *
+   * @generated from field: string description = 2;
+   */
+  description: string;
+
+  /**
+   * simple switch / hysteresis
+   *
+   * @generated from field: optional uint32 input_signal = 3;
+   */
+  inputSignal?: number | undefined;
+
+  /**
+   * @generated from oneof flaps.Logic.parameters
+   */
+  parameters: {
+    /**
+     * @generated from field: flaps.FixedLogic fixed = 4;
+     */
+    value: FixedLogic;
+    case: "fixed";
+  } | {
+    /**
+     * @generated from field: flaps.SimpleSwitchLogic simple_switch = 5;
+     */
+    value: SimpleSwitchLogic;
+    case: "simpleSwitch";
+  } | {
+    /**
+     * @generated from field: flaps.HysteresisLogic hysteresis = 6;
+     */
+    value: HysteresisLogic;
+    case: "hysteresis";
+  } | { case: undefined; value?: undefined };
+};
+
+/**
+ * Describes the message flaps.Logic.
+ * Use `create(LogicSchema)` to create a new message.
+ */
+export const LogicSchema: GenMessage<Logic> = /*@__PURE__*/
+  messageDesc(file_flaps, 14);
+
+/**
+ * @generated from message flaps.Configuration
+ */
+export type Configuration = Message<"flaps.Configuration"> & {
+  /**
+   * 120 ohm on CAN1
+   *
+   * @generated from field: bool fdcan_termination = 1;
+   */
+  fdcanTermination: boolean;
+
+  /**
+   * @generated from field: repeated flaps.CanFrame frames = 2;
+   */
+  frames: CanFrame[];
+
+  /**
+   * @generated from field: repeated flaps.Signal signals = 3;
+   */
+  signals: Signal[];
+
+  /**
+   * @generated from field: repeated flaps.Logic logics = 4;
+   */
+  logics: Logic[];
+
+  /**
+   * not set: exactly one logic
+   *
+   * @generated from field: optional uint32 selector_signal = 5;
+   */
+  selectorSignal?: number | undefined;
+
+  /**
+   * @generated from field: uint32 default_logic_index = 6;
+   */
+  defaultLogicIndex: number;
+
+  /**
+   * @generated from field: flaps.FlapsState fail_safe_state = 7;
+   */
+  failSafeState: FlapsState;
+
+  /**
+   * motor on time of one flap movement, 50..5000
+   *
+   * @generated from field: uint32 move_time_ms = 8;
+   */
+  moveTimeMs: number;
+};
+
+/**
+ * Describes the message flaps.Configuration.
+ * Use `create(ConfigurationSchema)` to create a new message.
+ */
+export const ConfigurationSchema: GenMessage<Configuration> = /*@__PURE__*/
+  messageDesc(file_flaps, 15);
+
+/**
+ * GET_CONFIGURATION — the configuration in use
+ *
+ * @generated from message flaps.GetConfigurationRequest
+ */
+export type GetConfigurationRequest = Message<"flaps.GetConfigurationRequest"> & {
+};
+
+/**
+ * Describes the message flaps.GetConfigurationRequest.
+ * Use `create(GetConfigurationRequestSchema)` to create a new message.
+ */
+export const GetConfigurationRequestSchema: GenMessage<GetConfigurationRequest> = /*@__PURE__*/
+  messageDesc(file_flaps, 16);
+
+/**
+ * @generated from message flaps.GetConfigurationResponse
+ */
+export type GetConfigurationResponse = Message<"flaps.GetConfigurationResponse"> & {
+  /**
+   * @generated from field: flaps.Configuration configuration = 1;
+   */
+  configuration?: Configuration | undefined;
+
+  /**
+   * set by SET_CONFIGURATION, cleared by SAVE_CONFIGURATION
+   *
+   * @generated from field: bool unsaved_changes = 2;
+   */
+  unsavedChanges: boolean;
+};
+
+/**
+ * Describes the message flaps.GetConfigurationResponse.
+ * Use `create(GetConfigurationResponseSchema)` to create a new message.
+ */
+export const GetConfigurationResponseSchema: GenMessage<GetConfigurationResponse> = /*@__PURE__*/
+  messageDesc(file_flaps, 17);
+
+/**
+ * SET_CONFIGURATION — validates the configuration and uses it right away (RAM only,
+ * lost on reset until SAVE_CONFIGURATION). Rejected: the previous one stays.
+ *
+ * @generated from message flaps.SetConfigurationRequest
+ */
+export type SetConfigurationRequest = Message<"flaps.SetConfigurationRequest"> & {
+  /**
+   * @generated from field: flaps.Configuration configuration = 1;
+   */
+  configuration?: Configuration | undefined;
+};
+
+/**
+ * Describes the message flaps.SetConfigurationRequest.
+ * Use `create(SetConfigurationRequestSchema)` to create a new message.
+ */
+export const SetConfigurationRequestSchema: GenMessage<SetConfigurationRequest> = /*@__PURE__*/
+  messageDesc(file_flaps, 18);
+
+/**
+ * @generated from message flaps.SetConfigurationResponse
+ */
+export type SetConfigurationResponse = Message<"flaps.SetConfigurationResponse"> & {
+  /**
+   * OK or INVALID_CONFIGURATION
+   *
+   * @generated from field: flaps.Status status = 1;
+   */
+  status: Status;
+
+  /**
+   * reason for INVALID_CONFIGURATION
+   *
+   * @generated from field: flaps.ConfigurationError error = 2;
+   */
+  error: ConfigurationError;
+};
+
+/**
+ * Describes the message flaps.SetConfigurationResponse.
+ * Use `create(SetConfigurationResponseSchema)` to create a new message.
+ */
+export const SetConfigurationResponseSchema: GenMessage<SetConfigurationResponse> = /*@__PURE__*/
+  messageDesc(file_flaps, 19);
+
+/**
+ * SAVE_CONFIGURATION — writes the configuration in use to flash. Takes 1-2 s (sector
+ * erase), the device does not read the UART meanwhile — wait for the reply.
+ *
+ * @generated from message flaps.SaveConfigurationRequest
+ */
+export type SaveConfigurationRequest = Message<"flaps.SaveConfigurationRequest"> & {
+};
+
+/**
+ * Describes the message flaps.SaveConfigurationRequest.
+ * Use `create(SaveConfigurationRequestSchema)` to create a new message.
+ */
+export const SaveConfigurationRequestSchema: GenMessage<SaveConfigurationRequest> = /*@__PURE__*/
+  messageDesc(file_flaps, 20);
+
+/**
+ * @generated from message flaps.SaveConfigurationResponse
+ */
+export type SaveConfigurationResponse = Message<"flaps.SaveConfigurationResponse"> & {
+  /**
+   * OK or FLASH_ERROR
+   *
+   * @generated from field: flaps.Status status = 1;
+   */
+  status: Status;
+};
+
+/**
+ * Describes the message flaps.SaveConfigurationResponse.
+ * Use `create(SaveConfigurationResponseSchema)` to create a new message.
+ */
+export const SaveConfigurationResponseSchema: GenMessage<SaveConfigurationResponse> = /*@__PURE__*/
+  messageDesc(file_flaps, 21);
+
+/**
+ * @generated from message flaps.SignalState
+ */
+export type SignalState = Message<"flaps.SignalState"> & {
+  /**
+   * index in Configuration.signals
+   *
+   * @generated from field: uint32 index = 1;
+   */
+  index: number;
+
+  /**
+   * last received value (0 before the first one)
+   *
+   * @generated from field: float value = 2;
+   */
+  value: number;
+
+  /**
+   * received and within the timeout of its frame
+   *
+   * @generated from field: bool fresh = 3;
+   */
+  fresh: boolean;
+};
+
+/**
+ * Describes the message flaps.SignalState.
+ * Use `create(SignalStateSchema)` to create a new message.
+ */
+export const SignalStateSchema: GenMessage<SignalState> = /*@__PURE__*/
+  messageDesc(file_flaps, 22);
+
+/**
+ * @generated from message flaps.DeviceState
+ */
+export type DeviceState = Message<"flaps.DeviceState"> & {
+  /**
+   * every configured signal
+   *
+   * @generated from field: repeated flaps.SignalState signals = 1;
+   */
+  signals: SignalState[];
+
+  /**
+   * index in Configuration.logics, -1 = fail-safe state
+   *
+   * @generated from field: sint32 active_logic = 2;
+   */
+  activeLogic: number;
+
+  /**
+   * @generated from field: flaps.FlapPosition flap1 = 3;
+   */
+  flap1: FlapPosition;
+
+  /**
+   * @generated from field: flaps.FlapPosition flap2 = 4;
+   */
+  flap2: FlapPosition;
+};
+
+/**
+ * Describes the message flaps.DeviceState.
+ * Use `create(DeviceStateSchema)` to create a new message.
+ */
+export const DeviceStateSchema: GenMessage<DeviceState> = /*@__PURE__*/
+  messageDesc(file_flaps, 23);
+
+/**
+ * GET_STATE — the whole state, the changes after it come in TELEMETRY / EVENT
+ *
+ * @generated from message flaps.GetStateRequest
+ */
+export type GetStateRequest = Message<"flaps.GetStateRequest"> & {
+};
+
+/**
+ * Describes the message flaps.GetStateRequest.
+ * Use `create(GetStateRequestSchema)` to create a new message.
+ */
+export const GetStateRequestSchema: GenMessage<GetStateRequest> = /*@__PURE__*/
+  messageDesc(file_flaps, 24);
+
+/**
+ * @generated from message flaps.GetStateResponse
+ */
+export type GetStateResponse = Message<"flaps.GetStateResponse"> & {
+  /**
+   * @generated from field: flaps.DeviceState state = 1;
+   */
+  state?: DeviceState | undefined;
+
+  /**
+   * last TELEMETRY / EVENT number, the next one is sequence + 1
+   *
+   * @generated from field: uint32 sequence = 2;
+   */
+  sequence: number;
+};
+
+/**
+ * Describes the message flaps.GetStateResponse.
+ * Use `create(GetStateResponseSchema)` to create a new message.
+ */
+export const GetStateResponseSchema: GenMessage<GetStateResponse> = /*@__PURE__*/
+  messageDesc(file_flaps, 25);
+
+/**
+ * TELEMETRY — signals that changed (value or freshness) since the last report or GET_STATE,
+ * at most every 100 ms. Not sent when nothing changed.
+ *
+ * @generated from message flaps.Telemetry
+ */
+export type Telemetry = Message<"flaps.Telemetry"> & {
+  /**
+   * @generated from field: uint32 sequence = 1;
+   */
+  sequence: number;
+
+  /**
+   * @generated from field: uint32 uptime_ms = 2;
+   */
+  uptimeMs: number;
+
+  /**
+   * @generated from field: repeated flaps.SignalState signals = 3;
+   */
+  signals: SignalState[];
+};
+
+/**
+ * Describes the message flaps.Telemetry.
+ * Use `create(TelemetrySchema)` to create a new message.
+ */
+export const TelemetrySchema: GenMessage<Telemetry> = /*@__PURE__*/
+  messageDesc(file_flaps, 26);
+
+/**
+ * @generated from message flaps.ActiveLogicChanged
+ */
+export type ActiveLogicChanged = Message<"flaps.ActiveLogicChanged"> & {
+  /**
+   * -1 = fail-safe state
+   *
+   * @generated from field: sint32 active_logic = 1;
+   */
+  activeLogic: number;
+};
+
+/**
+ * Describes the message flaps.ActiveLogicChanged.
+ * Use `create(ActiveLogicChangedSchema)` to create a new message.
+ */
+export const ActiveLogicChangedSchema: GenMessage<ActiveLogicChanged> = /*@__PURE__*/
+  messageDesc(file_flaps, 27);
+
+/**
+ * @generated from message flaps.FlapMoveStarted
+ */
+export type FlapMoveStarted = Message<"flaps.FlapMoveStarted"> & {
+  /**
+   * 1 or 2
+   *
+   * @generated from field: uint32 flap = 1;
+   */
+  flap: number;
+
+  /**
+   * OPENING or CLOSING
+   *
+   * @generated from field: flaps.FlapPosition position = 2;
+   */
+  position: FlapPosition;
+};
+
+/**
+ * Describes the message flaps.FlapMoveStarted.
+ * Use `create(FlapMoveStartedSchema)` to create a new message.
+ */
+export const FlapMoveStartedSchema: GenMessage<FlapMoveStarted> = /*@__PURE__*/
+  messageDesc(file_flaps, 28);
+
+/**
+ * AMP_OUT readings for tuning the end stop current
+ *
+ * @generated from message flaps.FlapMoveFinished
+ */
+export type FlapMoveFinished = Message<"flaps.FlapMoveFinished"> & {
+  /**
+   * 1 or 2
+   *
+   * @generated from field: uint32 flap = 1;
+   */
+  flap: number;
+
+  /**
+   * OPEN or CLOSED
+   *
+   * @generated from field: flaps.FlapPosition position = 2;
+   */
+  position: FlapPosition;
+
+  /**
+   * @generated from field: uint32 duration_ms = 3;
+   */
+  durationMs: number;
+
+  /**
+   * raw 16-bit ADC, includes the start inrush
+   *
+   * @generated from field: uint32 peak_amp_out = 4;
+   */
+  peakAmpOut: number;
+
+  /**
+   * @generated from field: uint32 amp_out_at_stop = 5;
+   */
+  ampOutAtStop: number;
+};
+
+/**
+ * Describes the message flaps.FlapMoveFinished.
+ * Use `create(FlapMoveFinishedSchema)` to create a new message.
+ */
+export const FlapMoveFinishedSchema: GenMessage<FlapMoveFinished> = /*@__PURE__*/
+  messageDesc(file_flaps, 29);
+
+/**
+ * EVENT — something happened, sent right away
+ *
+ * @generated from message flaps.Event
+ */
+export type Event = Message<"flaps.Event"> & {
+  /**
+   * @generated from field: uint32 sequence = 1;
+   */
+  sequence: number;
+
+  /**
+   * @generated from field: uint32 uptime_ms = 2;
+   */
+  uptimeMs: number;
+
+  /**
+   * @generated from oneof flaps.Event.event
+   */
+  event: {
+    /**
+     * @generated from field: flaps.ActiveLogicChanged active_logic_changed = 3;
+     */
+    value: ActiveLogicChanged;
+    case: "activeLogicChanged";
+  } | {
+    /**
+     * @generated from field: flaps.FlapMoveStarted flap_move_started = 4;
+     */
+    value: FlapMoveStarted;
+    case: "flapMoveStarted";
+  } | {
+    /**
+     * @generated from field: flaps.FlapMoveFinished flap_move_finished = 5;
+     */
+    value: FlapMoveFinished;
+    case: "flapMoveFinished";
+  } | { case: undefined; value?: undefined };
+};
+
+/**
+ * Describes the message flaps.Event.
+ * Use `create(EventSchema)` to create a new message.
+ */
+export const EventSchema: GenMessage<Event> = /*@__PURE__*/
+  messageDesc(file_flaps, 30);
+
+/**
+ * SET_DEV_MODE — for this session
+ *
+ * @generated from message flaps.SetDevModeRequest
+ */
+export type SetDevModeRequest = Message<"flaps.SetDevModeRequest"> & {
+  /**
+   * lines up to this level are sent, OFF = no logs
+   *
+   * @generated from field: flaps.LogLevel log_level = 1;
+   */
+  logLevel: LogLevel;
+
+  /**
+   * FLAP_TRACE after every flap movement
+   *
+   * @generated from field: bool flap_trace = 2;
+   */
+  flapTrace: boolean;
+};
+
+/**
+ * Describes the message flaps.SetDevModeRequest.
+ * Use `create(SetDevModeRequestSchema)` to create a new message.
+ */
+export const SetDevModeRequestSchema: GenMessage<SetDevModeRequest> = /*@__PURE__*/
+  messageDesc(file_flaps, 31);
+
+/**
+ * @generated from message flaps.SetDevModeResponse
+ */
+export type SetDevModeResponse = Message<"flaps.SetDevModeResponse"> & {
+  /**
+   * OK
+   *
+   * @generated from field: flaps.Status status = 1;
+   */
+  status: Status;
+};
+
+/**
+ * Describes the message flaps.SetDevModeResponse.
+ * Use `create(SetDevModeResponseSchema)` to create a new message.
+ */
+export const SetDevModeResponseSchema: GenMessage<SetDevModeResponse> = /*@__PURE__*/
+  messageDesc(file_flaps, 32);
+
+/**
+ * @generated from message flaps.LogEntry
+ */
+export type LogEntry = Message<"flaps.LogEntry"> & {
+  /**
+   * @generated from field: uint32 uptime_ms = 1;
+   */
+  uptimeMs: number;
+
+  /**
+   * @generated from field: flaps.LogLevel level = 2;
+   */
+  level: LogLevel;
+
+  /**
+   * max 63 bytes, "tag: message"
+   *
+   * @generated from field: string text = 3;
+   */
+  text: string;
+};
+
+/**
+ * Describes the message flaps.LogEntry.
+ * Use `create(LogEntrySchema)` to create a new message.
+ */
+export const LogEntrySchema: GenMessage<LogEntry> = /*@__PURE__*/
+  messageDesc(file_flaps, 33);
+
+/**
+ * LOG — oldest lines first. Lines kept since the start come too (Info and above).
+ *
+ * @generated from message flaps.Log
+ */
+export type Log = Message<"flaps.Log"> & {
+  /**
+   * @generated from field: repeated flaps.LogEntry entries = 1;
+   */
+  entries: LogEntry[];
+
+  /**
+   * lines lost before these (buffer full)
+   *
+   * @generated from field: uint32 dropped = 2;
+   */
+  dropped: number;
+};
+
+/**
+ * Describes the message flaps.Log.
+ * Use `create(LogSchema)` to create a new message.
+ */
+export const LogSchema: GenMessage<Log> = /*@__PURE__*/
+  messageDesc(file_flaps, 34);
+
+/**
+ * FLAP_TRACE — AMP_OUT (raw 16-bit ADC, ~22 ms average) during the last movement of a flap,
+ * sent after it finished (with the FlapMoveFinished event). Only the latest movement of a
+ * flap is kept: a trace not sent yet is replaced by the next one.
+ *
+ * @generated from message flaps.FlapTrace
+ */
+export type FlapTrace = Message<"flaps.FlapTrace"> & {
+  /**
+   * 1 or 2
+   *
+   * @generated from field: uint32 flap = 1;
+   */
+  flap: number;
+
+  /**
+   * OPEN or CLOSED — direction of the movement
+   *
+   * @generated from field: flaps.FlapPosition position = 2;
+   */
+  position: FlapPosition;
+
+  /**
+   * samples[i] was taken interval_ms * i after the start
+   *
+   * @generated from field: uint32 interval_ms = 3;
+   */
+  intervalMs: number;
+
+  /**
+   * packed, max 200
+   *
+   * @generated from field: repeated uint32 samples = 4;
+   */
+  samples: number[];
+};
+
+/**
+ * Describes the message flaps.FlapTrace.
+ * Use `create(FlapTraceSchema)` to create a new message.
+ */
+export const FlapTraceSchema: GenMessage<FlapTrace> = /*@__PURE__*/
+  messageDesc(file_flaps, 35);
+
+/**
  * @generated from enum flaps.Command
  */
 export enum Command {
@@ -265,6 +1080,71 @@ export enum Command {
    * @generated from enum value: COMMAND_CLOSE_SESSION = 4;
    */
   CLOSE_SESSION = 4,
+
+  /**
+   * GetConfigurationRequest  -> GetConfigurationResponse
+   *
+   * @generated from enum value: COMMAND_GET_CONFIGURATION = 5;
+   */
+  GET_CONFIGURATION = 5,
+
+  /**
+   * SetConfigurationRequest  -> SetConfigurationResponse
+   *
+   * @generated from enum value: COMMAND_SET_CONFIGURATION = 6;
+   */
+  SET_CONFIGURATION = 6,
+
+  /**
+   * SaveConfigurationRequest -> SaveConfigurationResponse
+   *
+   * @generated from enum value: COMMAND_SAVE_CONFIGURATION = 7;
+   */
+  SAVE_CONFIGURATION = 7,
+
+  /**
+   * GetStateRequest          -> GetStateResponse
+   *
+   * @generated from enum value: COMMAND_GET_STATE = 8;
+   */
+  GET_STATE = 8,
+
+  /**
+   * SetDevModeRequest        -> SetDevModeResponse
+   *
+   * @generated from enum value: COMMAND_SET_DEV_MODE = 9;
+   */
+  SET_DEV_MODE = 9,
+
+  /**
+   * 0x70..0x7F: sent without a request (device logs / telemetry, nRF52 link status, NACK)
+   *
+   * Telemetry — changed signal values, every 100 ms in a session
+   *
+   * @generated from enum value: COMMAND_TELEMETRY = 112;
+   */
+  TELEMETRY = 112,
+
+  /**
+   * Event — sent right away in a session
+   *
+   * @generated from enum value: COMMAND_EVENT = 113;
+   */
+  EVENT = 113,
+
+  /**
+   * Log — log lines, dev mode only
+   *
+   * @generated from enum value: COMMAND_LOG = 114;
+   */
+  LOG = 114,
+
+  /**
+   * FlapTrace — AMP_OUT during a movement, dev mode only
+   *
+   * @generated from enum value: COMMAND_FLAP_TRACE = 115;
+   */
+  FLAP_TRACE = 115,
 
   /**
    * Reply to any request that failed: ErrorResponse
@@ -328,6 +1208,20 @@ export enum Status {
    * @generated from enum value: STATUS_UNKNOWN_COMMAND = 6;
    */
   UNKNOWN_COMMAND = 6,
+
+  /**
+   * SET_CONFIGURATION rejected, see ConfigurationError
+   *
+   * @generated from enum value: STATUS_INVALID_CONFIGURATION = 7;
+   */
+  INVALID_CONFIGURATION = 7,
+
+  /**
+   * SAVE_CONFIGURATION could not write the flash
+   *
+   * @generated from enum value: STATUS_FLASH_ERROR = 8;
+   */
+  FLASH_ERROR = 8,
 }
 
 /**
@@ -335,4 +1229,249 @@ export enum Status {
  */
 export const StatusSchema: GenEnum<Status> = /*@__PURE__*/
   enumDesc(file_flaps, 1);
+
+/**
+ * @generated from enum flaps.FlapsState
+ */
+export enum FlapsState {
+  /**
+   * @generated from enum value: FLAPS_STATE_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: FLAPS_STATE_CLOSED = 1;
+   */
+  CLOSED = 1,
+
+  /**
+   * @generated from enum value: FLAPS_STATE_OPEN = 2;
+   */
+  OPEN = 2,
+}
+
+/**
+ * Describes the enum flaps.FlapsState.
+ */
+export const FlapsStateSchema: GenEnum<FlapsState> = /*@__PURE__*/
+  enumDesc(file_flaps, 2);
+
+/**
+ * Reason SET_CONFIGURATION was rejected (same order as ConfigurationError in firmware)
+ *
+ * @generated from enum flaps.ConfigurationError
+ */
+export enum ConfigurationError {
+  /**
+   * no error
+   *
+   * @generated from enum value: CONFIGURATION_ERROR_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: CONFIGURATION_ERROR_TOO_MANY_FRAMES = 1;
+   */
+  TOO_MANY_FRAMES = 1,
+
+  /**
+   * above 0x7FF (standard) or 0x1FFFFFFF (extended)
+   *
+   * @generated from enum value: CONFIGURATION_ERROR_INVALID_FRAME_ID = 2;
+   */
+  INVALID_FRAME_ID = 2,
+
+  /**
+   * @generated from enum value: CONFIGURATION_ERROR_DUPLICATE_FRAME = 3;
+   */
+  DUPLICATE_FRAME = 3,
+
+  /**
+   * @generated from enum value: CONFIGURATION_ERROR_TOO_MANY_SIGNALS = 4;
+   */
+  TOO_MANY_SIGNALS = 4,
+
+  /**
+   * frame_index past the frames
+   *
+   * @generated from enum value: CONFIGURATION_ERROR_INVALID_SIGNAL_FRAME = 5;
+   */
+  INVALID_SIGNAL_FRAME = 5,
+
+  /**
+   * length not 1..64 or past an 8-byte frame
+   *
+   * @generated from enum value: CONFIGURATION_ERROR_INVALID_SIGNAL_LAYOUT = 6;
+   */
+  INVALID_SIGNAL_LAYOUT = 6,
+
+  /**
+   * scale / bias not finite or scale 0
+   *
+   * @generated from enum value: CONFIGURATION_ERROR_INVALID_SIGNAL_SCALE = 7;
+   */
+  INVALID_SIGNAL_SCALE = 7,
+
+  /**
+   * @generated from enum value: CONFIGURATION_ERROR_NO_LOGIC = 8;
+   */
+  NO_LOGIC = 8,
+
+  /**
+   * @generated from enum value: CONFIGURATION_ERROR_TOO_MANY_LOGICS = 9;
+   */
+  TOO_MANY_LOGICS = 9,
+
+  /**
+   * @generated from enum value: CONFIGURATION_ERROR_INVALID_SELECTOR_SIGNAL = 10;
+   */
+  INVALID_SELECTOR_SIGNAL = 10,
+
+  /**
+   * several logics without a selector signal
+   *
+   * @generated from enum value: CONFIGURATION_ERROR_SELECTOR_REQUIRED = 11;
+   */
+  SELECTOR_REQUIRED = 11,
+
+  /**
+   * @generated from enum value: CONFIGURATION_ERROR_DUPLICATE_SELECTOR_VALUE = 12;
+   */
+  DUPLICATE_SELECTOR_VALUE = 12,
+
+  /**
+   * @generated from enum value: CONFIGURATION_ERROR_INVALID_DEFAULT_LOGIC = 13;
+   */
+  INVALID_DEFAULT_LOGIC = 13,
+
+  /**
+   * @generated from enum value: CONFIGURATION_ERROR_INVALID_FAIL_SAFE_STATE = 14;
+   */
+  INVALID_FAIL_SAFE_STATE = 14,
+
+  /**
+   * logic without parameters
+   *
+   * @generated from enum value: CONFIGURATION_ERROR_INVALID_LOGIC_TYPE = 15;
+   */
+  INVALID_LOGIC_TYPE = 15,
+
+  /**
+   * simple switch / hysteresis without a valid input
+   *
+   * @generated from enum value: CONFIGURATION_ERROR_INVALID_LOGIC_INPUT = 16;
+   */
+  INVALID_LOGIC_INPUT = 16,
+
+  /**
+   * @generated from enum value: CONFIGURATION_ERROR_INVALID_FIXED_STATE = 17;
+   */
+  INVALID_FIXED_STATE = 17,
+
+  /**
+   * open_value == close_value
+   *
+   * @generated from enum value: CONFIGURATION_ERROR_INVALID_SWITCH_VALUES = 18;
+   */
+  INVALID_SWITCH_VALUES = 18,
+
+  /**
+   * not finite or close_below > open_above
+   *
+   * @generated from enum value: CONFIGURATION_ERROR_INVALID_HYSTERESIS = 19;
+   */
+  INVALID_HYSTERESIS = 19,
+
+  /**
+   * move_time_ms outside 50..5000
+   *
+   * @generated from enum value: CONFIGURATION_ERROR_INVALID_MOVE_TIME = 20;
+   */
+  INVALID_MOVE_TIME = 20,
+}
+
+/**
+ * Describes the enum flaps.ConfigurationError.
+ */
+export const ConfigurationErrorSchema: GenEnum<ConfigurationError> = /*@__PURE__*/
+  enumDesc(file_flaps, 3);
+
+/**
+ * @generated from enum flaps.FlapPosition
+ */
+export enum FlapPosition {
+  /**
+   * @generated from enum value: FLAP_POSITION_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * no movement since the start
+   *
+   * @generated from enum value: FLAP_POSITION_UNKNOWN = 1;
+   */
+  UNKNOWN = 1,
+
+  /**
+   * @generated from enum value: FLAP_POSITION_OPENING = 2;
+   */
+  OPENING = 2,
+
+  /**
+   * @generated from enum value: FLAP_POSITION_OPEN = 3;
+   */
+  OPEN = 3,
+
+  /**
+   * @generated from enum value: FLAP_POSITION_CLOSING = 4;
+   */
+  CLOSING = 4,
+
+  /**
+   * @generated from enum value: FLAP_POSITION_CLOSED = 5;
+   */
+  CLOSED = 5,
+}
+
+/**
+ * Describes the enum flaps.FlapPosition.
+ */
+export const FlapPositionSchema: GenEnum<FlapPosition> = /*@__PURE__*/
+  enumDesc(file_flaps, 4);
+
+/**
+ * @generated from enum flaps.LogLevel
+ */
+export enum LogLevel {
+  /**
+   * @generated from enum value: LOG_LEVEL_OFF = 0;
+   */
+  OFF = 0,
+
+  /**
+   * @generated from enum value: LOG_LEVEL_ERROR = 1;
+   */
+  ERROR = 1,
+
+  /**
+   * @generated from enum value: LOG_LEVEL_WARN = 2;
+   */
+  WARN = 2,
+
+  /**
+   * @generated from enum value: LOG_LEVEL_INFO = 3;
+   */
+  INFO = 3,
+
+  /**
+   * @generated from enum value: LOG_LEVEL_DEBUG = 4;
+   */
+  DEBUG = 4,
+}
+
+/**
+ * Describes the enum flaps.LogLevel.
+ */
+export const LogLevelSchema: GenEnum<LogLevel> = /*@__PURE__*/
+  enumDesc(file_flaps, 5);
 

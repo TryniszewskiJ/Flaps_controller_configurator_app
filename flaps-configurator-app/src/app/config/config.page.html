@@ -2,7 +2,13 @@
   <ion-toolbar class="page-toolbar">
     <h1 slot="start" class="page-title">Config</h1>
     <ion-buttons slot="end">
-      <ion-button class="btn-read" fill="outline" color="medium" [disabled]="!connected()">
+      <ion-button
+        class="btn-read"
+        fill="outline"
+        color="medium"
+        [disabled]="!connected() || !!busy()"
+        (click)="read()"
+      >
         <ion-icon slot="start" name="download-outline"></ion-icon>
         Odczytaj
       </ion-button>
@@ -14,39 +20,187 @@
   <div class="page">
     <app-connection-banner />
 
-    <section class="card">
-      <div class="card-header">
-        <h2 class="card-label">Zmienne i stany</h2>
-        <ion-button class="btn-tint" [disabled]="!connected()">+ Nowa</ion-button>
-      </div>
-      @for (variable of variables; track variable.name) {
-        <div class="kv-row list-row mono">
-          <span>{{ variable.name }}</span>
-          <span class="text-muted">{{ variable.kind }}</span>
+    @if (draft(); as draft) {
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-label">Ramki CAN</h2>
+          <ion-button class="btn-tint" [disabled]="!canAddFrame()" (click)="editFrame(null)">
+            + Nowa
+          </ion-button>
         </div>
-      }
-    </section>
-
-    <section class="card">
-      <div class="card-header">
-        <h2 class="card-label">Warunki logiczne</h2>
-        <ion-button class="btn-tint" [disabled]="!connected()">+ Warunek</ion-button>
-      </div>
-      <div class="code-block mono">
-        @for (line of rule; track $index) {
-          <div>
-            <span class="code-keyword">{{ line.keyword }}</span> {{ line.expression }}
-          </div>
+        @for (frame of draft.frames; track $index) {
+          <button
+            type="button"
+            class="list-button list-row"
+            [disabled]="!canEdit()"
+            (click)="editFrame($index)"
+          >
+            <span class="row-main">
+              <strong class="mono">{{ frameLabel(frame) }}</strong>
+              <span class="row-sub">
+                {{
+                  frame.timeoutMs > 0
+                    ? 'wymagana, timeout ' + frame.timeoutMs + ' ms'
+                    : 'opcjonalna'
+                }}
+              </span>
+            </span>
+            <span class="row-side text-muted">{{ signalCount($index) }} syg.</span>
+            <ion-icon name="chevron-forward" aria-hidden="true"></ion-icon>
+          </button>
+        } @empty {
+          <p class="empty-text">Brak ramek — sterownik nic nie odbiera z CAN.</p>
         }
-      </div>
-    </section>
+      </section>
 
-    <section class="card">
-      <h2 class="card-label">Konfiguracja</h2>
-      <div class="btn-row">
-        <ion-button fill="outline" [disabled]="!connected()">Testuj</ion-button>
-        <ion-button [disabled]="!connected()">Zapisz</ion-button>
-      </div>
-    </section>
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-label">Sygnały</h2>
+          <ion-button class="btn-tint" [disabled]="!canAddSignal()" (click)="editSignal(null)">
+            + Nowy
+          </ion-button>
+        </div>
+        @for (signal of draft.signals; track $index) {
+          <button
+            type="button"
+            class="list-button list-row"
+            [disabled]="!canEdit()"
+            (click)="editSignal($index)"
+          >
+            <span class="row-main">
+              <strong>{{ signal.name || '(bez nazwy)' }}</strong>
+              <span class="row-sub mono"
+                >{{ signalFrame(signal) }} · {{ signalLayoutLabel(signal) }}</span
+              >
+            </span>
+            <span class="row-side mono text-muted">{{ signalScaleLabel(signal) }}</span>
+            <ion-icon name="chevron-forward" aria-hidden="true"></ion-icon>
+          </button>
+        } @empty {
+          <p class="empty-text">
+            {{
+              draft.frames.length > 0
+                ? 'Brak sygnałów.'
+                : 'Dodaj najpierw ramkę, z której sygnał będzie odczytywany.'
+            }}
+          </p>
+        }
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-label">Logiki</h2>
+          <ion-button class="btn-tint" [disabled]="!canAddLogic()" (click)="editLogic(null)">
+            + Nowa
+          </ion-button>
+        </div>
+        @for (logic of draft.logics; track $index) {
+          <button
+            type="button"
+            class="list-button list-row"
+            [disabled]="!canEdit()"
+            (click)="editLogic($index)"
+          >
+            <span class="row-main">
+              <strong>
+                {{ logic.description || 'Logika ' + ($index + 1) }}
+                @if ($index === draft.defaultLogicIndex) {
+                  <span class="tag">domyślna</span>
+                }
+              </strong>
+              <span class="row-sub mono">{{ logicSummary(logic, draft.signals) }}</span>
+            </span>
+            @if (draft.selectorSignal !== undefined) {
+              <span class="row-side mono text-muted">= {{ logic.selectorValue }}</span>
+            }
+            <ion-icon name="chevron-forward" aria-hidden="true"></ion-icon>
+          </button>
+        } @empty {
+          <p class="empty-text">Brak logik — sterownik nie przyjmie takiej konfiguracji.</p>
+        }
+        @if (needsSelector()) {
+          <p class="empty-text">Kolejna logika wymaga selektora — ustaw go w Ustawieniach.</p>
+        }
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-label">Ustawienia</h2>
+          <ion-button class="btn-tint" [disabled]="!canEdit()" (click)="editSettings()">
+            Edytuj
+          </ion-button>
+        </div>
+        <div class="kv-row">
+          <span class="text-muted">Selektor</span>
+          <span>{{
+            draft.selectorSignal !== undefined
+              ? (draft.signals[draft.selectorSignal]?.name ?? '—')
+              : 'brak'
+          }}</span>
+        </div>
+        <div class="kv-row">
+          <span class="text-muted">Stan bezpieczny</span>
+          <span>{{ flapsStateLabel(draft.failSafeState) }}</span>
+        </div>
+        <div class="kv-row">
+          <span class="text-muted">Czas ruchu</span>
+          <span class="mono">{{ draft.moveTimeMs }} ms</span>
+        </div>
+        <div class="kv-row">
+          <span class="text-muted">Terminator CAN</span>
+          <span>{{ draft.fdcanTermination ? 'włączony' : 'wyłączony' }}</span>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 class="card-label">Konfiguracja</h2>
+        <p class="status-text">{{ status() }}</p>
+        @if (notice(); as notice) {
+          <p class="message message--warning">{{ notice }}</p>
+        }
+        @if (config.error(); as error) {
+          <p class="message message--danger">{{ error }}</p>
+        }
+        @if (config.dirty()) {
+          <ion-button expand="block" fill="clear" [disabled]="!!busy()" (click)="discard()">
+            Cofnij zmiany
+          </ion-button>
+        }
+        <div class="btn-row">
+          <ion-button
+            fill="outline"
+            [disabled]="!connected() || !config.dirty() || !!busy()"
+            (click)="apply()"
+          >
+            @if (busy() === 'apply') {
+              <ion-spinner name="crescent"></ion-spinner>
+            } @else {
+              Testuj
+            }
+          </ion-button>
+          <ion-button
+            [disabled]="!connected() || (!config.dirty() && !config.unsavedOnDevice()) || !!busy()"
+            (click)="save()"
+          >
+            @if (busy() === 'save') {
+              <ion-spinner name="crescent"></ion-spinner>
+            } @else {
+              Zapisz
+            }
+          </ion-button>
+        </div>
+      </section>
+    } @else {
+      <section class="card card--placeholder">
+        @if (busy() === 'read') {
+          <ion-spinner name="crescent" aria-label="Odczyt konfiguracji"></ion-spinner>
+          <p>Odczytuję konfigurację ze sterownika…</p>
+        } @else if (config.error(); as error) {
+          <p>{{ error }}</p>
+        } @else {
+          <p>Połącz się ze sterownikiem, żeby edytować jego konfigurację.</p>
+        }
+      </section>
+    }
   </div>
 </ion-content>

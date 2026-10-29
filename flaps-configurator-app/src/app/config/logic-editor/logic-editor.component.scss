@@ -1,0 +1,20 @@
+@use '../editor-form';
+
+.card > ion-segment {
+  margin-bottom: 12px;
+}
+
+ion-segment-button {
+  min-height: 34px;
+  font-size: 11px;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.form > .field-help {
+  margin: 0;
+}
+
+.form > .field-error {
+  margin: -6px 0 0;
+}
