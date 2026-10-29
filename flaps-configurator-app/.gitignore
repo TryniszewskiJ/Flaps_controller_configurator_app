@@ -71,3 +71,6 @@ Thumbs.db
 
 # Kopie zapasowe (np. po ionic cap run -l)
 *.orig
+
+# Instalatory Electrona
+/release

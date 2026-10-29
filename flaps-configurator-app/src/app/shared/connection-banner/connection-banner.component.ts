@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { IonButton, IonSpinner, ModalController } from '@ionic/angular';
 import { BleLinkService, FoundDevice } from '../../core/ble/ble-link.service';
+import { DesktopBluetoothService } from '../../core/ble/desktop-bluetooth.service';
 import { ConnectionService } from '../../core/connection.service';
 import { DevicePickerComponent } from '../device-picker/device-picker.component';
 
@@ -17,6 +18,7 @@ import { DevicePickerComponent } from '../device-picker/device-picker.component'
 export class ConnectionBannerComponent {
   protected readonly connection = inject(ConnectionService);
   private readonly link = inject(BleLinkService);
+  private readonly desktopBluetooth = inject(DesktopBluetoothService);
   private readonly modal = inject(ModalController);
 
   /** Błąd wyboru urządzenia (np. przeglądarka bez Web Bluetooth). */
@@ -35,6 +37,9 @@ export class ConnectionBannerComponent {
   }
 
   private async pickDevice(): Promise<FoundDevice | null> {
+    if (this.desktopBluetooth.available) {
+      return this.pickDeviceOnDesktop();
+    }
     if (this.link.usesBrowserPicker) {
       try {
         return await this.link.requestDeviceInBrowser();
@@ -51,5 +56,29 @@ export class ConnectionBannerComponent {
     await picker.present();
     const { data, role } = await picker.onWillDismiss<FoundDevice>();
     return role === 'select' && data ? data : null;
+  }
+
+  /**
+   * Electron: requestDevice() Web Bluetooth czeka, aż w oknie wyboru (lista od procesu
+   * głównego) użytkownik wskaże urządzenie; zamknięcie okna anuluje wybór.
+   */
+  private async pickDeviceOnDesktop(): Promise<FoundDevice | null> {
+    const request = this.link.requestDeviceInBrowser().catch((error: unknown) => {
+      const message = error instanceof Error ? error.message : String(error);
+      if (!/cancel/i.test(message)) {
+        this.pickerError.set(`Nie można wyszukać urządzeń: ${message}`);
+      }
+      return null;
+    });
+
+    const picker = await this.modal.create({
+      component: DevicePickerComponent,
+      componentProps: { desktop: true },
+    });
+    await picker.present();
+    // Błąd wyboru (np. brak Bluetooth) zamyka okno, zamiast zostawić puste
+    void request.then((device) => (device ? undefined : picker.dismiss(null, 'cancel')));
+
+    return request;
   }
 }

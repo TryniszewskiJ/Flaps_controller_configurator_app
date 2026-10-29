@@ -1,0 +1,36 @@
+# Instalatory aplikacji desktopowej: npm run electron:dist:win / electron:dist:mac
+appId: com.dkcustoms.flapsConfigurator
+productName: Flaps Configurator
+copyright: Copyright Â© DK Customs
+
+directories:
+  output: release
+
+# Tylko proces Electrona i zbudowana aplikacja â€” zaleĹĽnoĹ›ci z node_modules sÄ… juĹĽ
+# w bundlu Angulara, a main/preload nie uĹĽywajÄ… ĹĽadnych pakietĂłw
+files:
+  - electron/**/*
+  - '!electron/dev.cjs'
+  - www/**/*
+  - package.json
+  - '!node_modules/**/*'
+npmRebuild: false
+
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  artifactName: ${productName}-Setup-${version}.${ext}
+
+mac:
+  category: public.app-category.utilities
+  target:
+    - target: dmg
+      arch: [universal]
+  # Bez tego macOS zamknie aplikacjÄ™ przy pierwszym uĹĽyciu Bluetooth
+  extendInfo:
+    NSBluetoothAlwaysUsageDescription: Bluetooth sĹ‚uĹĽy do poĹ‚Ä…czenia ze sterownikiem klap.

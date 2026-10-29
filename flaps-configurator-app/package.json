@@ -14,7 +14,11 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "cd .. && husky flaps-configurator-app/.husky",
-    "proto:gen": "buf generate"
+    "proto:gen": "buf generate",
+    "electron:start": "npm run build && electron .",
+    "electron:dist:win": "npm run build && electron-builder --win",
+    "electron:dist:mac": "npm run build && electron-builder --mac",
+    "electron:dev": "node electron/dev.cjs"
   },
   "private": true,
   "dependencies": {
@@ -49,6 +53,8 @@
     "@eslint/js": "^10.0.1",
     "@ionic/angular-toolkit": "^13.0.0",
     "angular-eslint": "22.6.0",
+    "electron": "44.10.0",
+    "electron-builder": "26.17.0",
     "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.7",
@@ -75,5 +81,7 @@
       "uuid": "11.1.1"
     },
     "vite": "8.3.5"
-  }
+  },
+  "main": "electron/main.cjs",
+  "productName": "Flaps Configurator"
 }

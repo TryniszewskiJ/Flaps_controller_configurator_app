@@ -54,8 +54,10 @@
       }
     </section>
 
-    <ion-button expand="block" fill="outline" [disabled]="scanning()" (click)="startScan()">
-      Szukaj ponownie
-    </ion-button>
+    @if (!desktop) {
+      <ion-button expand="block" fill="outline" [disabled]="scanning()" (click)="startScan()">
+        Szukaj ponownie
+      </ion-button>
+    }
   </div>
 </ion-content>

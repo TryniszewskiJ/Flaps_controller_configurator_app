@@ -1,11 +1,28 @@
 # Flaps Controller Configurator App
 
-Aplikacja mobilna (Android / iOS) do konfiguracji sterownika klap przez Bluetooth Low Energy.
+Aplikacja (Android, iOS, Windows, macOS) do konfiguracji sterownika klap przez Bluetooth Low Energy.
 
-Zbudowana na Ionic + Angular + Capacitor. Komunikacja BLE przez plugin
-[`@capacitor-community/bluetooth-le`](https://github.com/capacitor-community/bluetooth-le).
+Zbudowana na Ionic + Angular + Capacitor (telefony) i Electron (komputery). Komunikacja BLE przez plugin
+[`@capacitor-community/bluetooth-le`](https://github.com/capacitor-community/bluetooth-le) —
+na telefonach natywnie, w Electronie przez Web Bluetooth.
 
 > Status: szkielet projektu (szablon Ionic „blank” z dodanym pluginem BLE).
+
+## Spis treści
+
+- [Stack](#stack)
+- [Struktura repozytorium](#struktura-repozytorium)
+- [Wymagania](#wymagania)
+  - [Konfiguracja środowiska (Windows)](#konfiguracja-środowiska-windows)
+- [Uruchomienie](#uruchomienie)
+  - [W przeglądarce](#w-przeglądarce)
+  - [Na Androidzie (emulator lub telefon)](#na-androidzie-emulator-lub-telefon)
+  - [Na iPhonie (macOS)](#na-iphonie-macos)
+  - [Na komputerze — Windows / macOS (Electron)](#na-komputerze--windows--macos-electron)
+- [Połączenie z urządzeniem](#połączenie-z-urządzeniem)
+  - [Konfiguracja (zakładka Config)](#konfiguracja-zakładka-config)
+- [Jakość kodu](#jakość-kodu)
+- [Pozostałe komendy](#pozostałe-komendy)
 
 ## Stack
 
@@ -18,6 +35,7 @@ Zbudowana na Ionic + Angular + Capacitor. Komunikacja BLE przez plugin
 | JDK        | 21 (wymagany do builda Androida) |
 | Android    | minSdk 24, targetSdk 36 |
 | iOS        | 15+ (Xcode 26+, tylko na macOS) |
+| Electron   | 44 (Windows 10+, macOS) |
 
 ## Struktura repozytorium
 
@@ -25,6 +43,9 @@ Zbudowana na Ionic + Angular + Capacitor. Komunikacja BLE przez plugin
 flaps-configurator-app/      # projekt Ionic/Angular
 ├── src/                     # kod aplikacji (Angular)
 ├── android/                 # natywny projekt Android (Capacitor)
+├── ios/                     # natywny projekt iOS (Capacitor)
+├── electron/                # aplikacja desktopowa: proces główny i preload
+├── electron-builder.yml     # instalatory Windows / macOS
 ├── capacitor.config.ts      # konfiguracja Capacitora
 └── package.json
 ```
@@ -50,6 +71,12 @@ flaps-configurator-app/      # projekt Ionic/Angular
   na własnym telefonie (aplikacja działa wtedy 7 dni, potem trzeba ją wgrać ponownie);
   TestFlight i App Store wymagają płatnego Apple Developer Program
 - CocoaPods **nie** jest potrzebne — Capacitor 8 używa Swift Package Manager
+
+**Windows / macOS** (Electron):
+
+- tylko Node.js i npm — Electron instaluje się z `npm install`
+- komputer z **Bluetooth 4.0+ (BLE)** i włączonym Bluetooth
+- instalator macOS (DMG) da się zbudować tylko na Macu; instalator Windows — na Windows
 
 ### Konfiguracja środowiska (Windows)
 
@@ -145,6 +172,51 @@ Można też uruchomić aplikację z Xcode (`npx cap open ios`, przycisk ▶).
 
 Przy pierwszym połączeniu ze sterownikiem iOS sam pokaże okno parowania z kluczem — tak jak Android.
 
+### Na komputerze — Windows / macOS (Electron)
+
+Przy pracy nad kodem — z przeładowaniem na żywo:
+
+```bash
+cd flaps-configurator-app
+npm install
+npm run electron:dev
+```
+
+`electron:dev` uruchamia `ng serve` (port 4200, inny ustawisz zmienną `ELECTRON_DEV_PORT`)
+i Electrona, który ładuje aplikację z tego serwera i otwiera DevTools. Zmiany w `src/` przeładowują
+okno same; zmiany w `electron/*.cjs` wymagają ponownego uruchomienia. Zamknięcie okna zatrzymuje też
+`ng serve`. Argumenty dla Electrona podaje się po `--`, np. `npm run electron:dev -- --remote-debugging-port=9333`.
+
+Wersja jak w instalatorze — jednorazowy build produkcyjny do `www/` i Electron na tych plikach
+(bez obserwowania zmian):
+
+```bash
+npm run electron:start
+```
+
+Instalatory trafiają do `release/`:
+
+| System  | Komenda                       | Wynik                                   |
+|---------|-------------------------------|-----------------------------------------|
+| Windows | `npm run electron:dist:win` | `Flaps Configurator-Setup-<wersja>.exe` (NSIS) |
+| macOS   | `npm run electron:dist:mac` | `.dmg` (universal: Intel i Apple Silicon) |
+
+Jak działa Bluetooth w wersji desktopowej:
+
+- Łączenie idzie przez Web Bluetooth (Chromium w Electronie). Electron nie ma własnego okna
+  wyboru urządzenia — znalezione sterowniki pokazuje to samo okno **Wybierz urządzenie** co na
+  telefonie (lista przychodzi z procesu głównego, `electron/main.cjs`).
+- Parowanie z kluczem: na **Windows** aplikacja pokaże okno do wpisania kodu, na **macOS**
+  okno parowania pokazuje system.
+- macOS przy pierwszym połączeniu zapyta o zgodę na Bluetooth dla aplikacji.
+- Po ponownym uruchomieniu aplikacji urządzenie trzeba wybrać jeszcze raz (Web Bluetooth
+  nie pamięta wyboru między uruchomieniami).
+
+Instalatory nie są podpisane cyfrowo: Windows SmartScreen pokaże ostrzeżenie (*Więcej informacji →
+Uruchom mimo to*), a macOS zablokuje pierwsze uruchomienie (*prawy klik → Otwórz*). Do dystrybucji
+poza własnymi komputerami potrzebny jest certyfikat podpisu kodu (Windows) i Apple Developer ID
+z notaryzacją (macOS).
+
 ## Połączenie z urządzeniem
 
 Sterownik to STM32 ([`exhaust_flaps_controller`](https://github.com/TryniszewskiJ/exhaust_flaps_controller))
@@ -157,7 +229,20 @@ UI (baner, wybór urządzenia)
        ├─ ProtocolClient      core/protocol/protocol-client.ts — SEQ, timeout 500 ms, ponowienia, ERROR
        │    └─ ramki          core/protocol/frame.ts — 0xA5 … CRC-16/CCITT-FALSE, parser kawałków
        └─ BleLinkService      core/ble/ble-link.service.ts — skan, połączenie, notyfikacje, zapis
+            └─ plugin @capacitor-community/bluetooth-le
+                 ├─ Android / iOS — natywny BLE
+                 └─ przeglądarka / Electron — Web Bluetooth
 ```
+
+Web Bluetooth w Electronie nie ma okna wyboru urządzenia ani okna parowania — obsługują je:
+
+| Element | Plik | Rola |
+|---|---|---|
+| Proces główny | `electron/main.cjs` | protokół `app://` (bezpieczny kontekst, CSP), zdarzenie `select-bluetooth-device` → lista urządzeń, `setBluetoothPairingHandler` → prośba o klucz |
+| Preload | `electron/preload.cjs` | `window.flapsDesktop` — tylko funkcje Bluetooth, bez dostępu do Node.js |
+| Mostek w aplikacji | `core/ble/desktop-bridge.ts`, `core/ble/desktop-bluetooth.service.ts` | lista urządzeń do okna wyboru, okno wpisania klucza parowania (Windows) |
+
+Poza Electronem `window.flapsDesktop` nie istnieje i aplikacja działa jak na telefonie lub w przeglądarce.
 
 | GATT mostka nRF52 | UUID |
 |---|---|
@@ -171,9 +256,9 @@ UI (baner, wybór urządzenia)
 Przebieg:
 
 1. **Połącz** otwiera listę sterowników w pobliżu (skan po UUID serwisu; w przeglądarce — okno
-   wyboru Web Bluetooth).
-2. Po wyborze: połączenie BLE, przy pierwszym połączeniu **parowanie z kluczem** (systemowe okno
-   Androida), `START_SESSION`, `GET_DEVICE_INFO`.
+   wyboru Web Bluetooth; w Electronie — to samo okno co na telefonie, z listą od procesu głównego).
+2. Po wyborze: połączenie BLE, przy pierwszym połączeniu **parowanie z kluczem** (okno systemu na
+   Androidzie, iOS i macOS; okno aplikacji w Electronie na Windows), `START_SESSION`, `GET_DEVICE_INFO`.
 3. `PING` co ⅓ `session_timeout_ms`. `ERROR(NO_SESSION)` (np. reset STM32) — sesja otwierana
    ponownie; 3 pingi bez odpowiedzi — ponowne połączenie.
 4. Utrata połączenia bez kliknięcia **Rozłącz** — ponowne łączenie co 2 s, aż do skutku.
@@ -250,3 +335,6 @@ i poprawki ESLint wykonują się przy zapisie pliku.
 | `npm run format`       | formatowanie całego projektu      |
 | `npm run format:check` | sprawdzenie formatowania          |
 | `npm run proto:gen`    | generowanie modeli z `flaps.proto` |
+| `npm run electron:dev` | aplikacja desktopowa z przeładowaniem na żywo (`ng serve` + Electron) |
+| `npm run electron:start` | aplikacja desktopowa jak w instalatorze (build + Electron) |
+| `npm run electron:dist:win` / `:mac` | instalator Windows / macOS do `release/` |
