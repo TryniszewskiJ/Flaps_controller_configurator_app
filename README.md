@@ -17,6 +17,7 @@ Zbudowana na Ionic + Angular + Capacitor. Komunikacja BLE przez plugin
 | Node.js    | 24     |
 | JDK        | 21 (wymagany do builda Androida) |
 | Android    | minSdk 24, targetSdk 36 |
+| iOS        | 15+ (Xcode 26+, tylko na macOS) |
 
 ## Struktura repozytorium
 
@@ -32,9 +33,23 @@ flaps-configurator-app/      # projekt Ionic/Angular
 
 - Node.js 24 i npm
 - Ionic CLI: `npm install -g @ionic/cli`
+
+**Android** (Windows, macOS, Linux):
+
 - Android Studio z Android SDK (platforma 36) i emulatorem
 - **JDK 21** — Gradle 8.14 nie działa na Javie 25/26
   (błąd `Unsupported class file major version 69/70`)
+
+**iOS** (tylko macOS):
+
+- **Xcode 26 lub nowszy** (App Store) — wymóg Capacitora 8; po instalacji uruchom go raz,
+  żeby doinstalował komponenty, i zaakceptuj licencję
+- **iPhone z iOS 15+** — symulator iOS nie ma Bluetooth, więc połączenie ze sterownikiem
+  sprawdzisz tylko na telefonie
+- **Apple ID** dodane w Xcode (*Settings → Accounts*). Darmowe konto wystarczy do instalacji
+  na własnym telefonie (aplikacja działa wtedy 7 dni, potem trzeba ją wgrać ponownie);
+  TestFlight i App Store wymagają płatnego Apple Developer Program
+- CocoaPods **nie** jest potrzebne — Capacitor 8 używa Swift Package Manager
 
 ### Konfiguracja środowiska (Windows)
 
@@ -87,6 +102,48 @@ Otwarcie projektu w Android Studio:
 ```bash
 npx cap open android
 ```
+
+### Na iPhonie (macOS)
+
+Projekt iOS (`ios/`) nie jest jeszcze w repozytorium — trzeba go raz wygenerować.
+
+**Pierwsze uruchomienie:**
+
+1. Dodaj platformę:
+   ```bash
+   cd flaps-configurator-app
+   npm install
+   ionic build
+   npx cap add ios
+   ```
+2. Dopisz zgodę na Bluetooth w `ios/App/App/Info.plist` (bez niej aplikacja zamknie się
+   przy pierwszym użyciu Bluetooth):
+   ```xml
+   <key>NSBluetoothAlwaysUsageDescription</key>
+   <string>Bluetooth służy do połączenia ze sterownikiem klap.</string>
+   ```
+3. Zmień `appId` w [`capacitor.config.ts`](flaps-configurator-app/capacitor.config.ts) z domyślnego
+   `io.ionic.starter` na własny (np. `com.<nazwa>.flaps`) — Apple wymaga unikalnego identyfikatora
+   i odrzuci podpisanie szablonowego. Po zmianie: `npx cap sync`.
+4. Podpisywanie: `npx cap open ios` → target **App** → *Signing & Capabilities* → wybierz
+   swój **Team** (Apple ID).
+5. Na iPhonie: *Ustawienia → Prywatność i ochrona → Tryb dewelopera* (włącz, telefon się
+   zrestartuje). Po pierwszej instalacji z darmowego konta zaufaj certyfikatowi:
+   *Ustawienia → Ogólne → VPN i urządzenia zarządzane*.
+6. Zacommituj katalog `ios/`, żeby kolejne osoby nie musiały powtarzać kroków 1–4.
+
+**Kolejne uruchomienia** (telefon podłączony kablem albo w tej samej sieci Wi-Fi):
+
+```bash
+ionic build
+npx cap sync ios
+npx cap run ios
+```
+
+`npx cap run ios --list` pokazuje dostępne urządzenia, `--target <id>` wybiera jedno z nich.
+Można też uruchomić aplikację z Xcode (`npx cap open ios`, przycisk ▶).
+
+Przy pierwszym połączeniu ze sterownikiem iOS sam pokaże okno parowania z kluczem — tak jak Android.
 
 ## Połączenie z urządzeniem
 
