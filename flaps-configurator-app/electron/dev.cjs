@@ -4,6 +4,7 @@
 
 const { spawn, spawnSync } = require('node:child_process');
 const http = require('node:http');
+const net = require('node:net');
 const path = require('node:path');
 const electronBinary = require('electron');
 
@@ -38,6 +39,23 @@ function shutdown(code) {
   process.exit(code);
 }
 
+/** Zajęty port oznacza inny serwer — czekanie na niego uruchomiłoby Electrona z cudzą aplikacją. */
+function ensurePortFree(port) {
+  return new Promise((resolve, reject) => {
+    const probe = net.createServer();
+    probe.once('error', () =>
+      reject(
+        new Error(
+          `Port ${port} jest zajęty (inny ng serve albo electron:dev?). ` +
+            `Zamknij go albo ustaw inny port: ELECTRON_DEV_PORT=4300 npm run electron:dev`,
+        ),
+      ),
+    );
+    probe.once('listening', () => probe.close(resolve));
+    probe.listen(port, 'localhost');
+  });
+}
+
 function waitForServer(url, timeoutMs) {
   const deadline = Date.now() + timeoutMs;
   return new Promise((resolve, reject) => {
@@ -60,6 +78,8 @@ function waitForServer(url, timeoutMs) {
 }
 
 async function main() {
+  await ensurePortFree(PORT);
+
   const ng = start(process.execPath, [NG_CLI, 'serve', '--port', String(PORT)]);
   ng.on('exit', (code) => shutdown(code ?? 0));
 

@@ -100,6 +100,11 @@ ion-content {
   .card-label {
     margin: 0;
   }
+
+  // Bez górnego marginesu przycisków z .card — tytuł i przycisk w jednej linii
+  ion-button {
+    margin: 0;
+  }
 }
 
 .card-label {
@@ -108,6 +113,46 @@ ion-content {
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  color: var(--app-muted);
+}
+
+// --- Karta zwijana: <h2 class="card-label"><button class="card-toggle" …> ---
+.card-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  cursor: pointer;
+
+  ion-icon {
+    font-size: 13px;
+    transition: transform 0.15s ease;
+  }
+
+  &[aria-expanded='false'] ion-icon {
+    transform: rotate(-90deg);
+  }
+}
+
+// Zwinięta karta: bez odstępu pod nagłówkiem
+.card-label--collapsed,
+.card-header--collapsed {
+  margin-bottom: 0;
+}
+
+// Licznik przy tytule zwiniętej karty
+.card-count {
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--app-code-bg);
+  font-size: 10px;
+  letter-spacing: 0;
   color: var(--app-muted);
 }
 

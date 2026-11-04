@@ -81,6 +81,18 @@
   min-height: 0;
 }
 
+// Zwinięty log kurczy się do nagłówka, zamiast zajmować resztę ekranu
+.log-card--collapsed {
+  flex: none;
+}
+
+.log-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
 .log {
   flex: 1;
   min-height: 0;

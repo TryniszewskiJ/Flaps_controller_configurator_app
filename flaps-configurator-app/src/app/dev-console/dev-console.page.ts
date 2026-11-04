@@ -11,12 +11,15 @@ import {
   IonButton,
   IonContent,
   IonHeader,
+  IonIcon,
   IonSelect,
   IonSelectOption,
   IonTextarea,
   IonToolbar,
 } from '@ionic/angular';
 import { JsonValue } from '@bufbuild/protobuf';
+import { addIcons } from 'ionicons';
+import { chevronDown } from 'ionicons/icons';
 import { ConnectionService } from '../core/connection.service';
 import { FrameLogService } from '../core/frame-log.service';
 import {
@@ -44,6 +47,7 @@ interface CommandFilter {
     IonContent,
     IonTextarea,
     IonButton,
+    IonIcon,
     IonSelect,
     IonSelectOption,
     ConnectionBannerComponent,
@@ -58,6 +62,10 @@ export class DevConsolePage {
     command,
     name: commandName(command),
   }));
+
+  /** Rozwinięte karty; zwinięta "Komenda" oddaje miejsce logowi. */
+  protected readonly commandOpen = signal(true);
+  protected readonly logOpen = signal(true);
 
   protected readonly command = signal('');
   protected readonly sending = signal(false);
@@ -93,7 +101,9 @@ export class DevConsolePage {
   private readonly log = viewChild<ElementRef<HTMLElement>>('log');
 
   constructor() {
-    // Przewijanie logu do najnowszej ramki
+    addIcons({ chevronDown });
+
+    // Przewijanie logu do najnowszej ramki (także po rozwinięciu karty)
     afterRenderEffect(() => {
       this.entries();
       const el = this.log()?.nativeElement;
