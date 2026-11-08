@@ -13,14 +13,23 @@ import {
   Configuration,
   ConfigurationError,
   ConfigurationSchema,
+  DeviceState,
+  DeviceStateSchema,
   ErrorResponseSchema,
+  FlapPosition,
   FlapsState,
   GetConfigurationResponseSchema,
   GetDeviceInfoResponseSchema,
+  GetStateResponseSchema,
+  LogLevel,
   PingResponseSchema,
   SaveConfigurationResponseSchema,
   SetConfigurationRequestSchema,
   SetConfigurationResponseSchema,
+  SetDevModeRequestSchema,
+  SetDevModeResponseSchema,
+  SetFlapsOverrideRequestSchema,
+  SetFlapsOverrideResponseSchema,
   StartSessionResponseSchema,
   Status,
 } from '../protocol/gen/flaps_pb';
@@ -76,11 +85,34 @@ export class FakeDevice {
   /** Błąd, z którym SET_CONFIGURATION odrzuci następną konfigurację. */
   rejectConfiguration = ConfigurationError.UNSPECIFIED;
   saveStatus = Status.OK;
+  /** Stan zwracany przez GET_STATE. */
+  state: DeviceState = create(DeviceStateSchema, {
+    signals: [
+      { index: 0, value: 2500, fresh: true },
+      { index: 1, value: 1, fresh: true },
+    ],
+    activeLogic: 1,
+    flap1: FlapPosition.CLOSED,
+    flap2: FlapPosition.CLOSED,
+  });
+  /** Licznik TELEMETRY / EVENT; GET_STATE zwraca ostatni numer. */
+  sequence = 10;
+  devMode = { logLevel: LogLevel.OFF, flapTrace: false };
   readonly received: Frame[] = [];
 
   private readonly parser = new FrameParser((frame) => this.handle(frame));
 
   constructor(private readonly reply: (bytes: Uint8Array) => void) {}
+
+  /** Ramka bez żądania (TELEMETRY, EVENT, LOG, FLAP_TRACE) — SEQ = 0 jak w firmware. */
+  sendUnsolicited<T extends DescMessage>(
+    command: Command,
+    schema: T,
+    message: MessageInitShape<T>,
+  ): void {
+    const payload = toBinary(schema, create(schema, message));
+    this.reply(encodeFrame({ command, seq: 0, payload }));
+  }
 
   /** Bajty wysłane przez aplikację. */
   write(bytes: Uint8Array): void {
@@ -96,10 +128,12 @@ export class FakeDevice {
     switch (frame.command) {
       case Command.START_SESSION:
         this.sessionActive = this.startSessionStatus === Status.OK;
+        // Tryb dev wyłącza się przy każdym START_SESSION
+        this.devMode = { logLevel: LogLevel.OFF, flapTrace: false };
         this.respond(frame, StartSessionResponseSchema, {
           status: this.startSessionStatus,
           protocolVersionMajor: 1,
-          protocolVersionMinor: 5,
+          protocolVersionMinor: 6,
           sessionTimeoutMs: this.sessionTimeoutMs,
         });
         return;
@@ -152,6 +186,30 @@ export class FakeDevice {
         }
         this.respond(frame, SaveConfigurationResponseSchema, { status: this.saveStatus });
         return;
+      case Command.GET_STATE:
+        this.respond(frame, GetStateResponseSchema, {
+          state: clone(DeviceStateSchema, this.state),
+          sequence: this.sequence,
+        });
+        return;
+      case Command.SET_DEV_MODE: {
+        const { logLevel, flapTrace } = fromBinary(SetDevModeRequestSchema, frame.payload);
+        this.devMode = { logLevel, flapTrace };
+        this.respond(frame, SetDevModeResponseSchema, { status: Status.OK });
+        return;
+      }
+      case Command.SET_FLAPS_OVERRIDE: {
+        const { state, durationMs } = fromBinary(SetFlapsOverrideRequestSchema, frame.payload);
+        const ending = state === FlapsState.UNSPECIFIED;
+        if (!ending && (durationMs < 1 || durationMs > 600_000)) {
+          this.respond(frame, SetFlapsOverrideResponseSchema, { status: Status.INVALID_OVERRIDE });
+          return;
+        }
+        this.state.overrideState = state;
+        this.state.overrideRemainingMs = ending ? 0 : durationMs;
+        this.respond(frame, SetFlapsOverrideResponseSchema, { status: Status.OK });
+        return;
+      }
       default:
         this.error(frame, Status.UNKNOWN_COMMAND);
     }

@@ -9,7 +9,7 @@ import {
 import { BleLinkService, FoundDevice } from './ble/ble-link.service';
 import { FrameLogService } from './frame-log.service';
 import { COMMAND_SCHEMAS } from './protocol/commands';
-import { FrameParser } from './protocol/frame';
+import { Frame, FrameParser } from './protocol/frame';
 import {
   CloseSessionRequestSchema,
   CloseSessionResponseSchema,
@@ -78,6 +78,15 @@ export class ConnectionService {
   readonly connected = computed(() => this._status() === 'connected');
   readonly deviceName = computed(() => this._device()?.name ?? null);
 
+  private readonly _session = signal(0);
+  /**
+   * Rośnie przy każdym otwarciu sesji (także ponownym START_SESSION po NO_SESSION).
+   * Urządzenie wysyła stan i tryb dev dopiero po GET_STATE / SET_DEV_MODE w nowej sesji.
+   */
+  readonly session = this._session.asReadonly();
+
+  private readonly unsolicitedListeners = new Set<(frame: Frame) => void>();
+
   /** Użytkownik chce być połączony (od "Połącz" do "Rozłącz"). */
   private wanted = false;
   /** Zmienia się przy każdym połączeniu i jego końcu — unieważnia callbacki starych połączeń. */
@@ -85,6 +94,10 @@ export class ConnectionService {
   private client: ProtocolClient | null = null;
   private readonly parser = new FrameParser((frame) => {
     this.frameLog.add('rx', frame);
+    if (isUnsolicited(frame.command)) {
+      this.unsolicitedListeners.forEach((listener) => listener(frame));
+      return;
+    }
     this.client?.handleFrame(frame);
   });
   private pingTimer: ReturnType<typeof setTimeout> | null = null;
@@ -156,6 +169,12 @@ export class ConnectionService {
     await client.request(command, schemas.request, request, schemas.response, { retries: 0 });
   }
 
+  /** Wiadomości bez żądania (TELEMETRY, EVENT, LOG, FLAP_TRACE); zwraca wypisanie. */
+  onUnsolicited(listener: (frame: Frame) => void): () => void {
+    this.unsolicitedListeners.add(listener);
+    return () => this.unsolicitedListeners.delete(listener);
+  }
+
   /** Komenda w aktywnej sesji (konfiguracja, stan). Bez połączenia — błąd. */
   async request<Req extends DescMessage, Res extends DescMessage>(
     command: Command,
@@ -216,6 +235,7 @@ export class ConnectionService {
     }
     this._error.set(null);
     this._status.set('connected');
+    this._session.update((session) => session + 1);
     this.pingFailures = 0;
     this.schedulePing(generation, pingInterval(sessionTimeoutMs));
   }
@@ -272,6 +292,7 @@ export class ConnectionService {
         try {
           intervalMs = pingInterval(await this.startSession(client));
           this.pingFailures = 0;
+          this._session.update((session) => session + 1);
         } catch (sessionError) {
           if (sessionError instanceof SessionRejectedError) {
             this.fail(sessionError);
@@ -372,6 +393,11 @@ export class ConnectionService {
       this.reconnectTimer = null;
     }
   }
+}
+
+/** 0x70–0x7F: wysyłane przez urządzenie bez żądania (README firmware, zakresy CMD). */
+function isUnsolicited(command: number): boolean {
+  return command >= 0x70 && command <= 0x7f;
 }
 
 /** PING co ~1/3 timeoutu sesji (README firmware). */

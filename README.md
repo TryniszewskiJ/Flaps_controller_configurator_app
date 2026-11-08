@@ -21,6 +21,7 @@ na telefonach natywnie, w Electronie przez Web Bluetooth.
   - [Na komputerze — Windows / macOS (Electron)](#na-komputerze--windows--macos-electron)
 - [Połączenie z urządzeniem](#połączenie-z-urządzeniem)
   - [Konfiguracja (zakładka Config)](#konfiguracja-zakładka-config)
+  - [Stan, ręczne sterowanie i tryb deweloperski](#stan-ręczne-sterowanie-i-tryb-deweloperski)
 - [Jakość kodu](#jakość-kodu)
 - [Pozostałe komendy](#pozostałe-komendy)
 
@@ -283,6 +284,28 @@ Przebieg:
   przyjmuje tylko jedną logikę. Ostatniej logiki nie da się usunąć.
 - **Ustawienia** — selektor, logika domyślna, stan bezpieczny, czas ruchu klapy (50–5000 ms),
   terminator 120 Ω na CAN.
+
+### Stan, ręczne sterowanie i tryb deweloperski
+
+`DeviceStateService` (`core/device-state.service.ts`) po każdym starcie sesji (także ponownym
+po `NO_SESSION`) wywołuje `GET_STATE`, a potem nakłada zmiany z `TELEMETRY` (sygnały) i `EVENT`
+(aktywna logika, ruch klap, ręczne sterowanie). Luka we wspólnym liczniku `sequence` — stan
+od nowa (`GET_STATE`).
+
+- **Dashboard** pokazuje aktywną logikę (lub stan bezpieczny), położenie obu klap i sygnały —
+  nazwy z konfiguracji urządzenia.
+- **Otwórz / Zamknij klapy** wysyła `SET_FLAPS_OVERRIDE` na wybrany czas (1 / 5 / 10 min, firmware
+  przyjmuje do 10 min); działa także w stanie bezpiecznym. Aktywne sterowanie ręczne widać z
+  odliczaniem, **Oddaj logice** kończy je od razu. Zamknięcie aplikacji go nie kończy — kończy
+  je czas.
+- **Dev console → Tryb deweloperski** — `SET_DEV_MODE`: poziom logów sterownika i przebieg AMP_OUT
+  po każdym ruchu klapy. Sterownik wyłącza tryb przy każdym `START_SESSION`, aplikacja włącza go
+  ponownie sama.
+- **Dev console → Ruchy klap · AMP_OUT** — tabela ruchów: czas, klapa i kierunek, trwanie, szczyt
+  prądu i prąd przy zatrzymaniu (z `EVENT flap_move_finished`, zawsze), a po rozwinięciu —
+  próbki przebiegu z `FLAP_TRACE` (tryb dev). AMP_OUT to surowy odczyt ADC (0–65535); napięcie
+  liczone przy VREF 3,3 V ([`core/amp-out.ts`](flaps-configurator-app/src/app/core/amp-out.ts)).
+- **Dev console → Logi sterownika** — linie `LOG` z czasem od startu sterownika i poziomem.
 
 Modele protokołu są generowane z `flaps.proto` firmware do
 [`src/app/core/protocol/gen`](flaps-configurator-app/src/app/core/protocol/gen) (plik w repo,

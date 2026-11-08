@@ -65,6 +65,8 @@ export class ConfigurationService {
 
   /** Wersja robocza edytowana w aplikacji. */
   readonly draft = this._draft.asReadonly();
+  /** Konfiguracja w użyciu na urządzeniu — nazwy sygnałów i logik do wyświetlania stanu. */
+  readonly device = this._device.asReadonly();
   readonly busy = this._busy.asReadonly();
   /** Powód ostatniej nieudanej operacji. */
   readonly error = this._error.asReadonly();

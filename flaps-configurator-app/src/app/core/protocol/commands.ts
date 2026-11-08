@@ -11,12 +11,15 @@ import {
   CloseSessionResponseSchema,
   Command,
   ErrorResponseSchema,
+  EventSchema,
+  FlapTraceSchema,
   GetConfigurationRequestSchema,
   GetConfigurationResponseSchema,
   GetDeviceInfoRequestSchema,
   GetDeviceInfoResponseSchema,
   GetStateRequestSchema,
   GetStateResponseSchema,
+  LogSchema,
   PingRequestSchema,
   PingResponseSchema,
   SaveConfigurationRequestSchema,
@@ -25,8 +28,11 @@ import {
   SetConfigurationResponseSchema,
   SetDevModeRequestSchema,
   SetDevModeResponseSchema,
+  SetFlapsOverrideRequestSchema,
+  SetFlapsOverrideResponseSchema,
   StartSessionRequestSchema,
   StartSessionResponseSchema,
+  TelemetrySchema,
 } from './gen/flaps_pb';
 
 export const RESPONSE_BIT = 0x80;
@@ -68,6 +74,18 @@ export const COMMAND_SCHEMAS: Partial<Record<Command, CommandSchemas>> = {
     request: SetDevModeRequestSchema,
     response: SetDevModeResponseSchema,
   },
+  [Command.SET_FLAPS_OVERRIDE]: {
+    request: SetFlapsOverrideRequestSchema,
+    response: SetFlapsOverrideResponseSchema,
+  },
+};
+
+/** Modele wiadomości wysyłanych przez urządzenie bez żądania (0x70–0x7F, SEQ = 0). */
+export const UNSOLICITED_SCHEMAS: Partial<Record<Command, DescMessage>> = {
+  [Command.TELEMETRY]: TelemetrySchema,
+  [Command.EVENT]: EventSchema,
+  [Command.LOG]: LogSchema,
+  [Command.FLAP_TRACE]: FlapTraceSchema,
 };
 
 /** Komendy, które aplikacja może wysłać (do podpowiedzi i filtra). */
@@ -136,6 +154,10 @@ export function toHex(bytes: Uint8Array, separator = ' '): string {
 function payloadSchema(command: number): DescMessage | null {
   if (command === Command.ERROR) {
     return ErrorResponseSchema;
+  }
+  const unsolicited = UNSOLICITED_SCHEMAS[command as Command];
+  if (unsolicited) {
+    return unsolicited;
   }
   const schemas = COMMAND_SCHEMAS[baseCommand(command) as Command];
   if (!schemas) {

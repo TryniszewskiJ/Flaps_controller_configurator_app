@@ -4,7 +4,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [scrollY]="false">
+<ion-content>
   <div class="page console-page">
     <app-connection-banner />
 
@@ -57,6 +57,10 @@
         </div>
       }
     </section>
+
+    <app-dev-mode-card />
+    <app-flap-moves-card />
+    <app-device-log-card />
 
     <section class="card log-card" [class.log-card--collapsed]="!logOpen()">
       <div class="card-header" [class.card-header--collapsed]="!logOpen()">

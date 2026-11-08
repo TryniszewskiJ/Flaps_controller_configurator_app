@@ -1,0 +1,115 @@
+:host {
+  display: block;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+th {
+  padding: 4px;
+  border-bottom: 1px solid var(--app-border);
+  font-weight: 600;
+  text-align: start;
+  white-space: nowrap;
+  color: var(--app-muted);
+}
+
+td {
+  padding: 6px 4px;
+  border-bottom: 1px solid var(--app-border);
+  vertical-align: top;
+  white-space: nowrap;
+  color: var(--app-text);
+}
+
+.num {
+  text-align: end;
+}
+
+.raw,
+.volts {
+  display: block;
+}
+
+.volts {
+  color: var(--app-muted);
+}
+
+.row-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--ion-color-primary);
+  cursor: pointer;
+
+  ion-icon {
+    font-size: 12px;
+    transform: rotate(-90deg);
+    transition: transform 0.15s ease;
+  }
+
+  &[aria-expanded='true'] ion-icon {
+    transform: none;
+  }
+}
+
+.move--expanded td {
+  border-bottom: 0;
+  background: rgba(var(--ion-color-primary-rgb), 0.05);
+}
+
+// --- Przebieg AMP_OUT ---
+.trace > td {
+  padding: 0 6px 10px;
+  background: rgba(var(--ion-color-primary-rgb), 0.05);
+  white-space: normal;
+}
+
+.trace-info {
+  margin: 0 0 6px;
+  font-size: 11px;
+  color: var(--app-muted);
+}
+
+.trace-scroll {
+  max-height: 260px;
+  overflow-y: auto;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  background: var(--app-card-bg);
+}
+
+.trace-table {
+  th {
+    position: sticky;
+    top: 0;
+    background: var(--app-card-bg);
+  }
+
+  td {
+    padding: 3px 8px;
+  }
+}
+
+.trace-peak td {
+  font-weight: 700;
+  color: var(--ion-color-warning-shade);
+}
+
+.footnote,
+.empty {
+  margin: 8px 0 0;
+  font-size: 11px;
+  color: var(--app-muted);
+}

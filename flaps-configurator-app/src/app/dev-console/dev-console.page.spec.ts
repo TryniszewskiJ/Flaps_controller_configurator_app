@@ -39,6 +39,8 @@ describe('DevConsolePage', () => {
             error: signal(null),
             deviceName: signal('DK_flaps_controller'),
             deviceInfo: signal(null),
+            session: signal(0),
+            onUnsolicited: () => (): void => undefined,
             sendCommand,
           },
         },

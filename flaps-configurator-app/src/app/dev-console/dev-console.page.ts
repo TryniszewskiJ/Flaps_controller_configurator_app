@@ -30,6 +30,9 @@ import {
 } from '../core/protocol/commands';
 import { Command } from '../core/protocol/gen/flaps_pb';
 import { ConnectionBannerComponent } from '../shared/connection-banner/connection-banner.component';
+import { DevModeCardComponent } from './dev-mode-card/dev-mode-card.component';
+import { DeviceLogCardComponent } from './device-log-card/device-log-card.component';
+import { FlapMovesCardComponent } from './flap-moves-card/flap-moves-card.component';
 
 interface CommandFilter {
   command: number;
@@ -51,6 +54,9 @@ interface CommandFilter {
     IonSelect,
     IonSelectOption,
     ConnectionBannerComponent,
+    DevModeCardComponent,
+    FlapMovesCardComponent,
+    DeviceLogCardComponent,
   ],
 })
 export class DevConsolePage {

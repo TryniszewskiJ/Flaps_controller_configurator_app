@@ -10,29 +10,80 @@
 
     <section class="card">
       <h2 class="card-label">Tryb jazdy</h2>
-      <p class="drive-mode mono">{{ driveMode }}</p>
+      <p class="drive-mode" [class.drive-mode--fail-safe]="state()?.activeLogic === -1">
+        {{ activeLogic() ?? '—' }}
+      </p>
     </section>
 
     <section class="card">
       <h2 class="card-label">Stan klap</h2>
-      <div class="flaps-placeholder">[wizualizacja stanu klap]</div>
-    </section>
+      @for (flap of flaps(); track flap.name) {
+        <div class="kv-row list-row">
+          <span>{{ flap.name }}</span>
+          <span class="flap-state" [class]="'flap-state flap-state--' + flap.tone">
+            <span class="flap-dot" aria-hidden="true"></span>
+            {{ flap.label }}
+          </span>
+        </div>
+      } @empty {
+        <p class="muted-text">Połącz się ze sterownikiem, aby zobaczyć stan klap.</p>
+      }
 
-    <section class="card">
-      <h2 class="card-label">Stan zmiennych</h2>
-      @for (variable of variables; track variable.name) {
-        <div class="kv-row mono">
-          <span>{{ variable.name }}</span>
-          <span>{{ variable.value }}</span>
+      @if (override(); as overrideState) {
+        <div class="override">
+          <div class="override__text">
+            <strong>
+              Sterowanie ręczne: {{ overrideState === FlapsState.OPEN ? 'otwarte' : 'zamknięte' }}
+            </strong>
+            @if (overrideRemaining(); as remaining) {
+              <span>Logika przejmie sterowanie za {{ remaining }}</span>
+            }
+          </div>
+          <ion-button class="btn-tint" [disabled]="busy()" (click)="releaseOverride()">
+            Oddaj logice
+          </ion-button>
         </div>
       }
     </section>
 
     <section class="card">
+      <h2 class="card-label">Stan zmiennych</h2>
+      @for (signal of signals(); track signal.index) {
+        <div class="kv-row mono" [class.signal--stale]="!signal.fresh">
+          <span>{{ signal.name }}</span>
+          <span>{{ signal.fresh ? signal.value : signal.value + ' (brak danych)' }}</span>
+        </div>
+      } @empty {
+        <p class="muted-text">Brak sygnałów — połącz się ze sterownikiem.</p>
+      }
+    </section>
+
+    <section class="card">
       <h2 class="card-label">Akcje</h2>
-      <ion-button expand="block" color="warning" [disabled]="!connected()" (click)="toggleFlaps()">
-        {{ flapsOpen() ? 'Zamknij klapy' : 'Otwórz klapy' }}
-      </ion-button>
+      <div class="override-row">
+        <ion-button
+          class="override-button"
+          color="warning"
+          [disabled]="!connected() || !state() || busy()"
+          (click)="toggleFlaps()"
+        >
+          {{ flapsOpen() ? 'Zamknij klapy' : 'Otwórz klapy' }}
+        </ion-button>
+        <ion-select
+          class="duration-select"
+          aria-label="Czas sterowania ręcznego"
+          interface="popover"
+          [value]="overrideMinutes()"
+          (ionChange)="onMinutesChange($event.detail.value)"
+        >
+          @for (minutes of overrideMinutesOptions; track minutes) {
+            <ion-select-option [value]="minutes">na {{ minutes }} min</ion-select-option>
+          }
+        </ion-select>
+      </div>
+      @if (actionError(); as error) {
+        <p class="action-error">{{ error }}</p>
+      }
       <ion-button expand="block" [disabled]="!connected()">Wyślij ramkę CAN</ion-button>
       <ion-button expand="block" fill="outline" [disabled]="!connected()">
         Override zmiennej

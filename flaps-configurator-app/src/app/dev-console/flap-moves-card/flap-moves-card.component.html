@@ -1,0 +1,124 @@
+<section class="card">
+  <div class="card-header" [class.card-header--collapsed]="!open()">
+    <h2 class="card-label">
+      <button
+        type="button"
+        class="card-toggle"
+        [attr.aria-expanded]="open()"
+        (click)="open.set(!open())"
+      >
+        <ion-icon name="chevron-down" aria-hidden="true"></ion-icon>
+        Ruchy klap · AMP_OUT
+        @if (!open()) {
+          <span class="card-count">{{ moves().length }}</span>
+        }
+      </button>
+    </h2>
+    @if (open()) {
+      <ion-button class="btn-tint" [disabled]="moves().length === 0" (click)="clear()">
+        Wyczyść
+      </ion-button>
+    }
+  </div>
+
+  @if (open()) {
+    @if (moves().length > 0) {
+      <div class="table-scroll">
+        <table class="moves mono">
+          <thead>
+            <tr>
+              <th scope="col">Czas</th>
+              <th scope="col">Ruch</th>
+              <th scope="col" class="num">Trwanie</th>
+              <th scope="col" class="num">Szczyt</th>
+              <th scope="col" class="num">Koniec</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (move of moves(); track move.id) {
+              <tr class="move" [class.move--expanded]="expanded() === move.id">
+                <td>
+                  <button
+                    type="button"
+                    class="row-toggle"
+                    [attr.aria-expanded]="expanded() === move.id"
+                    [attr.aria-label]="'Przebieg ruchu z ' + move.time"
+                    (click)="toggle(move)"
+                  >
+                    <ion-icon name="chevron-down" aria-hidden="true"></ion-icon>
+                    {{ move.time }}
+                  </button>
+                </td>
+                <td>
+                  <span class="raw">K{{ move.flap }}</span>
+                  <span class="volts">{{ direction(move.position) }}</span>
+                </td>
+                <td class="num">{{ move.durationMs === null ? '—' : move.durationMs + ' ms' }}</td>
+                <td class="num">
+                  @if (move.peakAmpOut === null) {
+                    —
+                  } @else {
+                    <span class="raw">{{ move.peakAmpOut }}</span>
+                    <span class="volts">{{ volts(move.peakAmpOut) }}</span>
+                  }
+                </td>
+                <td class="num">
+                  @if (move.ampOutAtStop === null) {
+                    —
+                  } @else {
+                    <span class="raw">{{ move.ampOutAtStop }}</span>
+                    <span class="volts">{{ volts(move.ampOutAtStop) }}</span>
+                  }
+                </td>
+              </tr>
+              @if (expanded() === move.id) {
+                <tr class="trace">
+                  <td colspan="5">
+                    @if (move.trace) {
+                      <p class="trace-info">
+                        {{ move.trace.samples.length }} próbek co {{ move.trace.intervalMs }} ms ·
+                        szczyt wyróżniony
+                      </p>
+                      <div class="trace-scroll">
+                        <table class="trace-table">
+                          <thead>
+                            <tr>
+                              <th scope="col" class="num">t [ms]</th>
+                              <th scope="col" class="num">AMP_OUT</th>
+                              <th scope="col" class="num">U [V]</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            @for (row of traceRows(move); track $index) {
+                              <tr [class.trace-peak]="row.peak">
+                                <td class="num">{{ row.timeMs }}</td>
+                                <td class="num">{{ row.raw }}</td>
+                                <td class="num">{{ row.volts }}</td>
+                              </tr>
+                            }
+                          </tbody>
+                        </table>
+                      </div>
+                    } @else {
+                      <p class="trace-info">
+                        Brak przebiegu — włącz „Przebieg AMP_OUT po ruchu klapy” w trybie
+                        deweloperskim.
+                      </p>
+                    }
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="footnote">
+        AMP_OUT to surowy odczyt ADC (0–65535). Napięcie liczone przy VREF {{ vref }} V.
+      </p>
+    } @else {
+      <p class="empty">
+        Ruchy klap pojawią się tutaj po połączeniu — np. po „Otwórz klapy” na Dashboardzie.
+      </p>
+    }
+  }
+</section>

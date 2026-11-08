@@ -1,6 +1,5 @@
-// Strona na całą wysokość: log zajmuje resztę miejsca i przewija się sam
+// Strona przewijana — kart jest więcej niż mieści ekran
 .console-page {
-  height: 100%;
   box-sizing: border-box;
 }
 
@@ -74,11 +73,10 @@
 }
 
 // --- Log ramek ---
+// Log ramek ma stałą wysokość i przewija się sam
 .log-card {
   display: flex;
-  flex: 1;
   flex-direction: column;
-  min-height: 0;
 }
 
 // Zwinięty log kurczy się do nagłówka, zamiast zajmować resztę ekranu
@@ -94,8 +92,8 @@
 }
 
 .log {
-  flex: 1;
-  min-height: 0;
+  height: 45vh;
+  min-height: 240px;
   overflow-y: auto;
   padding: 4px 10px;
   background: var(--app-code-bg);

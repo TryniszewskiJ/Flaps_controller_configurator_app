@@ -1,18 +1,108 @@
 .drive-mode {
   margin: 0;
   font-size: 18px;
+  font-weight: 600;
+  color: var(--app-text);
+}
+
+.drive-mode--fail-safe {
+  color: var(--ion-color-danger);
+}
+
+.muted-text {
+  margin: 0;
+  font-size: 12px;
   color: var(--app-muted);
 }
 
-.flaps-placeholder {
+// --- Stan klap ---
+.flap-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.flap-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--app-muted);
+}
+
+.flap-state--open .flap-dot {
+  background: var(--ion-color-success);
+}
+
+.flap-state--closed .flap-dot {
+  background: var(--ion-color-medium);
+}
+
+.flap-state--moving .flap-dot {
+  background: var(--ion-color-warning);
+}
+
+.override {
   display: flex;
   align-items: center;
-  justify-content: center;
-  height: 120px;
-  border: 1px dashed var(--app-border);
+  gap: 10px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--app-warning-border);
   border-radius: 8px;
-  background: var(--app-code-bg);
-  font-family: var(--app-font-mono);
-  font-size: 12px;
+  background: var(--app-warning-bg);
+
+  ion-button {
+    margin: 0;
+  }
+}
+
+.override__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+  color: var(--app-warning-text);
+
+  strong {
+    font-size: 12px;
+    color: var(--app-text);
+  }
+}
+
+// --- Stan zmiennych ---
+.signal--stale {
   color: var(--app-muted);
+}
+
+// --- Akcje ---
+.override-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.override-button {
+  flex: 1;
+}
+
+.duration-select {
+  --padding-start: 10px;
+  --padding-end: 8px;
+  --highlight-color-focused: transparent;
+  --highlight-height: 0;
+  flex: none;
+  width: 116px;
+  min-height: 36px;
+  margin-top: 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.action-error {
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: var(--ion-color-danger);
 }

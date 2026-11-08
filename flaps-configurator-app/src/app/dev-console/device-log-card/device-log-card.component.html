@@ -1,0 +1,47 @@
+<section class="card">
+  <div class="card-header" [class.card-header--collapsed]="!open()">
+    <h2 class="card-label">
+      <button
+        type="button"
+        class="card-toggle"
+        [attr.aria-expanded]="open()"
+        (click)="open.set(!open())"
+      >
+        <ion-icon name="chevron-down" aria-hidden="true"></ion-icon>
+        Logi sterownika
+        @if (!open()) {
+          <span class="card-count">{{ logs().length }}</span>
+        }
+      </button>
+    </h2>
+    @if (open()) {
+      <ion-button class="btn-tint" [disabled]="logs().length === 0" (click)="clear()">
+        Wyczyść
+      </ion-button>
+    }
+  </div>
+
+  @if (open()) {
+    @if (dropped() > 0) {
+      <p class="dropped">Sterownik pominął {{ dropped() }} linii (pełny bufor).</p>
+    }
+    <div #list class="log mono" role="log" aria-live="polite">
+      @for (line of logs(); track line.id) {
+        <div class="line">
+          <span class="time">{{ uptime(line.uptimeMs) }}</span>
+          <span
+            class="level"
+            [class.level--error]="line.level === LogLevel.ERROR"
+            [class.level--warn]="line.level === LogLevel.WARN"
+            [class.level--debug]="line.level === LogLevel.DEBUG"
+          >
+            {{ level(line.level) }}
+          </span>
+          <span class="text">{{ line.text }}</span>
+        </div>
+      } @empty {
+        <p class="empty">Logi pojawią się po włączeniu ich w trybie deweloperskim.</p>
+      }
+    </div>
+  }
+</section>

@@ -1,0 +1,47 @@
+<section class="card">
+  <h2 class="card-label" [class.card-label--collapsed]="!open()">
+    <button
+      type="button"
+      class="card-toggle"
+      [attr.aria-expanded]="open()"
+      (click)="open.set(!open())"
+    >
+      <ion-icon name="chevron-down" aria-hidden="true"></ion-icon>
+      Tryb deweloperski
+      @if (!open() && enabled()) {
+        <span class="card-count">włączony</span>
+      }
+    </button>
+  </h2>
+
+  @if (open()) {
+    <div class="setting-row">
+      <span>Logi sterownika</span>
+      <ion-select
+        class="setting-select"
+        aria-label="Poziom logów sterownika"
+        interface="popover"
+        [value]="devMode().logLevel"
+        (ionChange)="setLogLevel($event.detail.value)"
+      >
+        @for (level of levels; track level.value) {
+          <ion-select-option [value]="level.value">{{ level.label }}</ion-select-option>
+        }
+      </ion-select>
+    </div>
+    <div class="setting-row">
+      <span>Przebieg AMP_OUT po ruchu klapy</span>
+      <ion-toggle
+        aria-label="Przebieg AMP_OUT po ruchu klapy"
+        [checked]="devMode().flapTrace"
+        (ionChange)="setFlapTrace($event.detail.checked)"
+      ></ion-toggle>
+    </div>
+    <p class="hint">
+      Sterownik wyłącza tryb przy każdym połączeniu — aplikacja włącza go ponownie sama.
+    </p>
+    @if (error(); as message) {
+      <p class="error">{{ message }}</p>
+    }
+  }
+</section>
