@@ -7,6 +7,7 @@ import {
   Configuration,
   ConfigurationError,
   ConfigurationSchema,
+  FlapOutputSchema,
   FlapsState,
   GetConfigurationRequestSchema,
   GetConfigurationResponseSchema,
@@ -46,6 +47,37 @@ export interface ConfigurationSettings {
   failSafeState: FlapsState;
   moveTimeMs: number;
   fdcanTermination: boolean;
+  /** Wyjścia silników 1MA/1MB i 2MA/2MB. */
+  flap1: FlapOutputSettings;
+  flap2: FlapOutputSettings;
+  /** Przejazd demo zamiast CAN auta — działa tylko w trybie deweloperskim. */
+  demoMode: boolean;
+}
+
+/** Wyjście silnika: czy jest na nim klapa i czy silnik jest podłączony odwrotnie. */
+export interface FlapOutputSettings {
+  connected: boolean;
+  reversed: boolean;
+}
+
+/** Ustawienia wyjścia z konfiguracji; brak pola (urządzenie < 1.7) = podłączone, zwykły kierunek. */
+export function flapOutputSettings(config: Configuration, flap: 1 | 2): FlapOutputSettings {
+  const output = flap === 1 ? config.flap1 : config.flap2;
+  return { connected: !output?.disconnected, reversed: !!output?.reversed };
+}
+
+/** Ustawienia ogólne z konfiguracji (do okna Ustawień). */
+export function configurationSettings(config: Configuration): ConfigurationSettings {
+  return {
+    selectorSignal: config.selectorSignal,
+    defaultLogicIndex: config.defaultLogicIndex,
+    failSafeState: config.failSafeState,
+    moveTimeMs: config.moveTimeMs,
+    fdcanTermination: config.fdcanTermination,
+    flap1: flapOutputSettings(config, 1),
+    flap2: flapOutputSettings(config, 2),
+    demoMode: config.demoMode,
+  };
 }
 
 /**
@@ -103,6 +135,9 @@ export class ConfigurationService {
         GetConfigurationResponseSchema,
       );
       const configuration = reply.configuration ?? create(ConfigurationSchema);
+      // Zawsze oba wyjścia — zmiana ustawień nie oznacza wtedy różnicy „brak pola” vs „pusty”
+      configuration.flap1 ??= create(FlapOutputSchema);
+      configuration.flap2 ??= create(FlapOutputSchema);
       this._device.set(configuration);
       this._draft.set(clone(ConfigurationSchema, configuration));
       this._unsavedOnDevice.set(reply.unsavedChanges);
@@ -258,6 +293,9 @@ export class ConfigurationService {
       config.failSafeState = settings.failSafeState;
       config.moveTimeMs = settings.moveTimeMs;
       config.fdcanTermination = settings.fdcanTermination;
+      config.flap1 = flapOutput(settings.flap1);
+      config.flap2 = flapOutput(settings.flap2);
+      config.demoMode = settings.demoMode;
     });
   }
 
@@ -326,6 +364,13 @@ export function signalUsage(config: Configuration, index: number): string[] {
   return usage;
 }
 
+function flapOutput(settings: FlapOutputSettings): Configuration['flap1'] {
+  return create(FlapOutputSchema, {
+    disconnected: !settings.connected,
+    reversed: settings.reversed,
+  });
+}
+
 export function describeConfigurationError(error: ConfigurationError): string {
   return CONFIGURATION_ERRORS[error] ?? `kod błędu ${error}.`;
 }
@@ -352,6 +397,7 @@ const CONFIGURATION_ERRORS: Partial<Record<ConfigurationError, string>> = {
     'przełącznik ma tę samą wartość otwarcia i zamknięcia.',
   [ConfigurationError.INVALID_HYSTERESIS]: 'próg zamknięcia histerezy jest powyżej progu otwarcia.',
   [ConfigurationError.INVALID_MOVE_TIME]: 'czas ruchu klapy spoza 50–5000 ms.',
+  [ConfigurationError.NO_FLAP_CONNECTED]: 'co najmniej jedna klapa musi być podłączona.',
 };
 
 function describeError(error: unknown): string {

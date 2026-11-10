@@ -5,6 +5,7 @@ import { ConfigurationService } from '../core/configuration.service';
 import { ConnectionService, ConnectionStatus } from '../core/connection.service';
 import { DeviceStateService } from '../core/device-state.service';
 import {
+  ConfigurationSchema,
   DeviceState,
   DeviceStateSchema,
   FlapPosition,
@@ -20,6 +21,8 @@ describe('DashboardPage', () => {
   const overrideUntil = signal<number | null>(null);
   const setOverride = vi.fn(() => Promise.resolve());
   const releaseOverride = vi.fn(() => Promise.resolve());
+  const device = signal(defaultConfiguration());
+  const devModeEnabled = signal(false);
 
   const text = (): string => fixture.nativeElement.textContent;
   const flapsButton = (): HTMLElement =>
@@ -29,6 +32,8 @@ describe('DashboardPage', () => {
     vi.clearAllMocks();
     status.set('connected');
     overrideUntil.set(null);
+    device.set(defaultConfiguration());
+    devModeEnabled.set(false);
     state.set(
       create(DeviceStateSchema, {
         signals: [
@@ -53,12 +58,13 @@ describe('DashboardPage', () => {
             deviceInfo: signal(null),
           },
         },
-        { provide: ConfigurationService, useValue: { device: signal(defaultConfiguration()) } },
+        { provide: ConfigurationService, useValue: { device } },
         {
           provide: DeviceStateService,
           useValue: {
             state,
             overrideUntil,
+            devModeEnabled,
             override: computed(() => {
               const s = state();
               return s && s.overrideState !== FlapsState.UNSPECIFIED ? s.overrideState : null;
@@ -71,6 +77,24 @@ describe('DashboardPage', () => {
     });
     fixture = TestBed.createComponent(DashboardPage);
     fixture.detectChanges();
+  });
+
+  it('shows a flap on a disconnected output as not connected', () => {
+    state.set(create(DeviceStateSchema, { ...state()!, flap2: FlapPosition.NOT_CONNECTED }));
+    fixture.detectChanges();
+
+    expect(text()).toContain('Niepodłączona');
+    expect(fixture.nativeElement.querySelector('.flap-state--off')).not.toBeNull();
+  });
+
+  it('shows the demo banner only with demo mode configured and dev mode on', () => {
+    device.set(create(ConfigurationSchema, { ...defaultConfiguration(), demoMode: true }));
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.demo-banner')).toBeNull();
+
+    devModeEnabled.set(true);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.demo-banner')?.textContent).toContain('Tryb demo');
   });
 
   it('shows the active logic, flaps and signals with names from the configuration', () => {

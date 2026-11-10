@@ -40,6 +40,15 @@
     <p class="hint">
       Sterownik wyłącza tryb przy każdym połączeniu — aplikacja włącza go ponownie sama.
     </p>
+    <p class="hint">
+      @if (!demoConfigured()) {
+        Tryb demo: wyłączony w konfiguracji (Config → Ustawienia).
+      } @else if (enabled()) {
+        <strong>Tryb demo działa</strong> — sterownik odtwarza przejazd zamiast CAN auta.
+      } @else {
+        Tryb demo jest w konfiguracji — ruszy po włączeniu logów albo przebiegu AMP_OUT.
+      }
+    </p>
     @if (error(); as message) {
       <p class="error">{{ message }}</p>
     }

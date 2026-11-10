@@ -42,6 +42,26 @@
   background: var(--ion-color-warning);
 }
 
+.flap-state--off {
+  font-weight: 400;
+  color: var(--app-muted);
+
+  .flap-dot {
+    background: transparent;
+    border: 1px solid var(--app-muted);
+  }
+}
+
+.demo-banner {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--app-warning-border);
+  border-radius: 12px;
+  background: var(--app-warning-bg);
+  font-size: 13px;
+  color: var(--app-warning-text);
+}
+
 .override {
   display: flex;
   align-items: center;

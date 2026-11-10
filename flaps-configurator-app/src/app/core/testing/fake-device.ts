@@ -66,6 +66,8 @@ export function defaultConfiguration(): Configuration {
     selectorSignal: 1,
     failSafeState: FlapsState.CLOSED,
     moveTimeMs: 250,
+    flap1: {},
+    flap2: {},
   });
 }
 
@@ -133,7 +135,7 @@ export class FakeDevice {
         this.respond(frame, StartSessionResponseSchema, {
           status: this.startSessionStatus,
           protocolVersionMajor: 1,
-          protocolVersionMinor: 6,
+          protocolVersionMinor: 8,
           sessionTimeoutMs: this.sessionTimeoutMs,
         });
         return;
@@ -168,10 +170,14 @@ export class FakeDevice {
         return;
       case Command.SET_CONFIGURATION: {
         const { configuration } = fromBinary(SetConfigurationRequestSchema, frame.payload);
-        if (this.rejectConfiguration !== ConfigurationError.UNSPECIFIED || !configuration) {
+        const error =
+          configuration?.flap1?.disconnected && configuration.flap2?.disconnected
+            ? ConfigurationError.NO_FLAP_CONNECTED
+            : this.rejectConfiguration;
+        if (error !== ConfigurationError.UNSPECIFIED || !configuration) {
           this.respond(frame, SetConfigurationResponseSchema, {
             status: Status.INVALID_CONFIGURATION,
-            error: this.rejectConfiguration,
+            error,
           });
           return;
         }

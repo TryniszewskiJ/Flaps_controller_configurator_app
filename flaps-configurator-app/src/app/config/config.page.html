@@ -147,8 +147,20 @@
           <span class="mono">{{ draft.moveTimeMs }} ms</span>
         </div>
         <div class="kv-row">
+          <span class="text-muted">Klapa 1</span>
+          <span>{{ flapOutputLabel(1) }}</span>
+        </div>
+        <div class="kv-row">
+          <span class="text-muted">Klapa 2</span>
+          <span>{{ flapOutputLabel(2) }}</span>
+        </div>
+        <div class="kv-row">
           <span class="text-muted">Terminator CAN</span>
           <span>{{ draft.fdcanTermination ? 'włączony' : 'wyłączony' }}</span>
+        </div>
+        <div class="kv-row">
+          <span class="text-muted">Tryb demo</span>
+          <span>{{ draft.demoMode ? 'włączony (w trybie dev)' : 'wyłączony' }}</span>
         </div>
       </section>
 

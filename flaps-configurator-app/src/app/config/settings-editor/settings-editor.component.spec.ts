@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { create } from '@bufbuild/protobuf';
 import { ModalController } from '@ionic/angular';
-import { ConfigurationSettings } from '../../core/configuration.service';
+import { ConfigurationSettings, configurationSettings } from '../../core/configuration.service';
 import { FlapsState, LogicSchema } from '../../core/protocol/gen/flaps_pb';
 import { defaultConfiguration } from '../../core/testing/fake-device';
 import { SettingsEditorComponent } from './settings-editor.component';
@@ -17,13 +17,7 @@ describe('SettingsEditorComponent', () => {
     Object.assign(editor, {
       signals: config.signals,
       logics: config.logics,
-      settings: {
-        selectorSignal: config.selectorSignal,
-        defaultLogicIndex: config.defaultLogicIndex,
-        failSafeState: config.failSafeState,
-        moveTimeMs: config.moveTimeMs,
-        fdcanTermination: config.fdcanTermination,
-      } satisfies ConfigurationSettings,
+      settings: configurationSettings(config),
     });
     fixture.detectChanges();
   };
@@ -45,6 +39,8 @@ describe('SettingsEditorComponent', () => {
     editor['onFailSafe']('open');
     editor['onMoveTime']('400');
     editor['termination'].set(true);
+    editor['setFlapOutput'](2, { reversed: true });
+    editor['demoMode'].set(true);
 
     expect(await save()).toEqual({
       selectorSignal: 1,
@@ -52,7 +48,20 @@ describe('SettingsEditorComponent', () => {
       failSafeState: FlapsState.OPEN,
       moveTimeMs: 400,
       fdcanTermination: true,
+      flap1: { connected: true, reversed: false },
+      flap2: { connected: true, reversed: true },
+      demoMode: true,
     });
+  });
+
+  it('requires at least one connected flap', () => {
+    open();
+    editor['setFlapOutput'](1, { connected: false });
+    expect(editor['valid']()).toBe(true);
+
+    editor['setFlapOutput'](2, { connected: false });
+    expect(editor['flapsError']()).toContain('Co najmniej jedna');
+    expect(editor['valid']()).toBe(false);
   });
 
   it('requires a selector for several logics', () => {

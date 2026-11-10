@@ -1,7 +1,8 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { IonIcon, IonSelect, IonSelectOption, IonToggle } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { chevronDown } from 'ionicons/icons';
+import { ConfigurationService } from '../../core/configuration.service';
 import { DevModeSettings, DeviceStateService } from '../../core/device-state.service';
 import { LogLevel } from '../../core/protocol/gen/flaps_pb';
 
@@ -22,9 +23,12 @@ const LOG_LEVELS = [
 })
 export class DevModeCardComponent {
   private readonly deviceState = inject(DeviceStateService);
+  private readonly configuration = inject(ConfigurationService);
 
   protected readonly devMode = this.deviceState.devMode;
   protected readonly enabled = this.deviceState.devModeEnabled;
+  /** Tryb demo w konfiguracji sterownika — uruchamia się razem z trybem dev. */
+  protected readonly demoConfigured = computed(() => !!this.configuration.device()?.demoMode);
   protected readonly levels = LOG_LEVELS;
   protected readonly open = signal(true);
   protected readonly error = signal<string | null>(null);

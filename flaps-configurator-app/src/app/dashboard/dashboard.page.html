@@ -8,6 +8,12 @@
   <div class="page">
     <app-connection-banner />
 
+    @if (demo()) {
+      <p class="demo-banner">
+        <strong>Tryb demo</strong> — sterownik odtwarza przejazd demonstracyjny zamiast CAN auta.
+      </p>
+    }
+
     <section class="card">
       <h2 class="card-label">Tryb jazdy</h2>
       <p class="drive-mode" [class.drive-mode--fail-safe]="state()?.activeLogic === -1">

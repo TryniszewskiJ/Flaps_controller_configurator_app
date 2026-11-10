@@ -27,7 +27,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file flaps.proto.
  */
 export const file_flaps: GenFile = /*@__PURE__*/
-  fileDesc("CgtmbGFwcy5wcm90bxIFZmxhcHMiLgoNRXJyb3JSZXNwb25zZRIdCgZzdGF0dXMYASABKA4yDS5mbGFwcy5TdGF0dXMiZQoTU3RhcnRTZXNzaW9uUmVxdWVzdBIOCgZhcHBfaWQYASABKAcSHgoWcHJvdG9jb2xfdmVyc2lvbl9tYWpvchgCIAEoDRIeChZwcm90b2NvbF92ZXJzaW9uX21pbm9yGAMgASgNIpEBChRTdGFydFNlc3Npb25SZXNwb25zZRIdCgZzdGF0dXMYASABKA4yDS5mbGFwcy5TdGF0dXMSHgoWcHJvdG9jb2xfdmVyc2lvbl9tYWpvchgCIAEoDRIeChZwcm90b2NvbF92ZXJzaW9uX21pbm9yGAMgASgNEhoKEnNlc3Npb25fdGltZW91dF9tcxgEIAEoDSIWChRHZXREZXZpY2VJbmZvUmVxdWVzdCKLAQoVR2V0RGV2aWNlSW5mb1Jlc3BvbnNlEh4KFmZpcm13YXJlX3ZlcnNpb25fbWFqb3IYASABKA0SHgoWZmlybXdhcmVfdmVyc2lvbl9taW5vchgCIAEoDRIeChZmaXJtd2FyZV92ZXJzaW9uX3BhdGNoGAMgASgNEhIKCmRldmljZV91aWQYBCABKAwiDQoLUGluZ1JlcXVlc3QiIQoMUGluZ1Jlc3BvbnNlEhEKCXVwdGltZV9tcxgBIAEoDSIVChNDbG9zZVNlc3Npb25SZXF1ZXN0IhYKFENsb3NlU2Vzc2lvblJlc3BvbnNlIj8KCENhbkZyYW1lEgoKAmlkGAEgASgNEhMKC2V4dGVuZGVkX2lkGAIgASgIEhIKCnRpbWVvdXRfbXMYAyABKA0imgEKBlNpZ25hbBITCgtmcmFtZV9pbmRleBgBIAEoDRIUCgxzdGFydGluZ19iaXQYAiABKA0SEwoLbGVuZ3RoX2JpdHMYAyABKA0SEgoKYmlnX2VuZGlhbhgEIAEoCBINCgVzY2FsZRgFIAEoAhIMCgRiaWFzGAYgASgCEgwKBG5hbWUYByABKAkSEQoJaXNfc2lnbmVkGAggASgIIi4KCkZpeGVkTG9naWMSIAoFc3RhdGUYASABKA4yES5mbGFwcy5GbGFwc1N0YXRlIjwKEVNpbXBsZVN3aXRjaExvZ2ljEhIKCm9wZW5fdmFsdWUYASABKBESEwoLY2xvc2VfdmFsdWUYAiABKBEiOgoPSHlzdGVyZXNpc0xvZ2ljEhIKCm9wZW5fYWJvdmUYASABKAISEwoLY2xvc2VfYmVsb3cYAiABKAIi8wEKBUxvZ2ljEhYKDnNlbGVjdG9yX3ZhbHVlGAEgASgREhMKC2Rlc2NyaXB0aW9uGAIgASgJEhkKDGlucHV0X3NpZ25hbBgDIAEoDUgBiAEBEiIKBWZpeGVkGAQgASgLMhEuZmxhcHMuRml4ZWRMb2dpY0gAEjEKDXNpbXBsZV9zd2l0Y2gYBSABKAsyGC5mbGFwcy5TaW1wbGVTd2l0Y2hMb2dpY0gAEiwKCmh5c3RlcmVzaXMYBiABKAsyFi5mbGFwcy5IeXN0ZXJlc2lzTG9naWNIAEIMCgpwYXJhbWV0ZXJzQg8KDV9pbnB1dF9zaWduYWwimgIKDUNvbmZpZ3VyYXRpb24SGQoRZmRjYW5fdGVybWluYXRpb24YASABKAgSHwoGZnJhbWVzGAIgAygLMg8uZmxhcHMuQ2FuRnJhbWUSHgoHc2lnbmFscxgDIAMoCzINLmZsYXBzLlNpZ25hbBIcCgZsb2dpY3MYBCADKAsyDC5mbGFwcy5Mb2dpYxIcCg9zZWxlY3Rvcl9zaWduYWwYBSABKA1IAIgBARIbChNkZWZhdWx0X2xvZ2ljX2luZGV4GAYgASgNEioKD2ZhaWxfc2FmZV9zdGF0ZRgHIAEoDjIRLmZsYXBzLkZsYXBzU3RhdGUSFAoMbW92ZV90aW1lX21zGAggASgNQhIKEF9zZWxlY3Rvcl9zaWduYWwiGQoXR2V0Q29uZmlndXJhdGlvblJlcXVlc3QiYAoYR2V0Q29uZmlndXJhdGlvblJlc3BvbnNlEisKDWNvbmZpZ3VyYXRpb24YASABKAsyFC5mbGFwcy5Db25maWd1cmF0aW9uEhcKD3Vuc2F2ZWRfY2hhbmdlcxgCIAEoCCJGChdTZXRDb25maWd1cmF0aW9uUmVxdWVzdBIrCg1jb25maWd1cmF0aW9uGAEgASgLMhQuZmxhcHMuQ29uZmlndXJhdGlvbiJjChhTZXRDb25maWd1cmF0aW9uUmVzcG9uc2USHQoGc3RhdHVzGAEgASgOMg0uZmxhcHMuU3RhdHVzEigKBWVycm9yGAIgASgOMhkuZmxhcHMuQ29uZmlndXJhdGlvbkVycm9yIhoKGFNhdmVDb25maWd1cmF0aW9uUmVxdWVzdCI6ChlTYXZlQ29uZmlndXJhdGlvblJlc3BvbnNlEh0KBnN0YXR1cxgBIAEoDjINLmZsYXBzLlN0YXR1cyI6CgtTaWduYWxTdGF0ZRINCgVpbmRleBgBIAEoDRINCgV2YWx1ZRgCIAEoAhINCgVmcmVzaBgDIAEoCCLaAQoLRGV2aWNlU3RhdGUSIwoHc2lnbmFscxgBIAMoCzISLmZsYXBzLlNpZ25hbFN0YXRlEhQKDGFjdGl2ZV9sb2dpYxgCIAEoERIiCgVmbGFwMRgDIAEoDjITLmZsYXBzLkZsYXBQb3NpdGlvbhIiCgVmbGFwMhgEIAEoDjITLmZsYXBzLkZsYXBQb3NpdGlvbhIpCg5vdmVycmlkZV9zdGF0ZRgFIAEoDjIRLmZsYXBzLkZsYXBzU3RhdGUSHQoVb3ZlcnJpZGVfcmVtYWluaW5nX21zGAYgASgNIhEKD0dldFN0YXRlUmVxdWVzdCJHChBHZXRTdGF0ZVJlc3BvbnNlEiEKBXN0YXRlGAEgASgLMhIuZmxhcHMuRGV2aWNlU3RhdGUSEAoIc2VxdWVuY2UYAiABKA0iVQoJVGVsZW1ldHJ5EhAKCHNlcXVlbmNlGAEgASgNEhEKCXVwdGltZV9tcxgCIAEoDRIjCgdzaWduYWxzGAMgAygLMhIuZmxhcHMuU2lnbmFsU3RhdGUiKgoSQWN0aXZlTG9naWNDaGFuZ2VkEhQKDGFjdGl2ZV9sb2dpYxgBIAEoESJGCg9GbGFwTW92ZVN0YXJ0ZWQSDAoEZmxhcBgBIAEoDRIlCghwb3NpdGlvbhgCIAEoDjITLmZsYXBzLkZsYXBQb3NpdGlvbiKLAQoQRmxhcE1vdmVGaW5pc2hlZBIMCgRmbGFwGAEgASgNEiUKCHBvc2l0aW9uGAIgASgOMhMuZmxhcHMuRmxhcFBvc2l0aW9uEhMKC2R1cmF0aW9uX21zGAMgASgNEhQKDHBlYWtfYW1wX291dBgEIAEoDRIXCg9hbXBfb3V0X2F0X3N0b3AYBSABKA0iTgoURmxhcHNPdmVycmlkZUNoYW5nZWQSIAoFc3RhdGUYASABKA4yES5mbGFwcy5GbGFwc1N0YXRlEhQKDHJlbWFpbmluZ19tcxgCIAEoDSKbAgoFRXZlbnQSEAoIc2VxdWVuY2UYASABKA0SEQoJdXB0aW1lX21zGAIgASgNEjkKFGFjdGl2ZV9sb2dpY19jaGFuZ2VkGAMgASgLMhkuZmxhcHMuQWN0aXZlTG9naWNDaGFuZ2VkSAASMwoRZmxhcF9tb3ZlX3N0YXJ0ZWQYBCABKAsyFi5mbGFwcy5GbGFwTW92ZVN0YXJ0ZWRIABI1ChJmbGFwX21vdmVfZmluaXNoZWQYBSABKAsyFy5mbGFwcy5GbGFwTW92ZUZpbmlzaGVkSAASPQoWZmxhcHNfb3ZlcnJpZGVfY2hhbmdlZBgGIAEoCzIbLmZsYXBzLkZsYXBzT3ZlcnJpZGVDaGFuZ2VkSABCBwoFZXZlbnQiUAoXU2V0RmxhcHNPdmVycmlkZVJlcXVlc3QSIAoFc3RhdGUYASABKA4yES5mbGFwcy5GbGFwc1N0YXRlEhMKC2R1cmF0aW9uX21zGAIgASgNIjkKGFNldEZsYXBzT3ZlcnJpZGVSZXNwb25zZRIdCgZzdGF0dXMYASABKA4yDS5mbGFwcy5TdGF0dXMiSwoRU2V0RGV2TW9kZVJlcXVlc3QSIgoJbG9nX2xldmVsGAEgASgOMg8uZmxhcHMuTG9nTGV2ZWwSEgoKZmxhcF90cmFjZRgCIAEoCCIzChJTZXREZXZNb2RlUmVzcG9uc2USHQoGc3RhdHVzGAEgASgOMg0uZmxhcHMuU3RhdHVzIksKCExvZ0VudHJ5EhEKCXVwdGltZV9tcxgBIAEoDRIeCgVsZXZlbBgCIAEoDjIPLmZsYXBzLkxvZ0xldmVsEgwKBHRleHQYAyABKAkiOAoDTG9nEiAKB2VudHJpZXMYASADKAsyDy5mbGFwcy5Mb2dFbnRyeRIPCgdkcm9wcGVkGAIgASgNImYKCUZsYXBUcmFjZRIMCgRmbGFwGAEgASgNEiUKCHBvc2l0aW9uGAIgASgOMhMuZmxhcHMuRmxhcFBvc2l0aW9uEhMKC2ludGVydmFsX21zGAMgASgNEg8KB3NhbXBsZXMYBCADKA0qnQMKB0NvbW1hbmQSFwoTQ09NTUFORF9VTlNQRUNJRklFRBAAEhkKFUNPTU1BTkRfU1RBUlRfU0VTU0lPThABEhsKF0NPTU1BTkRfR0VUX0RFVklDRV9JTkZPEAISEAoMQ09NTUFORF9QSU5HEAMSGQoVQ09NTUFORF9DTE9TRV9TRVNTSU9OEAQSHQoZQ09NTUFORF9HRVRfQ09ORklHVVJBVElPThAFEh0KGUNPTU1BTkRfU0VUX0NPTkZJR1VSQVRJT04QBhIeChpDT01NQU5EX1NBVkVfQ09ORklHVVJBVElPThAHEhUKEUNPTU1BTkRfR0VUX1NUQVRFEAgSGAoUQ09NTUFORF9TRVRfREVWX01PREUQCRIeChpDT01NQU5EX1NFVF9GTEFQU19PVkVSUklERRAKEhUKEUNPTU1BTkRfVEVMRU1FVFJZEHASEQoNQ09NTUFORF9FVkVOVBBxEg8KC0NPTU1BTkRfTE9HEHISFgoSQ09NTUFORF9GTEFQX1RSQUNFEHMSEgoNQ09NTUFORF9FUlJPUhD/ASqKAgoGU3RhdHVzEhYKElNUQVRVU19VTlNQRUNJRklFRBAAEg0KCVNUQVRVU19PSxABEhUKEVNUQVRVU19OT19TRVNTSU9OEAISHgoaU1RBVFVTX1VOU1VQUE9SVEVEX1ZFUlNJT04QAxIWChJTVEFUVVNfVU5LTk9XTl9BUFAQBBIXChNTVEFUVVNfREVDT0RFX0VSUk9SEAUSGgoWU1RBVFVTX1VOS05PV05fQ09NTUFORBAGEiAKHFNUQVRVU19JTlZBTElEX0NPTkZJR1VSQVRJT04QBxIWChJTVEFUVVNfRkxBU0hfRVJST1IQCBIbChdTVEFUVVNfSU5WQUxJRF9PVkVSUklERRAJKlcKCkZsYXBzU3RhdGUSGwoXRkxBUFNfU1RBVEVfVU5TUEVDSUZJRUQQABIWChJGTEFQU19TVEFURV9DTE9TRUQQARIUChBGTEFQU19TVEFURV9PUEVOEAIqrwcKEkNvbmZpZ3VyYXRpb25FcnJvchIjCh9DT05GSUdVUkFUSU9OX0VSUk9SX1VOU1BFQ0lGSUVEEAASJwojQ09ORklHVVJBVElPTl9FUlJPUl9UT09fTUFOWV9GUkFNRVMQARIoCiRDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfRlJBTUVfSUQQAhInCiNDT05GSUdVUkFUSU9OX0VSUk9SX0RVUExJQ0FURV9GUkFNRRADEigKJENPTkZJR1VSQVRJT05fRVJST1JfVE9PX01BTllfU0lHTkFMUxAEEiwKKENPTkZJR1VSQVRJT05fRVJST1JfSU5WQUxJRF9TSUdOQUxfRlJBTUUQBRItCilDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfU0lHTkFMX0xBWU9VVBAGEiwKKENPTkZJR1VSQVRJT05fRVJST1JfSU5WQUxJRF9TSUdOQUxfU0NBTEUQBxIgChxDT05GSUdVUkFUSU9OX0VSUk9SX05PX0xPR0lDEAgSJwojQ09ORklHVVJBVElPTl9FUlJPUl9UT09fTUFOWV9MT0dJQ1MQCRIvCitDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfU0VMRUNUT1JfU0lHTkFMEAoSKQolQ09ORklHVVJBVElPTl9FUlJPUl9TRUxFQ1RPUl9SRVFVSVJFRBALEjAKLENPTkZJR1VSQVRJT05fRVJST1JfRFVQTElDQVRFX1NFTEVDVE9SX1ZBTFVFEAwSLQopQ09ORklHVVJBVElPTl9FUlJPUl9JTlZBTElEX0RFRkFVTFRfTE9HSUMQDRIvCitDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfRkFJTF9TQUZFX1NUQVRFEA4SKgomQ09ORklHVVJBVElPTl9FUlJPUl9JTlZBTElEX0xPR0lDX1RZUEUQDxIrCidDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfTE9HSUNfSU5QVVQQEBIrCidDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfRklYRURfU1RBVEUQERItCilDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfU1dJVENIX1ZBTFVFUxASEioKJkNPTkZJR1VSQVRJT05fRVJST1JfSU5WQUxJRF9IWVNURVJFU0lTEBMSKQolQ09ORklHVVJBVElPTl9FUlJPUl9JTlZBTElEX01PVkVfVElNRRAUKrABCgxGbGFwUG9zaXRpb24SHQoZRkxBUF9QT1NJVElPTl9VTlNQRUNJRklFRBAAEhkKFUZMQVBfUE9TSVRJT05fVU5LTk9XThABEhkKFUZMQVBfUE9TSVRJT05fT1BFTklORxACEhYKEkZMQVBfUE9TSVRJT05fT1BFThADEhkKFUZMQVBfUE9TSVRJT05fQ0xPU0lORxAEEhgKFEZMQVBfUE9TSVRJT05fQ0xPU0VEEAUqbwoITG9nTGV2ZWwSEQoNTE9HX0xFVkVMX09GRhAAEhMKD0xPR19MRVZFTF9FUlJPUhABEhIKDkxPR19MRVZFTF9XQVJOEAISEgoOTE9HX0xFVkVMX0lORk8QAxITCg9MT0dfTEVWRUxfREVCVUcQBGIGcHJvdG8z");
+  fileDesc("CgtmbGFwcy5wcm90bxIFZmxhcHMiLgoNRXJyb3JSZXNwb25zZRIdCgZzdGF0dXMYASABKA4yDS5mbGFwcy5TdGF0dXMiZQoTU3RhcnRTZXNzaW9uUmVxdWVzdBIOCgZhcHBfaWQYASABKAcSHgoWcHJvdG9jb2xfdmVyc2lvbl9tYWpvchgCIAEoDRIeChZwcm90b2NvbF92ZXJzaW9uX21pbm9yGAMgASgNIpEBChRTdGFydFNlc3Npb25SZXNwb25zZRIdCgZzdGF0dXMYASABKA4yDS5mbGFwcy5TdGF0dXMSHgoWcHJvdG9jb2xfdmVyc2lvbl9tYWpvchgCIAEoDRIeChZwcm90b2NvbF92ZXJzaW9uX21pbm9yGAMgASgNEhoKEnNlc3Npb25fdGltZW91dF9tcxgEIAEoDSIWChRHZXREZXZpY2VJbmZvUmVxdWVzdCKLAQoVR2V0RGV2aWNlSW5mb1Jlc3BvbnNlEh4KFmZpcm13YXJlX3ZlcnNpb25fbWFqb3IYASABKA0SHgoWZmlybXdhcmVfdmVyc2lvbl9taW5vchgCIAEoDRIeChZmaXJtd2FyZV92ZXJzaW9uX3BhdGNoGAMgASgNEhIKCmRldmljZV91aWQYBCABKAwiDQoLUGluZ1JlcXVlc3QiIQoMUGluZ1Jlc3BvbnNlEhEKCXVwdGltZV9tcxgBIAEoDSIVChNDbG9zZVNlc3Npb25SZXF1ZXN0IhYKFENsb3NlU2Vzc2lvblJlc3BvbnNlIj8KCENhbkZyYW1lEgoKAmlkGAEgASgNEhMKC2V4dGVuZGVkX2lkGAIgASgIEhIKCnRpbWVvdXRfbXMYAyABKA0imgEKBlNpZ25hbBITCgtmcmFtZV9pbmRleBgBIAEoDRIUCgxzdGFydGluZ19iaXQYAiABKA0SEwoLbGVuZ3RoX2JpdHMYAyABKA0SEgoKYmlnX2VuZGlhbhgEIAEoCBINCgVzY2FsZRgFIAEoAhIMCgRiaWFzGAYgASgCEgwKBG5hbWUYByABKAkSEQoJaXNfc2lnbmVkGAggASgIIi4KCkZpeGVkTG9naWMSIAoFc3RhdGUYASABKA4yES5mbGFwcy5GbGFwc1N0YXRlIjwKEVNpbXBsZVN3aXRjaExvZ2ljEhIKCm9wZW5fdmFsdWUYASABKBESEwoLY2xvc2VfdmFsdWUYAiABKBEiOgoPSHlzdGVyZXNpc0xvZ2ljEhIKCm9wZW5fYWJvdmUYASABKAISEwoLY2xvc2VfYmVsb3cYAiABKAIi8wEKBUxvZ2ljEhYKDnNlbGVjdG9yX3ZhbHVlGAEgASgREhMKC2Rlc2NyaXB0aW9uGAIgASgJEhkKDGlucHV0X3NpZ25hbBgDIAEoDUgBiAEBEiIKBWZpeGVkGAQgASgLMhEuZmxhcHMuRml4ZWRMb2dpY0gAEjEKDXNpbXBsZV9zd2l0Y2gYBSABKAsyGC5mbGFwcy5TaW1wbGVTd2l0Y2hMb2dpY0gAEiwKCmh5c3RlcmVzaXMYBiABKAsyFi5mbGFwcy5IeXN0ZXJlc2lzTG9naWNIAEIMCgpwYXJhbWV0ZXJzQg8KDV9pbnB1dF9zaWduYWwiNAoKRmxhcE91dHB1dBIUCgxkaXNjb25uZWN0ZWQYASABKAgSEAoIcmV2ZXJzZWQYAiABKAgi8QIKDUNvbmZpZ3VyYXRpb24SGQoRZmRjYW5fdGVybWluYXRpb24YASABKAgSHwoGZnJhbWVzGAIgAygLMg8uZmxhcHMuQ2FuRnJhbWUSHgoHc2lnbmFscxgDIAMoCzINLmZsYXBzLlNpZ25hbBIcCgZsb2dpY3MYBCADKAsyDC5mbGFwcy5Mb2dpYxIcCg9zZWxlY3Rvcl9zaWduYWwYBSABKA1IAIgBARIbChNkZWZhdWx0X2xvZ2ljX2luZGV4GAYgASgNEioKD2ZhaWxfc2FmZV9zdGF0ZRgHIAEoDjIRLmZsYXBzLkZsYXBzU3RhdGUSFAoMbW92ZV90aW1lX21zGAggASgNEiAKBWZsYXAxGAkgASgLMhEuZmxhcHMuRmxhcE91dHB1dBIgCgVmbGFwMhgKIAEoCzIRLmZsYXBzLkZsYXBPdXRwdXQSEQoJZGVtb19tb2RlGAsgASgIQhIKEF9zZWxlY3Rvcl9zaWduYWwiGQoXR2V0Q29uZmlndXJhdGlvblJlcXVlc3QiYAoYR2V0Q29uZmlndXJhdGlvblJlc3BvbnNlEisKDWNvbmZpZ3VyYXRpb24YASABKAsyFC5mbGFwcy5Db25maWd1cmF0aW9uEhcKD3Vuc2F2ZWRfY2hhbmdlcxgCIAEoCCJGChdTZXRDb25maWd1cmF0aW9uUmVxdWVzdBIrCg1jb25maWd1cmF0aW9uGAEgASgLMhQuZmxhcHMuQ29uZmlndXJhdGlvbiJjChhTZXRDb25maWd1cmF0aW9uUmVzcG9uc2USHQoGc3RhdHVzGAEgASgOMg0uZmxhcHMuU3RhdHVzEigKBWVycm9yGAIgASgOMhkuZmxhcHMuQ29uZmlndXJhdGlvbkVycm9yIhoKGFNhdmVDb25maWd1cmF0aW9uUmVxdWVzdCI6ChlTYXZlQ29uZmlndXJhdGlvblJlc3BvbnNlEh0KBnN0YXR1cxgBIAEoDjINLmZsYXBzLlN0YXR1cyI6CgtTaWduYWxTdGF0ZRINCgVpbmRleBgBIAEoDRINCgV2YWx1ZRgCIAEoAhINCgVmcmVzaBgDIAEoCCLaAQoLRGV2aWNlU3RhdGUSIwoHc2lnbmFscxgBIAMoCzISLmZsYXBzLlNpZ25hbFN0YXRlEhQKDGFjdGl2ZV9sb2dpYxgCIAEoERIiCgVmbGFwMRgDIAEoDjITLmZsYXBzLkZsYXBQb3NpdGlvbhIiCgVmbGFwMhgEIAEoDjITLmZsYXBzLkZsYXBQb3NpdGlvbhIpCg5vdmVycmlkZV9zdGF0ZRgFIAEoDjIRLmZsYXBzLkZsYXBzU3RhdGUSHQoVb3ZlcnJpZGVfcmVtYWluaW5nX21zGAYgASgNIhEKD0dldFN0YXRlUmVxdWVzdCJHChBHZXRTdGF0ZVJlc3BvbnNlEiEKBXN0YXRlGAEgASgLMhIuZmxhcHMuRGV2aWNlU3RhdGUSEAoIc2VxdWVuY2UYAiABKA0iVQoJVGVsZW1ldHJ5EhAKCHNlcXVlbmNlGAEgASgNEhEKCXVwdGltZV9tcxgCIAEoDRIjCgdzaWduYWxzGAMgAygLMhIuZmxhcHMuU2lnbmFsU3RhdGUiKgoSQWN0aXZlTG9naWNDaGFuZ2VkEhQKDGFjdGl2ZV9sb2dpYxgBIAEoESJGCg9GbGFwTW92ZVN0YXJ0ZWQSDAoEZmxhcBgBIAEoDRIlCghwb3NpdGlvbhgCIAEoDjITLmZsYXBzLkZsYXBQb3NpdGlvbiKLAQoQRmxhcE1vdmVGaW5pc2hlZBIMCgRmbGFwGAEgASgNEiUKCHBvc2l0aW9uGAIgASgOMhMuZmxhcHMuRmxhcFBvc2l0aW9uEhMKC2R1cmF0aW9uX21zGAMgASgNEhQKDHBlYWtfYW1wX291dBgEIAEoDRIXCg9hbXBfb3V0X2F0X3N0b3AYBSABKA0iTgoURmxhcHNPdmVycmlkZUNoYW5nZWQSIAoFc3RhdGUYASABKA4yES5mbGFwcy5GbGFwc1N0YXRlEhQKDHJlbWFpbmluZ19tcxgCIAEoDSKbAgoFRXZlbnQSEAoIc2VxdWVuY2UYASABKA0SEQoJdXB0aW1lX21zGAIgASgNEjkKFGFjdGl2ZV9sb2dpY19jaGFuZ2VkGAMgASgLMhkuZmxhcHMuQWN0aXZlTG9naWNDaGFuZ2VkSAASMwoRZmxhcF9tb3ZlX3N0YXJ0ZWQYBCABKAsyFi5mbGFwcy5GbGFwTW92ZVN0YXJ0ZWRIABI1ChJmbGFwX21vdmVfZmluaXNoZWQYBSABKAsyFy5mbGFwcy5GbGFwTW92ZUZpbmlzaGVkSAASPQoWZmxhcHNfb3ZlcnJpZGVfY2hhbmdlZBgGIAEoCzIbLmZsYXBzLkZsYXBzT3ZlcnJpZGVDaGFuZ2VkSABCBwoFZXZlbnQiUAoXU2V0RmxhcHNPdmVycmlkZVJlcXVlc3QSIAoFc3RhdGUYASABKA4yES5mbGFwcy5GbGFwc1N0YXRlEhMKC2R1cmF0aW9uX21zGAIgASgNIjkKGFNldEZsYXBzT3ZlcnJpZGVSZXNwb25zZRIdCgZzdGF0dXMYASABKA4yDS5mbGFwcy5TdGF0dXMiSwoRU2V0RGV2TW9kZVJlcXVlc3QSIgoJbG9nX2xldmVsGAEgASgOMg8uZmxhcHMuTG9nTGV2ZWwSEgoKZmxhcF90cmFjZRgCIAEoCCIzChJTZXREZXZNb2RlUmVzcG9uc2USHQoGc3RhdHVzGAEgASgOMg0uZmxhcHMuU3RhdHVzIksKCExvZ0VudHJ5EhEKCXVwdGltZV9tcxgBIAEoDRIeCgVsZXZlbBgCIAEoDjIPLmZsYXBzLkxvZ0xldmVsEgwKBHRleHQYAyABKAkiOAoDTG9nEiAKB2VudHJpZXMYASADKAsyDy5mbGFwcy5Mb2dFbnRyeRIPCgdkcm9wcGVkGAIgASgNImYKCUZsYXBUcmFjZRIMCgRmbGFwGAEgASgNEiUKCHBvc2l0aW9uGAIgASgOMhMuZmxhcHMuRmxhcFBvc2l0aW9uEhMKC2ludGVydmFsX21zGAMgASgNEg8KB3NhbXBsZXMYBCADKA0qnQMKB0NvbW1hbmQSFwoTQ09NTUFORF9VTlNQRUNJRklFRBAAEhkKFUNPTU1BTkRfU1RBUlRfU0VTU0lPThABEhsKF0NPTU1BTkRfR0VUX0RFVklDRV9JTkZPEAISEAoMQ09NTUFORF9QSU5HEAMSGQoVQ09NTUFORF9DTE9TRV9TRVNTSU9OEAQSHQoZQ09NTUFORF9HRVRfQ09ORklHVVJBVElPThAFEh0KGUNPTU1BTkRfU0VUX0NPTkZJR1VSQVRJT04QBhIeChpDT01NQU5EX1NBVkVfQ09ORklHVVJBVElPThAHEhUKEUNPTU1BTkRfR0VUX1NUQVRFEAgSGAoUQ09NTUFORF9TRVRfREVWX01PREUQCRIeChpDT01NQU5EX1NFVF9GTEFQU19PVkVSUklERRAKEhUKEUNPTU1BTkRfVEVMRU1FVFJZEHASEQoNQ09NTUFORF9FVkVOVBBxEg8KC0NPTU1BTkRfTE9HEHISFgoSQ09NTUFORF9GTEFQX1RSQUNFEHMSEgoNQ09NTUFORF9FUlJPUhD/ASqKAgoGU3RhdHVzEhYKElNUQVRVU19VTlNQRUNJRklFRBAAEg0KCVNUQVRVU19PSxABEhUKEVNUQVRVU19OT19TRVNTSU9OEAISHgoaU1RBVFVTX1VOU1VQUE9SVEVEX1ZFUlNJT04QAxIWChJTVEFUVVNfVU5LTk9XTl9BUFAQBBIXChNTVEFUVVNfREVDT0RFX0VSUk9SEAUSGgoWU1RBVFVTX1VOS05PV05fQ09NTUFORBAGEiAKHFNUQVRVU19JTlZBTElEX0NPTkZJR1VSQVRJT04QBxIWChJTVEFUVVNfRkxBU0hfRVJST1IQCBIbChdTVEFUVVNfSU5WQUxJRF9PVkVSUklERRAJKlcKCkZsYXBzU3RhdGUSGwoXRkxBUFNfU1RBVEVfVU5TUEVDSUZJRUQQABIWChJGTEFQU19TVEFURV9DTE9TRUQQARIUChBGTEFQU19TVEFURV9PUEVOEAIq2gcKEkNvbmZpZ3VyYXRpb25FcnJvchIjCh9DT05GSUdVUkFUSU9OX0VSUk9SX1VOU1BFQ0lGSUVEEAASJwojQ09ORklHVVJBVElPTl9FUlJPUl9UT09fTUFOWV9GUkFNRVMQARIoCiRDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfRlJBTUVfSUQQAhInCiNDT05GSUdVUkFUSU9OX0VSUk9SX0RVUExJQ0FURV9GUkFNRRADEigKJENPTkZJR1VSQVRJT05fRVJST1JfVE9PX01BTllfU0lHTkFMUxAEEiwKKENPTkZJR1VSQVRJT05fRVJST1JfSU5WQUxJRF9TSUdOQUxfRlJBTUUQBRItCilDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfU0lHTkFMX0xBWU9VVBAGEiwKKENPTkZJR1VSQVRJT05fRVJST1JfSU5WQUxJRF9TSUdOQUxfU0NBTEUQBxIgChxDT05GSUdVUkFUSU9OX0VSUk9SX05PX0xPR0lDEAgSJwojQ09ORklHVVJBVElPTl9FUlJPUl9UT09fTUFOWV9MT0dJQ1MQCRIvCitDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfU0VMRUNUT1JfU0lHTkFMEAoSKQolQ09ORklHVVJBVElPTl9FUlJPUl9TRUxFQ1RPUl9SRVFVSVJFRBALEjAKLENPTkZJR1VSQVRJT05fRVJST1JfRFVQTElDQVRFX1NFTEVDVE9SX1ZBTFVFEAwSLQopQ09ORklHVVJBVElPTl9FUlJPUl9JTlZBTElEX0RFRkFVTFRfTE9HSUMQDRIvCitDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfRkFJTF9TQUZFX1NUQVRFEA4SKgomQ09ORklHVVJBVElPTl9FUlJPUl9JTlZBTElEX0xPR0lDX1RZUEUQDxIrCidDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfTE9HSUNfSU5QVVQQEBIrCidDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfRklYRURfU1RBVEUQERItCilDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfU1dJVENIX1ZBTFVFUxASEioKJkNPTkZJR1VSQVRJT05fRVJST1JfSU5WQUxJRF9IWVNURVJFU0lTEBMSKQolQ09ORklHVVJBVElPTl9FUlJPUl9JTlZBTElEX01PVkVfVElNRRAUEikKJUNPTkZJR1VSQVRJT05fRVJST1JfTk9fRkxBUF9DT05ORUNURUQQFSrRAQoMRmxhcFBvc2l0aW9uEh0KGUZMQVBfUE9TSVRJT05fVU5TUEVDSUZJRUQQABIZChVGTEFQX1BPU0lUSU9OX1VOS05PV04QARIZChVGTEFQX1BPU0lUSU9OX09QRU5JTkcQAhIWChJGTEFQX1BPU0lUSU9OX09QRU4QAxIZChVGTEFQX1BPU0lUSU9OX0NMT1NJTkcQBBIYChRGTEFQX1BPU0lUSU9OX0NMT1NFRBAFEh8KG0ZMQVBfUE9TSVRJT05fTk9UX0NPTk5FQ1RFRBAGKm8KCExvZ0xldmVsEhEKDUxPR19MRVZFTF9PRkYQABITCg9MT0dfTEVWRUxfRVJST1IQARISCg5MT0dfTEVWRUxfV0FSThACEhIKDkxPR19MRVZFTF9JTkZPEAMSEwoPTE9HX0xFVkVMX0RFQlVHEARiBnByb3RvMw");
 
 /**
  * @generated from message flaps.ErrorResponse
@@ -444,6 +444,35 @@ export const LogicSchema: GenMessage<Logic> = /*@__PURE__*/
   messageDesc(file_flaps, 14);
 
 /**
+ * One motor output of the board and the flap on it. Not sent (older app) = connected,
+ * normal wiring — hence the negated `disconnected`.
+ *
+ * @generated from message flaps.FlapOutput
+ */
+export type FlapOutput = Message<"flaps.FlapOutput"> & {
+  /**
+   * nothing on this output: never driven, position NOT_CONNECTED
+   *
+   * @generated from field: bool disconnected = 1;
+   */
+  disconnected: boolean;
+
+  /**
+   * motor wired the other way: open drives IN2 instead of IN1
+   *
+   * @generated from field: bool reversed = 2;
+   */
+  reversed: boolean;
+};
+
+/**
+ * Describes the message flaps.FlapOutput.
+ * Use `create(FlapOutputSchema)` to create a new message.
+ */
+export const FlapOutputSchema: GenMessage<FlapOutput> = /*@__PURE__*/
+  messageDesc(file_flaps, 15);
+
+/**
  * @generated from message flaps.Configuration
  */
 export type Configuration = Message<"flaps.Configuration"> & {
@@ -492,6 +521,27 @@ export type Configuration = Message<"flaps.Configuration"> & {
    * @generated from field: uint32 move_time_ms = 8;
    */
   moveTimeMs: number;
+
+  /**
+   * 1MA / 1MB
+   *
+   * @generated from field: flaps.FlapOutput flap1 = 9;
+   */
+  flap1?: FlapOutput | undefined;
+
+  /**
+   * 2MA / 2MB, at least one of them connected
+   *
+   * @generated from field: flaps.FlapOutput flap2 = 10;
+   */
+  flap2?: FlapOutput | undefined;
+
+  /**
+   * fixed drive instead of the car's CAN, only in dev mode
+   *
+   * @generated from field: bool demo_mode = 11;
+   */
+  demoMode: boolean;
 };
 
 /**
@@ -499,7 +549,7 @@ export type Configuration = Message<"flaps.Configuration"> & {
  * Use `create(ConfigurationSchema)` to create a new message.
  */
 export const ConfigurationSchema: GenMessage<Configuration> = /*@__PURE__*/
-  messageDesc(file_flaps, 15);
+  messageDesc(file_flaps, 16);
 
 /**
  * GET_CONFIGURATION — the configuration in use
@@ -514,7 +564,7 @@ export type GetConfigurationRequest = Message<"flaps.GetConfigurationRequest"> &
  * Use `create(GetConfigurationRequestSchema)` to create a new message.
  */
 export const GetConfigurationRequestSchema: GenMessage<GetConfigurationRequest> = /*@__PURE__*/
-  messageDesc(file_flaps, 16);
+  messageDesc(file_flaps, 17);
 
 /**
  * @generated from message flaps.GetConfigurationResponse
@@ -538,7 +588,7 @@ export type GetConfigurationResponse = Message<"flaps.GetConfigurationResponse">
  * Use `create(GetConfigurationResponseSchema)` to create a new message.
  */
 export const GetConfigurationResponseSchema: GenMessage<GetConfigurationResponse> = /*@__PURE__*/
-  messageDesc(file_flaps, 17);
+  messageDesc(file_flaps, 18);
 
 /**
  * SET_CONFIGURATION — validates the configuration and uses it right away (RAM only,
@@ -558,7 +608,7 @@ export type SetConfigurationRequest = Message<"flaps.SetConfigurationRequest"> &
  * Use `create(SetConfigurationRequestSchema)` to create a new message.
  */
 export const SetConfigurationRequestSchema: GenMessage<SetConfigurationRequest> = /*@__PURE__*/
-  messageDesc(file_flaps, 18);
+  messageDesc(file_flaps, 19);
 
 /**
  * @generated from message flaps.SetConfigurationResponse
@@ -584,7 +634,7 @@ export type SetConfigurationResponse = Message<"flaps.SetConfigurationResponse">
  * Use `create(SetConfigurationResponseSchema)` to create a new message.
  */
 export const SetConfigurationResponseSchema: GenMessage<SetConfigurationResponse> = /*@__PURE__*/
-  messageDesc(file_flaps, 19);
+  messageDesc(file_flaps, 20);
 
 /**
  * SAVE_CONFIGURATION — writes the configuration in use to flash. Takes 1-2 s (sector
@@ -600,7 +650,7 @@ export type SaveConfigurationRequest = Message<"flaps.SaveConfigurationRequest">
  * Use `create(SaveConfigurationRequestSchema)` to create a new message.
  */
 export const SaveConfigurationRequestSchema: GenMessage<SaveConfigurationRequest> = /*@__PURE__*/
-  messageDesc(file_flaps, 20);
+  messageDesc(file_flaps, 21);
 
 /**
  * @generated from message flaps.SaveConfigurationResponse
@@ -619,7 +669,7 @@ export type SaveConfigurationResponse = Message<"flaps.SaveConfigurationResponse
  * Use `create(SaveConfigurationResponseSchema)` to create a new message.
  */
 export const SaveConfigurationResponseSchema: GenMessage<SaveConfigurationResponse> = /*@__PURE__*/
-  messageDesc(file_flaps, 21);
+  messageDesc(file_flaps, 22);
 
 /**
  * @generated from message flaps.SignalState
@@ -652,7 +702,7 @@ export type SignalState = Message<"flaps.SignalState"> & {
  * Use `create(SignalStateSchema)` to create a new message.
  */
 export const SignalStateSchema: GenMessage<SignalState> = /*@__PURE__*/
-  messageDesc(file_flaps, 22);
+  messageDesc(file_flaps, 23);
 
 /**
  * @generated from message flaps.DeviceState
@@ -702,7 +752,7 @@ export type DeviceState = Message<"flaps.DeviceState"> & {
  * Use `create(DeviceStateSchema)` to create a new message.
  */
 export const DeviceStateSchema: GenMessage<DeviceState> = /*@__PURE__*/
-  messageDesc(file_flaps, 23);
+  messageDesc(file_flaps, 24);
 
 /**
  * GET_STATE — the whole state, the changes after it come in TELEMETRY / EVENT
@@ -717,7 +767,7 @@ export type GetStateRequest = Message<"flaps.GetStateRequest"> & {
  * Use `create(GetStateRequestSchema)` to create a new message.
  */
 export const GetStateRequestSchema: GenMessage<GetStateRequest> = /*@__PURE__*/
-  messageDesc(file_flaps, 24);
+  messageDesc(file_flaps, 25);
 
 /**
  * @generated from message flaps.GetStateResponse
@@ -741,7 +791,7 @@ export type GetStateResponse = Message<"flaps.GetStateResponse"> & {
  * Use `create(GetStateResponseSchema)` to create a new message.
  */
 export const GetStateResponseSchema: GenMessage<GetStateResponse> = /*@__PURE__*/
-  messageDesc(file_flaps, 25);
+  messageDesc(file_flaps, 26);
 
 /**
  * TELEMETRY — signals that changed (value or freshness) since the last report or GET_STATE,
@@ -771,7 +821,7 @@ export type Telemetry = Message<"flaps.Telemetry"> & {
  * Use `create(TelemetrySchema)` to create a new message.
  */
 export const TelemetrySchema: GenMessage<Telemetry> = /*@__PURE__*/
-  messageDesc(file_flaps, 26);
+  messageDesc(file_flaps, 27);
 
 /**
  * @generated from message flaps.ActiveLogicChanged
@@ -790,7 +840,7 @@ export type ActiveLogicChanged = Message<"flaps.ActiveLogicChanged"> & {
  * Use `create(ActiveLogicChangedSchema)` to create a new message.
  */
 export const ActiveLogicChangedSchema: GenMessage<ActiveLogicChanged> = /*@__PURE__*/
-  messageDesc(file_flaps, 27);
+  messageDesc(file_flaps, 28);
 
 /**
  * @generated from message flaps.FlapMoveStarted
@@ -816,7 +866,7 @@ export type FlapMoveStarted = Message<"flaps.FlapMoveStarted"> & {
  * Use `create(FlapMoveStartedSchema)` to create a new message.
  */
 export const FlapMoveStartedSchema: GenMessage<FlapMoveStarted> = /*@__PURE__*/
-  messageDesc(file_flaps, 28);
+  messageDesc(file_flaps, 29);
 
 /**
  * AMP_OUT readings for tuning the end stop current
@@ -861,7 +911,7 @@ export type FlapMoveFinished = Message<"flaps.FlapMoveFinished"> & {
  * Use `create(FlapMoveFinishedSchema)` to create a new message.
  */
 export const FlapMoveFinishedSchema: GenMessage<FlapMoveFinished> = /*@__PURE__*/
-  messageDesc(file_flaps, 29);
+  messageDesc(file_flaps, 30);
 
 /**
  * The override started, ended (time up or released) or changed direction. Renewing
@@ -888,7 +938,7 @@ export type FlapsOverrideChanged = Message<"flaps.FlapsOverrideChanged"> & {
  * Use `create(FlapsOverrideChangedSchema)` to create a new message.
  */
 export const FlapsOverrideChangedSchema: GenMessage<FlapsOverrideChanged> = /*@__PURE__*/
-  messageDesc(file_flaps, 30);
+  messageDesc(file_flaps, 31);
 
 /**
  * EVENT — something happened, sent right away
@@ -941,7 +991,7 @@ export type Event = Message<"flaps.Event"> & {
  * Use `create(EventSchema)` to create a new message.
  */
 export const EventSchema: GenMessage<Event> = /*@__PURE__*/
-  messageDesc(file_flaps, 31);
+  messageDesc(file_flaps, 32);
 
 /**
  * SET_FLAPS_OVERRIDE — the flaps stay in `state` for duration_ms instead of following
@@ -971,7 +1021,7 @@ export type SetFlapsOverrideRequest = Message<"flaps.SetFlapsOverrideRequest"> &
  * Use `create(SetFlapsOverrideRequestSchema)` to create a new message.
  */
 export const SetFlapsOverrideRequestSchema: GenMessage<SetFlapsOverrideRequest> = /*@__PURE__*/
-  messageDesc(file_flaps, 32);
+  messageDesc(file_flaps, 33);
 
 /**
  * @generated from message flaps.SetFlapsOverrideResponse
@@ -990,7 +1040,7 @@ export type SetFlapsOverrideResponse = Message<"flaps.SetFlapsOverrideResponse">
  * Use `create(SetFlapsOverrideResponseSchema)` to create a new message.
  */
 export const SetFlapsOverrideResponseSchema: GenMessage<SetFlapsOverrideResponse> = /*@__PURE__*/
-  messageDesc(file_flaps, 33);
+  messageDesc(file_flaps, 34);
 
 /**
  * SET_DEV_MODE — for this session
@@ -1018,7 +1068,7 @@ export type SetDevModeRequest = Message<"flaps.SetDevModeRequest"> & {
  * Use `create(SetDevModeRequestSchema)` to create a new message.
  */
 export const SetDevModeRequestSchema: GenMessage<SetDevModeRequest> = /*@__PURE__*/
-  messageDesc(file_flaps, 34);
+  messageDesc(file_flaps, 35);
 
 /**
  * @generated from message flaps.SetDevModeResponse
@@ -1037,7 +1087,7 @@ export type SetDevModeResponse = Message<"flaps.SetDevModeResponse"> & {
  * Use `create(SetDevModeResponseSchema)` to create a new message.
  */
 export const SetDevModeResponseSchema: GenMessage<SetDevModeResponse> = /*@__PURE__*/
-  messageDesc(file_flaps, 35);
+  messageDesc(file_flaps, 36);
 
 /**
  * @generated from message flaps.LogEntry
@@ -1066,7 +1116,7 @@ export type LogEntry = Message<"flaps.LogEntry"> & {
  * Use `create(LogEntrySchema)` to create a new message.
  */
 export const LogEntrySchema: GenMessage<LogEntry> = /*@__PURE__*/
-  messageDesc(file_flaps, 36);
+  messageDesc(file_flaps, 37);
 
 /**
  * LOG — oldest lines first. Lines kept since the start come too (Info and above).
@@ -1092,7 +1142,7 @@ export type Log = Message<"flaps.Log"> & {
  * Use `create(LogSchema)` to create a new message.
  */
 export const LogSchema: GenMessage<Log> = /*@__PURE__*/
-  messageDesc(file_flaps, 37);
+  messageDesc(file_flaps, 38);
 
 /**
  * FLAP_TRACE — AMP_OUT (raw 16-bit ADC, ~22 ms average) during the last movement of a flap,
@@ -1136,7 +1186,7 @@ export type FlapTrace = Message<"flaps.FlapTrace"> & {
  * Use `create(FlapTraceSchema)` to create a new message.
  */
 export const FlapTraceSchema: GenMessage<FlapTrace> = /*@__PURE__*/
-  messageDesc(file_flaps, 38);
+  messageDesc(file_flaps, 39);
 
 /**
  * @generated from enum flaps.Command
@@ -1498,6 +1548,13 @@ export enum ConfigurationError {
    * @generated from enum value: CONFIGURATION_ERROR_INVALID_MOVE_TIME = 20;
    */
   INVALID_MOVE_TIME = 20,
+
+  /**
+   * flap1 and flap2 both disconnected
+   *
+   * @generated from enum value: CONFIGURATION_ERROR_NO_FLAP_CONNECTED = 21;
+   */
+  NO_FLAP_CONNECTED = 21,
 }
 
 /**
@@ -1541,6 +1598,13 @@ export enum FlapPosition {
    * @generated from enum value: FLAP_POSITION_CLOSED = 5;
    */
   CLOSED = 5,
+
+  /**
+   * Configuration.flapN.disconnected
+   *
+   * @generated from enum value: FLAP_POSITION_NOT_CONNECTED = 6;
+   */
+  NOT_CONNECTED = 6,
 }
 
 /**

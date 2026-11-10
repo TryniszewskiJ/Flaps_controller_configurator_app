@@ -1,7 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { create } from '@bufbuild/protobuf';
 import { BleLinkService } from './ble/ble-link.service';
-import { ConfigurationService } from './configuration.service';
+import {
+  ConfigurationService,
+  configurationSettings,
+  flapOutputSettings,
+} from './configuration.service';
 import { ConnectionService } from './connection.service';
 import {
   CanFrameSchema,
@@ -139,7 +143,7 @@ describe('ConfigurationService', () => {
 
   it('keeps the default logic pointing at the same logic after a removal', async () => {
     await connect();
-    service.setSettings({ ...service.draft()!, defaultLogicIndex: 1 });
+    service.setSettings({ ...configurationSettings(service.draft()!), defaultLogicIndex: 1 });
 
     expect(service.removeLogic(0)).toBeNull();
     expect(service.draft()?.logics.map((logic) => logic.description)).toEqual(['Sport']);
@@ -155,6 +159,9 @@ describe('ConfigurationService', () => {
       failSafeState: FlapsState.OPEN,
       moveTimeMs: 400,
       fdcanTermination: true,
+      flap1: { connected: true, reversed: true },
+      flap2: { connected: false, reversed: false },
+      demoMode: true,
     });
 
     const draft = service.draft()!;
@@ -162,7 +169,36 @@ describe('ConfigurationService', () => {
     expect(draft.failSafeState).toBe(FlapsState.OPEN);
     expect(draft.moveTimeMs).toBe(400);
     expect(draft.fdcanTermination).toBe(true);
+    expect(flapOutputSettings(draft, 1)).toEqual({ connected: true, reversed: true });
+    expect(flapOutputSettings(draft, 2)).toEqual({ connected: false, reversed: false });
+    expect(draft.demoMode).toBe(true);
     expect(service.dirty()).toBe(true);
+  });
+
+  it('treats missing flap outputs (device < 1.7) as connected without changes', async () => {
+    link.device.configuration.flap1 = undefined;
+    link.device.configuration.flap2 = undefined;
+    await connect();
+
+    expect(configurationSettings(service.draft()!).flap1).toEqual({
+      connected: true,
+      reversed: false,
+    });
+    service.setSettings(configurationSettings(service.draft()!));
+    expect(service.dirty()).toBe(false);
+  });
+
+  it('explains a configuration without any connected flap', async () => {
+    await connect();
+    const settings = configurationSettings(service.draft()!);
+    service.setSettings({
+      ...settings,
+      flap1: { connected: false, reversed: false },
+      flap2: { connected: false, reversed: false },
+    });
+
+    expect(await service.apply()).toBe(false);
+    expect(service.error()).toContain('co najmniej jedna klapa');
   });
 
   it('discards the draft on disconnect', async () => {

@@ -16,7 +16,7 @@ import { ConnectionBannerComponent } from '../shared/connection-banner/connectio
 interface FlapView {
   name: string;
   label: string;
-  tone: 'open' | 'closed' | 'moving' | 'unknown';
+  tone: 'open' | 'closed' | 'moving' | 'unknown' | 'off';
 }
 
 interface SignalView {
@@ -33,6 +33,7 @@ const FLAP_LABELS: Record<FlapPosition, string> = {
   [FlapPosition.OPEN]: 'Otwarta',
   [FlapPosition.CLOSING]: 'Zamykanie…',
   [FlapPosition.CLOSED]: 'Zamknięta',
+  [FlapPosition.NOT_CONNECTED]: 'Niepodłączona',
 };
 
 /** Czas ręcznego sterowania do wyboru (firmware przyjmuje do 10 min). */
@@ -99,6 +100,11 @@ export class DashboardPage {
       }));
   });
 
+  /** Tryb demo: sterownik odtwarza przejazd zamiast CAN auta (demo w konfiguracji + tryb dev). */
+  protected readonly demo = computed(
+    () => !!this.configuration.device()?.demoMode && this.deviceState.devModeEnabled(),
+  );
+
   /** Klapy otwarte albo w trakcie otwierania — przycisk je zamyka. */
   protected readonly flapsOpen = computed(() => {
     const state = this.state();
@@ -159,7 +165,9 @@ function flapView(name: string, position: FlapPosition): FlapView {
         ? 'closed'
         : position === FlapPosition.OPENING || position === FlapPosition.CLOSING
           ? 'moving'
-          : 'unknown';
+          : position === FlapPosition.NOT_CONNECTED
+            ? 'off'
+            : 'unknown';
   return { name, label: FLAP_LABELS[position] ?? '—', tone };
 }
 

@@ -15,6 +15,8 @@ import { chevronForward, downloadOutline } from 'ionicons/icons';
 import {
   ConfigurationService,
   ConfigurationSettings,
+  configurationSettings,
+  flapOutputSettings,
   MAX_FRAMES,
   MAX_LOGICS,
   MAX_SIGNALS,
@@ -101,6 +103,20 @@ export class ConfigPage {
   protected readonly signalScaleLabel = signalScaleLabel;
   protected readonly logicSummary = logicSummary;
   protected readonly flapsStateLabel = flapsStateLabel;
+
+  /** Wyjście klapy w skrócie: „podłączona”, „odwrócona”, „niepodłączona”. */
+  protected flapOutputLabel(flap: 1 | 2): string {
+    const draft = this.draft();
+    if (!draft) {
+      return '—';
+    }
+    const output = flapOutputSettings(draft, flap);
+    return !output.connected
+      ? 'niepodłączona'
+      : output.reversed
+        ? 'odwrócony kierunek'
+        : 'podłączona';
+  }
 
   constructor() {
     addIcons({ chevronForward, downloadOutline });
@@ -203,13 +219,7 @@ export class ConfigPage {
     if (!draft || !this.canEdit()) {
       return;
     }
-    const settings: ConfigurationSettings = {
-      selectorSignal: draft.selectorSignal,
-      defaultLogicIndex: draft.defaultLogicIndex,
-      failSafeState: draft.failSafeState,
-      moveTimeMs: draft.moveTimeMs,
-      fdcanTermination: draft.fdcanTermination,
-    };
+    const settings = configurationSettings(draft);
     const { data, role } = await this.openEditor<ConfigurationSettings>(SettingsEditorComponent, {
       signals: draft.signals,
       logics: draft.logics,

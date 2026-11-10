@@ -18,6 +18,7 @@ import { addIcons } from 'ionicons';
 import { close } from 'ionicons/icons';
 import {
   ConfigurationSettings,
+  FlapOutputSettings,
   MAX_MOVE_TIME_MS,
   MIN_MOVE_TIME_MS,
 } from '../../core/configuration.service';
@@ -28,7 +29,8 @@ import { parseInteger } from '../config-format';
 const NO_SELECTOR = -1;
 
 /**
- * Okno ustawień ogólnych: selektor, logika domyślna, stan bezpieczny, czas ruchu, terminator.
+ * Okno ustawień ogólnych: selektor, logika domyślna, stan bezpieczny, czas ruchu, wyjścia klap,
+ * terminator i tryb demo.
  * Zamyka się z ustawieniami (rola 'save') albo 'cancel'.
  */
 @Component({
@@ -63,9 +65,13 @@ export class SettingsEditorComponent implements OnInit {
   protected readonly failSafeState = signal(FlapsState.CLOSED);
   protected readonly moveTimeText = signal('250');
   protected readonly termination = signal(false);
+  protected readonly flap1 = signal<FlapOutputSettings>({ connected: true, reversed: false });
+  protected readonly flap2 = signal<FlapOutputSettings>({ connected: true, reversed: false });
+  protected readonly demoMode = signal(false);
   protected readonly moveTime = computed(() => parseInteger(this.moveTimeText()));
 
   protected readonly NO_SELECTOR = NO_SELECTOR;
+  protected readonly flapNumbers = [1, 2] as const;
   protected readonly FlapsState = FlapsState;
   protected readonly MIN_MOVE_TIME_MS = MIN_MOVE_TIME_MS;
   protected readonly MAX_MOVE_TIME_MS = MAX_MOVE_TIME_MS;
@@ -94,7 +100,15 @@ export class SettingsEditorComponent implements OnInit {
       : null;
   });
 
-  protected readonly valid = computed(() => !this.selectorError() && !this.moveTimeError());
+  protected readonly flapsError = computed(() =>
+    !this.flap1().connected && !this.flap2().connected
+      ? 'Co najmniej jedna klapa musi być podłączona.'
+      : null,
+  );
+
+  protected readonly valid = computed(
+    () => !this.selectorError() && !this.moveTimeError() && !this.flapsError(),
+  );
 
   protected readonly logicName = (index: number): string => logicName(this.logics, index);
 
@@ -112,6 +126,9 @@ export class SettingsEditorComponent implements OnInit {
       );
       this.moveTimeText.set(String(settings.moveTimeMs));
       this.termination.set(settings.fdcanTermination);
+      this.flap1.set({ ...settings.flap1 });
+      this.flap2.set({ ...settings.flap2 });
+      this.demoMode.set(settings.demoMode);
     }
   }
 
@@ -131,6 +148,14 @@ export class SettingsEditorComponent implements OnInit {
     this.moveTimeText.set(typeof value === 'string' ? value : '');
   }
 
+  protected flapOutput(flap: 1 | 2): FlapOutputSettings {
+    return flap === 1 ? this.flap1() : this.flap2();
+  }
+
+  protected setFlapOutput(flap: 1 | 2, change: Partial<FlapOutputSettings>): void {
+    (flap === 1 ? this.flap1 : this.flap2).update((output) => ({ ...output, ...change }));
+  }
+
   protected async save(): Promise<void> {
     if (!this.valid()) {
       return;
@@ -141,6 +166,9 @@ export class SettingsEditorComponent implements OnInit {
       failSafeState: this.failSafeState(),
       moveTimeMs: this.moveTime(),
       fdcanTermination: this.termination(),
+      flap1: this.flap1(),
+      flap2: this.flap2(),
+      demoMode: this.demoMode(),
     };
     await this.modal.dismiss(settings, 'save');
   }

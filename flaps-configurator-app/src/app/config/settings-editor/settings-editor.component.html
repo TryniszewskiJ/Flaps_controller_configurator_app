@@ -97,6 +97,40 @@
     </section>
 
     <section class="card form">
+      <h2 class="card-label">Wyjścia klap</h2>
+      @for (flap of flapNumbers; track flap) {
+        <div class="flap-output">
+          <ion-toggle
+            labelPlacement="start"
+            justify="space-between"
+            [checked]="flapOutput(flap).connected"
+            (ionChange)="setFlapOutput(flap, { connected: $event.detail.checked })"
+          >
+            Klapa {{ flap }} ({{ flap }}MA / {{ flap }}MB)
+          </ion-toggle>
+          <ion-toggle
+            labelPlacement="start"
+            justify="space-between"
+            [checked]="flapOutput(flap).reversed"
+            [disabled]="!flapOutput(flap).connected"
+            (ionChange)="setFlapOutput(flap, { reversed: $event.detail.checked })"
+          >
+            Odwrócony kierunek silnika
+          </ion-toggle>
+        </div>
+      }
+      @if (flapsError(); as error) {
+        <p class="field-error">{{ error }}</p>
+      } @else {
+        <p class="field-help">
+          Jedna klapa: wyłącz nieużywane wyjście. Kierunek: włącz „Otwórz klapy” na Dashboardzie —
+          jeśli klapa się zamyka, odwróć kierunek. Zmiana zatrzymuje silnik i sterownik rusza klapę
+          od nowa.
+        </p>
+      }
+    </section>
+
+    <section class="card form">
       <h2 class="card-label">CAN</h2>
       <div>
         <ion-toggle
@@ -108,6 +142,21 @@
           Terminator 120 Ω
         </ion-toggle>
         <p class="field-help">Włącz, gdy sterownik jest na końcu magistrali CAN.</p>
+      </div>
+      <div>
+        <ion-toggle
+          labelPlacement="start"
+          justify="space-between"
+          [checked]="demoMode()"
+          (ionChange)="demoMode.set($event.detail.checked)"
+        >
+          Tryb demo
+        </ion-toggle>
+        <p class="field-help">
+          Sterownik odtwarza 65-sekundowy przejazd zamiast CAN auta — tylko gdy w Dev console jest
+          włączony tryb deweloperski. Po rozłączeniu i resecie wraca do CAN auta. Działa z ramkami
+          konfiguracji domyślnej.
+        </p>
       </div>
     </section>
 

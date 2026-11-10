@@ -284,6 +284,16 @@ Przebieg:
   przyjmuje tylko jedną logikę. Ostatniej logiki nie da się usunąć.
 - **Ustawienia** — selektor, logika domyślna, stan bezpieczny, czas ruchu klapy (50–5000 ms),
   terminator 120 Ω na CAN.
+- **Wyjścia klap** (w Ustawieniach, protokół 1.7) — dla każdego wyjścia silnika: *podłączona*
+  (jedna klapa = wyłączone drugie wyjście, co najmniej jedno musi zostać) i *odwrócony kierunek
+  silnika* (zamiast przekładania przewodów). Kierunek najprościej sprawdzić przyciskiem
+  **Otwórz klapy** — jeśli klapa się zamyka, odwróć ją. W protobufie `Configuration.flap1` /
+  `flap2` (`FlapOutput { disconnected, reversed }`); brak pola od starszego firmware =
+  podłączona, zwykły kierunek.
+- **Tryb demo** (w Ustawieniach, protokół 1.8) — `Configuration.demo_mode`: sterownik odtwarza
+  65-sekundowy przejazd (CAN w internal loopback) zamiast słuchać auta. Działa tylko, gdy w
+  sesji jest włączony tryb deweloperski (logi albo przebieg AMP_OUT) i z ramkami konfiguracji
+  domyślnej. Dashboard pokazuje wtedy pasek „Tryb demo”.
 
 ### Stan, ręczne sterowanie i tryb deweloperski
 
@@ -292,8 +302,8 @@ po `NO_SESSION`) wywołuje `GET_STATE`, a potem nakłada zmiany z `TELEMETRY` (s
 (aktywna logika, ruch klap, ręczne sterowanie). Luka we wspólnym liczniku `sequence` — stan
 od nowa (`GET_STATE`).
 
-- **Dashboard** pokazuje aktywną logikę (lub stan bezpieczny), położenie obu klap i sygnały —
-  nazwy z konfiguracji urządzenia.
+- **Dashboard** pokazuje aktywną logikę (lub stan bezpieczny), położenie obu klap
+  (niepodłączone wyjście: „Niepodłączona”) i sygnały — nazwy z konfiguracji urządzenia.
 - **Otwórz / Zamknij klapy** wysyła `SET_FLAPS_OVERRIDE` na wybrany czas (1 / 5 / 10 min, firmware
   przyjmuje do 10 min); działa także w stanie bezpiecznym. Aktywne sterowanie ręczne widać z
   odliczaniem, **Oddaj logice** kończy je od razu. Zamknięcie aplikacji go nie kończy — kończy
