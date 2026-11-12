@@ -27,7 +27,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file flaps.proto.
  */
 export const file_flaps: GenFile = /*@__PURE__*/
-  fileDesc("CgtmbGFwcy5wcm90bxIFZmxhcHMiLgoNRXJyb3JSZXNwb25zZRIdCgZzdGF0dXMYASABKA4yDS5mbGFwcy5TdGF0dXMiZQoTU3RhcnRTZXNzaW9uUmVxdWVzdBIOCgZhcHBfaWQYASABKAcSHgoWcHJvdG9jb2xfdmVyc2lvbl9tYWpvchgCIAEoDRIeChZwcm90b2NvbF92ZXJzaW9uX21pbm9yGAMgASgNIpEBChRTdGFydFNlc3Npb25SZXNwb25zZRIdCgZzdGF0dXMYASABKA4yDS5mbGFwcy5TdGF0dXMSHgoWcHJvdG9jb2xfdmVyc2lvbl9tYWpvchgCIAEoDRIeChZwcm90b2NvbF92ZXJzaW9uX21pbm9yGAMgASgNEhoKEnNlc3Npb25fdGltZW91dF9tcxgEIAEoDSIWChRHZXREZXZpY2VJbmZvUmVxdWVzdCKLAQoVR2V0RGV2aWNlSW5mb1Jlc3BvbnNlEh4KFmZpcm13YXJlX3ZlcnNpb25fbWFqb3IYASABKA0SHgoWZmlybXdhcmVfdmVyc2lvbl9taW5vchgCIAEoDRIeChZmaXJtd2FyZV92ZXJzaW9uX3BhdGNoGAMgASgNEhIKCmRldmljZV91aWQYBCABKAwiDQoLUGluZ1JlcXVlc3QiIQoMUGluZ1Jlc3BvbnNlEhEKCXVwdGltZV9tcxgBIAEoDSIVChNDbG9zZVNlc3Npb25SZXF1ZXN0IhYKFENsb3NlU2Vzc2lvblJlc3BvbnNlIj8KCENhbkZyYW1lEgoKAmlkGAEgASgNEhMKC2V4dGVuZGVkX2lkGAIgASgIEhIKCnRpbWVvdXRfbXMYAyABKA0imgEKBlNpZ25hbBITCgtmcmFtZV9pbmRleBgBIAEoDRIUCgxzdGFydGluZ19iaXQYAiABKA0SEwoLbGVuZ3RoX2JpdHMYAyABKA0SEgoKYmlnX2VuZGlhbhgEIAEoCBINCgVzY2FsZRgFIAEoAhIMCgRiaWFzGAYgASgCEgwKBG5hbWUYByABKAkSEQoJaXNfc2lnbmVkGAggASgIIi4KCkZpeGVkTG9naWMSIAoFc3RhdGUYASABKA4yES5mbGFwcy5GbGFwc1N0YXRlIjwKEVNpbXBsZVN3aXRjaExvZ2ljEhIKCm9wZW5fdmFsdWUYASABKBESEwoLY2xvc2VfdmFsdWUYAiABKBEiOgoPSHlzdGVyZXNpc0xvZ2ljEhIKCm9wZW5fYWJvdmUYASABKAISEwoLY2xvc2VfYmVsb3cYAiABKAIi8wEKBUxvZ2ljEhYKDnNlbGVjdG9yX3ZhbHVlGAEgASgREhMKC2Rlc2NyaXB0aW9uGAIgASgJEhkKDGlucHV0X3NpZ25hbBgDIAEoDUgBiAEBEiIKBWZpeGVkGAQgASgLMhEuZmxhcHMuRml4ZWRMb2dpY0gAEjEKDXNpbXBsZV9zd2l0Y2gYBSABKAsyGC5mbGFwcy5TaW1wbGVTd2l0Y2hMb2dpY0gAEiwKCmh5c3RlcmVzaXMYBiABKAsyFi5mbGFwcy5IeXN0ZXJlc2lzTG9naWNIAEIMCgpwYXJhbWV0ZXJzQg8KDV9pbnB1dF9zaWduYWwiNAoKRmxhcE91dHB1dBIUCgxkaXNjb25uZWN0ZWQYASABKAgSEAoIcmV2ZXJzZWQYAiABKAgi8QIKDUNvbmZpZ3VyYXRpb24SGQoRZmRjYW5fdGVybWluYXRpb24YASABKAgSHwoGZnJhbWVzGAIgAygLMg8uZmxhcHMuQ2FuRnJhbWUSHgoHc2lnbmFscxgDIAMoCzINLmZsYXBzLlNpZ25hbBIcCgZsb2dpY3MYBCADKAsyDC5mbGFwcy5Mb2dpYxIcCg9zZWxlY3Rvcl9zaWduYWwYBSABKA1IAIgBARIbChNkZWZhdWx0X2xvZ2ljX2luZGV4GAYgASgNEioKD2ZhaWxfc2FmZV9zdGF0ZRgHIAEoDjIRLmZsYXBzLkZsYXBzU3RhdGUSFAoMbW92ZV90aW1lX21zGAggASgNEiAKBWZsYXAxGAkgASgLMhEuZmxhcHMuRmxhcE91dHB1dBIgCgVmbGFwMhgKIAEoCzIRLmZsYXBzLkZsYXBPdXRwdXQSEQoJZGVtb19tb2RlGAsgASgIQhIKEF9zZWxlY3Rvcl9zaWduYWwiGQoXR2V0Q29uZmlndXJhdGlvblJlcXVlc3QiYAoYR2V0Q29uZmlndXJhdGlvblJlc3BvbnNlEisKDWNvbmZpZ3VyYXRpb24YASABKAsyFC5mbGFwcy5Db25maWd1cmF0aW9uEhcKD3Vuc2F2ZWRfY2hhbmdlcxgCIAEoCCJGChdTZXRDb25maWd1cmF0aW9uUmVxdWVzdBIrCg1jb25maWd1cmF0aW9uGAEgASgLMhQuZmxhcHMuQ29uZmlndXJhdGlvbiJjChhTZXRDb25maWd1cmF0aW9uUmVzcG9uc2USHQoGc3RhdHVzGAEgASgOMg0uZmxhcHMuU3RhdHVzEigKBWVycm9yGAIgASgOMhkuZmxhcHMuQ29uZmlndXJhdGlvbkVycm9yIhoKGFNhdmVDb25maWd1cmF0aW9uUmVxdWVzdCI6ChlTYXZlQ29uZmlndXJhdGlvblJlc3BvbnNlEh0KBnN0YXR1cxgBIAEoDjINLmZsYXBzLlN0YXR1cyI6CgtTaWduYWxTdGF0ZRINCgVpbmRleBgBIAEoDRINCgV2YWx1ZRgCIAEoAhINCgVmcmVzaBgDIAEoCCLaAQoLRGV2aWNlU3RhdGUSIwoHc2lnbmFscxgBIAMoCzISLmZsYXBzLlNpZ25hbFN0YXRlEhQKDGFjdGl2ZV9sb2dpYxgCIAEoERIiCgVmbGFwMRgDIAEoDjITLmZsYXBzLkZsYXBQb3NpdGlvbhIiCgVmbGFwMhgEIAEoDjITLmZsYXBzLkZsYXBQb3NpdGlvbhIpCg5vdmVycmlkZV9zdGF0ZRgFIAEoDjIRLmZsYXBzLkZsYXBzU3RhdGUSHQoVb3ZlcnJpZGVfcmVtYWluaW5nX21zGAYgASgNIhEKD0dldFN0YXRlUmVxdWVzdCJHChBHZXRTdGF0ZVJlc3BvbnNlEiEKBXN0YXRlGAEgASgLMhIuZmxhcHMuRGV2aWNlU3RhdGUSEAoIc2VxdWVuY2UYAiABKA0iVQoJVGVsZW1ldHJ5EhAKCHNlcXVlbmNlGAEgASgNEhEKCXVwdGltZV9tcxgCIAEoDRIjCgdzaWduYWxzGAMgAygLMhIuZmxhcHMuU2lnbmFsU3RhdGUiKgoSQWN0aXZlTG9naWNDaGFuZ2VkEhQKDGFjdGl2ZV9sb2dpYxgBIAEoESJGCg9GbGFwTW92ZVN0YXJ0ZWQSDAoEZmxhcBgBIAEoDRIlCghwb3NpdGlvbhgCIAEoDjITLmZsYXBzLkZsYXBQb3NpdGlvbiKLAQoQRmxhcE1vdmVGaW5pc2hlZBIMCgRmbGFwGAEgASgNEiUKCHBvc2l0aW9uGAIgASgOMhMuZmxhcHMuRmxhcFBvc2l0aW9uEhMKC2R1cmF0aW9uX21zGAMgASgNEhQKDHBlYWtfYW1wX291dBgEIAEoDRIXCg9hbXBfb3V0X2F0X3N0b3AYBSABKA0iTgoURmxhcHNPdmVycmlkZUNoYW5nZWQSIAoFc3RhdGUYASABKA4yES5mbGFwcy5GbGFwc1N0YXRlEhQKDHJlbWFpbmluZ19tcxgCIAEoDSKbAgoFRXZlbnQSEAoIc2VxdWVuY2UYASABKA0SEQoJdXB0aW1lX21zGAIgASgNEjkKFGFjdGl2ZV9sb2dpY19jaGFuZ2VkGAMgASgLMhkuZmxhcHMuQWN0aXZlTG9naWNDaGFuZ2VkSAASMwoRZmxhcF9tb3ZlX3N0YXJ0ZWQYBCABKAsyFi5mbGFwcy5GbGFwTW92ZVN0YXJ0ZWRIABI1ChJmbGFwX21vdmVfZmluaXNoZWQYBSABKAsyFy5mbGFwcy5GbGFwTW92ZUZpbmlzaGVkSAASPQoWZmxhcHNfb3ZlcnJpZGVfY2hhbmdlZBgGIAEoCzIbLmZsYXBzLkZsYXBzT3ZlcnJpZGVDaGFuZ2VkSABCBwoFZXZlbnQiUAoXU2V0RmxhcHNPdmVycmlkZVJlcXVlc3QSIAoFc3RhdGUYASABKA4yES5mbGFwcy5GbGFwc1N0YXRlEhMKC2R1cmF0aW9uX21zGAIgASgNIjkKGFNldEZsYXBzT3ZlcnJpZGVSZXNwb25zZRIdCgZzdGF0dXMYASABKA4yDS5mbGFwcy5TdGF0dXMiSwoRU2V0RGV2TW9kZVJlcXVlc3QSIgoJbG9nX2xldmVsGAEgASgOMg8uZmxhcHMuTG9nTGV2ZWwSEgoKZmxhcF90cmFjZRgCIAEoCCIzChJTZXREZXZNb2RlUmVzcG9uc2USHQoGc3RhdHVzGAEgASgOMg0uZmxhcHMuU3RhdHVzIksKCExvZ0VudHJ5EhEKCXVwdGltZV9tcxgBIAEoDRIeCgVsZXZlbBgCIAEoDjIPLmZsYXBzLkxvZ0xldmVsEgwKBHRleHQYAyABKAkiOAoDTG9nEiAKB2VudHJpZXMYASADKAsyDy5mbGFwcy5Mb2dFbnRyeRIPCgdkcm9wcGVkGAIgASgNImYKCUZsYXBUcmFjZRIMCgRmbGFwGAEgASgNEiUKCHBvc2l0aW9uGAIgASgOMhMuZmxhcHMuRmxhcFBvc2l0aW9uEhMKC2ludGVydmFsX21zGAMgASgNEg8KB3NhbXBsZXMYBCADKA0qnQMKB0NvbW1hbmQSFwoTQ09NTUFORF9VTlNQRUNJRklFRBAAEhkKFUNPTU1BTkRfU1RBUlRfU0VTU0lPThABEhsKF0NPTU1BTkRfR0VUX0RFVklDRV9JTkZPEAISEAoMQ09NTUFORF9QSU5HEAMSGQoVQ09NTUFORF9DTE9TRV9TRVNTSU9OEAQSHQoZQ09NTUFORF9HRVRfQ09ORklHVVJBVElPThAFEh0KGUNPTU1BTkRfU0VUX0NPTkZJR1VSQVRJT04QBhIeChpDT01NQU5EX1NBVkVfQ09ORklHVVJBVElPThAHEhUKEUNPTU1BTkRfR0VUX1NUQVRFEAgSGAoUQ09NTUFORF9TRVRfREVWX01PREUQCRIeChpDT01NQU5EX1NFVF9GTEFQU19PVkVSUklERRAKEhUKEUNPTU1BTkRfVEVMRU1FVFJZEHASEQoNQ09NTUFORF9FVkVOVBBxEg8KC0NPTU1BTkRfTE9HEHISFgoSQ09NTUFORF9GTEFQX1RSQUNFEHMSEgoNQ09NTUFORF9FUlJPUhD/ASqKAgoGU3RhdHVzEhYKElNUQVRVU19VTlNQRUNJRklFRBAAEg0KCVNUQVRVU19PSxABEhUKEVNUQVRVU19OT19TRVNTSU9OEAISHgoaU1RBVFVTX1VOU1VQUE9SVEVEX1ZFUlNJT04QAxIWChJTVEFUVVNfVU5LTk9XTl9BUFAQBBIXChNTVEFUVVNfREVDT0RFX0VSUk9SEAUSGgoWU1RBVFVTX1VOS05PV05fQ09NTUFORBAGEiAKHFNUQVRVU19JTlZBTElEX0NPTkZJR1VSQVRJT04QBxIWChJTVEFUVVNfRkxBU0hfRVJST1IQCBIbChdTVEFUVVNfSU5WQUxJRF9PVkVSUklERRAJKlcKCkZsYXBzU3RhdGUSGwoXRkxBUFNfU1RBVEVfVU5TUEVDSUZJRUQQABIWChJGTEFQU19TVEFURV9DTE9TRUQQARIUChBGTEFQU19TVEFURV9PUEVOEAIq2gcKEkNvbmZpZ3VyYXRpb25FcnJvchIjCh9DT05GSUdVUkFUSU9OX0VSUk9SX1VOU1BFQ0lGSUVEEAASJwojQ09ORklHVVJBVElPTl9FUlJPUl9UT09fTUFOWV9GUkFNRVMQARIoCiRDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfRlJBTUVfSUQQAhInCiNDT05GSUdVUkFUSU9OX0VSUk9SX0RVUExJQ0FURV9GUkFNRRADEigKJENPTkZJR1VSQVRJT05fRVJST1JfVE9PX01BTllfU0lHTkFMUxAEEiwKKENPTkZJR1VSQVRJT05fRVJST1JfSU5WQUxJRF9TSUdOQUxfRlJBTUUQBRItCilDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfU0lHTkFMX0xBWU9VVBAGEiwKKENPTkZJR1VSQVRJT05fRVJST1JfSU5WQUxJRF9TSUdOQUxfU0NBTEUQBxIgChxDT05GSUdVUkFUSU9OX0VSUk9SX05PX0xPR0lDEAgSJwojQ09ORklHVVJBVElPTl9FUlJPUl9UT09fTUFOWV9MT0dJQ1MQCRIvCitDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfU0VMRUNUT1JfU0lHTkFMEAoSKQolQ09ORklHVVJBVElPTl9FUlJPUl9TRUxFQ1RPUl9SRVFVSVJFRBALEjAKLENPTkZJR1VSQVRJT05fRVJST1JfRFVQTElDQVRFX1NFTEVDVE9SX1ZBTFVFEAwSLQopQ09ORklHVVJBVElPTl9FUlJPUl9JTlZBTElEX0RFRkFVTFRfTE9HSUMQDRIvCitDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfRkFJTF9TQUZFX1NUQVRFEA4SKgomQ09ORklHVVJBVElPTl9FUlJPUl9JTlZBTElEX0xPR0lDX1RZUEUQDxIrCidDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfTE9HSUNfSU5QVVQQEBIrCidDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfRklYRURfU1RBVEUQERItCilDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfU1dJVENIX1ZBTFVFUxASEioKJkNPTkZJR1VSQVRJT05fRVJST1JfSU5WQUxJRF9IWVNURVJFU0lTEBMSKQolQ09ORklHVVJBVElPTl9FUlJPUl9JTlZBTElEX01PVkVfVElNRRAUEikKJUNPTkZJR1VSQVRJT05fRVJST1JfTk9fRkxBUF9DT05ORUNURUQQFSrRAQoMRmxhcFBvc2l0aW9uEh0KGUZMQVBfUE9TSVRJT05fVU5TUEVDSUZJRUQQABIZChVGTEFQX1BPU0lUSU9OX1VOS05PV04QARIZChVGTEFQX1BPU0lUSU9OX09QRU5JTkcQAhIWChJGTEFQX1BPU0lUSU9OX09QRU4QAxIZChVGTEFQX1BPU0lUSU9OX0NMT1NJTkcQBBIYChRGTEFQX1BPU0lUSU9OX0NMT1NFRBAFEh8KG0ZMQVBfUE9TSVRJT05fTk9UX0NPTk5FQ1RFRBAGKm8KCExvZ0xldmVsEhEKDUxPR19MRVZFTF9PRkYQABITCg9MT0dfTEVWRUxfRVJST1IQARISCg5MT0dfTEVWRUxfV0FSThACEhIKDkxPR19MRVZFTF9JTkZPEAMSEwoPTE9HX0xFVkVMX0RFQlVHEARiBnByb3RvMw");
+  fileDesc("CgtmbGFwcy5wcm90bxIFZmxhcHMiLgoNRXJyb3JSZXNwb25zZRIdCgZzdGF0dXMYASABKA4yDS5mbGFwcy5TdGF0dXMiZQoTU3RhcnRTZXNzaW9uUmVxdWVzdBIOCgZhcHBfaWQYASABKAcSHgoWcHJvdG9jb2xfdmVyc2lvbl9tYWpvchgCIAEoDRIeChZwcm90b2NvbF92ZXJzaW9uX21pbm9yGAMgASgNIpEBChRTdGFydFNlc3Npb25SZXNwb25zZRIdCgZzdGF0dXMYASABKA4yDS5mbGFwcy5TdGF0dXMSHgoWcHJvdG9jb2xfdmVyc2lvbl9tYWpvchgCIAEoDRIeChZwcm90b2NvbF92ZXJzaW9uX21pbm9yGAMgASgNEhoKEnNlc3Npb25fdGltZW91dF9tcxgEIAEoDSIWChRHZXREZXZpY2VJbmZvUmVxdWVzdCLgAQoVR2V0RGV2aWNlSW5mb1Jlc3BvbnNlEh4KFmZpcm13YXJlX3ZlcnNpb25fbWFqb3IYASABKA0SHgoWZmlybXdhcmVfdmVyc2lvbl9taW5vchgCIAEoDRIeChZmaXJtd2FyZV92ZXJzaW9uX3BhdGNoGAMgASgNEhIKCmRldmljZV91aWQYBCABKAwSHwoEbW9kZRgFIAEoDjIRLmZsYXBzLkRldmljZU1vZGUSMgoRYm9vdGxvYWRlcl9yZWFzb24YBiABKA4yFy5mbGFwcy5Cb290bG9hZGVyUmVhc29uIg0KC1BpbmdSZXF1ZXN0IiEKDFBpbmdSZXNwb25zZRIRCgl1cHRpbWVfbXMYASABKA0iFQoTQ2xvc2VTZXNzaW9uUmVxdWVzdCIWChRDbG9zZVNlc3Npb25SZXNwb25zZSI/CghDYW5GcmFtZRIKCgJpZBgBIAEoDRITCgtleHRlbmRlZF9pZBgCIAEoCBISCgp0aW1lb3V0X21zGAMgASgNIpoBCgZTaWduYWwSEwoLZnJhbWVfaW5kZXgYASABKA0SFAoMc3RhcnRpbmdfYml0GAIgASgNEhMKC2xlbmd0aF9iaXRzGAMgASgNEhIKCmJpZ19lbmRpYW4YBCABKAgSDQoFc2NhbGUYBSABKAISDAoEYmlhcxgGIAEoAhIMCgRuYW1lGAcgASgJEhEKCWlzX3NpZ25lZBgIIAEoCCIuCgpGaXhlZExvZ2ljEiAKBXN0YXRlGAEgASgOMhEuZmxhcHMuRmxhcHNTdGF0ZSI8ChFTaW1wbGVTd2l0Y2hMb2dpYxISCgpvcGVuX3ZhbHVlGAEgASgREhMKC2Nsb3NlX3ZhbHVlGAIgASgRIjoKD0h5c3RlcmVzaXNMb2dpYxISCgpvcGVuX2Fib3ZlGAEgASgCEhMKC2Nsb3NlX2JlbG93GAIgASgCIvMBCgVMb2dpYxIWCg5zZWxlY3Rvcl92YWx1ZRgBIAEoERITCgtkZXNjcmlwdGlvbhgCIAEoCRIZCgxpbnB1dF9zaWduYWwYAyABKA1IAYgBARIiCgVmaXhlZBgEIAEoCzIRLmZsYXBzLkZpeGVkTG9naWNIABIxCg1zaW1wbGVfc3dpdGNoGAUgASgLMhguZmxhcHMuU2ltcGxlU3dpdGNoTG9naWNIABIsCgpoeXN0ZXJlc2lzGAYgASgLMhYuZmxhcHMuSHlzdGVyZXNpc0xvZ2ljSABCDAoKcGFyYW1ldGVyc0IPCg1faW5wdXRfc2lnbmFsIjQKCkZsYXBPdXRwdXQSFAoMZGlzY29ubmVjdGVkGAEgASgIEhAKCHJldmVyc2VkGAIgASgIIvECCg1Db25maWd1cmF0aW9uEhkKEWZkY2FuX3Rlcm1pbmF0aW9uGAEgASgIEh8KBmZyYW1lcxgCIAMoCzIPLmZsYXBzLkNhbkZyYW1lEh4KB3NpZ25hbHMYAyADKAsyDS5mbGFwcy5TaWduYWwSHAoGbG9naWNzGAQgAygLMgwuZmxhcHMuTG9naWMSHAoPc2VsZWN0b3Jfc2lnbmFsGAUgASgNSACIAQESGwoTZGVmYXVsdF9sb2dpY19pbmRleBgGIAEoDRIqCg9mYWlsX3NhZmVfc3RhdGUYByABKA4yES5mbGFwcy5GbGFwc1N0YXRlEhQKDG1vdmVfdGltZV9tcxgIIAEoDRIgCgVmbGFwMRgJIAEoCzIRLmZsYXBzLkZsYXBPdXRwdXQSIAoFZmxhcDIYCiABKAsyES5mbGFwcy5GbGFwT3V0cHV0EhEKCWRlbW9fbW9kZRgLIAEoCEISChBfc2VsZWN0b3Jfc2lnbmFsIhkKF0dldENvbmZpZ3VyYXRpb25SZXF1ZXN0ImAKGEdldENvbmZpZ3VyYXRpb25SZXNwb25zZRIrCg1jb25maWd1cmF0aW9uGAEgASgLMhQuZmxhcHMuQ29uZmlndXJhdGlvbhIXCg91bnNhdmVkX2NoYW5nZXMYAiABKAgiRgoXU2V0Q29uZmlndXJhdGlvblJlcXVlc3QSKwoNY29uZmlndXJhdGlvbhgBIAEoCzIULmZsYXBzLkNvbmZpZ3VyYXRpb24iYwoYU2V0Q29uZmlndXJhdGlvblJlc3BvbnNlEh0KBnN0YXR1cxgBIAEoDjINLmZsYXBzLlN0YXR1cxIoCgVlcnJvchgCIAEoDjIZLmZsYXBzLkNvbmZpZ3VyYXRpb25FcnJvciIaChhTYXZlQ29uZmlndXJhdGlvblJlcXVlc3QiOgoZU2F2ZUNvbmZpZ3VyYXRpb25SZXNwb25zZRIdCgZzdGF0dXMYASABKA4yDS5mbGFwcy5TdGF0dXMiOgoLU2lnbmFsU3RhdGUSDQoFaW5kZXgYASABKA0SDQoFdmFsdWUYAiABKAISDQoFZnJlc2gYAyABKAgi2gEKC0RldmljZVN0YXRlEiMKB3NpZ25hbHMYASADKAsyEi5mbGFwcy5TaWduYWxTdGF0ZRIUCgxhY3RpdmVfbG9naWMYAiABKBESIgoFZmxhcDEYAyABKA4yEy5mbGFwcy5GbGFwUG9zaXRpb24SIgoFZmxhcDIYBCABKA4yEy5mbGFwcy5GbGFwUG9zaXRpb24SKQoOb3ZlcnJpZGVfc3RhdGUYBSABKA4yES5mbGFwcy5GbGFwc1N0YXRlEh0KFW92ZXJyaWRlX3JlbWFpbmluZ19tcxgGIAEoDSIRCg9HZXRTdGF0ZVJlcXVlc3QiRwoQR2V0U3RhdGVSZXNwb25zZRIhCgVzdGF0ZRgBIAEoCzISLmZsYXBzLkRldmljZVN0YXRlEhAKCHNlcXVlbmNlGAIgASgNIlUKCVRlbGVtZXRyeRIQCghzZXF1ZW5jZRgBIAEoDRIRCgl1cHRpbWVfbXMYAiABKA0SIwoHc2lnbmFscxgDIAMoCzISLmZsYXBzLlNpZ25hbFN0YXRlIioKEkFjdGl2ZUxvZ2ljQ2hhbmdlZBIUCgxhY3RpdmVfbG9naWMYASABKBEiRgoPRmxhcE1vdmVTdGFydGVkEgwKBGZsYXAYASABKA0SJQoIcG9zaXRpb24YAiABKA4yEy5mbGFwcy5GbGFwUG9zaXRpb24iiwEKEEZsYXBNb3ZlRmluaXNoZWQSDAoEZmxhcBgBIAEoDRIlCghwb3NpdGlvbhgCIAEoDjITLmZsYXBzLkZsYXBQb3NpdGlvbhITCgtkdXJhdGlvbl9tcxgDIAEoDRIUCgxwZWFrX2FtcF9vdXQYBCABKA0SFwoPYW1wX291dF9hdF9zdG9wGAUgASgNIk4KFEZsYXBzT3ZlcnJpZGVDaGFuZ2VkEiAKBXN0YXRlGAEgASgOMhEuZmxhcHMuRmxhcHNTdGF0ZRIUCgxyZW1haW5pbmdfbXMYAiABKA0imwIKBUV2ZW50EhAKCHNlcXVlbmNlGAEgASgNEhEKCXVwdGltZV9tcxgCIAEoDRI5ChRhY3RpdmVfbG9naWNfY2hhbmdlZBgDIAEoCzIZLmZsYXBzLkFjdGl2ZUxvZ2ljQ2hhbmdlZEgAEjMKEWZsYXBfbW92ZV9zdGFydGVkGAQgASgLMhYuZmxhcHMuRmxhcE1vdmVTdGFydGVkSAASNQoSZmxhcF9tb3ZlX2ZpbmlzaGVkGAUgASgLMhcuZmxhcHMuRmxhcE1vdmVGaW5pc2hlZEgAEj0KFmZsYXBzX292ZXJyaWRlX2NoYW5nZWQYBiABKAsyGy5mbGFwcy5GbGFwc092ZXJyaWRlQ2hhbmdlZEgAQgcKBWV2ZW50IlAKF1NldEZsYXBzT3ZlcnJpZGVSZXF1ZXN0EiAKBXN0YXRlGAEgASgOMhEuZmxhcHMuRmxhcHNTdGF0ZRITCgtkdXJhdGlvbl9tcxgCIAEoDSI5ChhTZXRGbGFwc092ZXJyaWRlUmVzcG9uc2USHQoGc3RhdHVzGAEgASgOMg0uZmxhcHMuU3RhdHVzIksKEVNldERldk1vZGVSZXF1ZXN0EiIKCWxvZ19sZXZlbBgBIAEoDjIPLmZsYXBzLkxvZ0xldmVsEhIKCmZsYXBfdHJhY2UYAiABKAgiMwoSU2V0RGV2TW9kZVJlc3BvbnNlEh0KBnN0YXR1cxgBIAEoDjINLmZsYXBzLlN0YXR1cyJLCghMb2dFbnRyeRIRCgl1cHRpbWVfbXMYASABKA0SHgoFbGV2ZWwYAiABKA4yDy5mbGFwcy5Mb2dMZXZlbBIMCgR0ZXh0GAMgASgJIjgKA0xvZxIgCgdlbnRyaWVzGAEgAygLMg8uZmxhcHMuTG9nRW50cnkSDwoHZHJvcHBlZBgCIAEoDSJmCglGbGFwVHJhY2USDAoEZmxhcBgBIAEoDRIlCghwb3NpdGlvbhgCIAEoDjITLmZsYXBzLkZsYXBQb3NpdGlvbhITCgtpbnRlcnZhbF9tcxgDIAEoDRIPCgdzYW1wbGVzGAQgAygNIjAKGkZpcm13YXJlVXBkYXRlQmVnaW5SZXF1ZXN0EhIKCmltYWdlX3NpemUYASABKA0ilwEKG0Zpcm13YXJlVXBkYXRlQmVnaW5SZXNwb25zZRIdCgZzdGF0dXMYASABKA4yDS5mbGFwcy5TdGF0dXMSKQoFZXJyb3IYAiABKA4yGi5mbGFwcy5GaXJtd2FyZVVwZGF0ZUVycm9yEhYKDm1heF9jaHVua19zaXplGAMgASgNEhYKDm1heF9pbWFnZV9zaXplGAQgASgNIjkKGUZpcm13YXJlVXBkYXRlRGF0YVJlcXVlc3QSDgoGb2Zmc2V0GAEgASgNEgwKBGRhdGEYAiABKAwieAoaRmlybXdhcmVVcGRhdGVEYXRhUmVzcG9uc2USHQoGc3RhdHVzGAEgASgOMg0uZmxhcHMuU3RhdHVzEikKBWVycm9yGAIgASgOMhouZmxhcHMuRmlybXdhcmVVcGRhdGVFcnJvchIQCghyZWNlaXZlZBgDIAEoDSIdChtGaXJtd2FyZVVwZGF0ZUNvbW1pdFJlcXVlc3QiaAocRmlybXdhcmVVcGRhdGVDb21taXRSZXNwb25zZRIdCgZzdGF0dXMYASABKA4yDS5mbGFwcy5TdGF0dXMSKQoFZXJyb3IYAiABKA4yGi5mbGFwcy5GaXJtd2FyZVVwZGF0ZUVycm9yIhwKGkZpcm13YXJlVXBkYXRlQWJvcnRSZXF1ZXN0Ih0KG0Zpcm13YXJlVXBkYXRlQWJvcnRSZXNwb25zZSImCg1SZWJvb3RSZXF1ZXN0EhUKDXRvX2Jvb3Rsb2FkZXIYASABKAgiLwoOUmVib290UmVzcG9uc2USHQoGc3RhdHVzGAEgASgOMg0uZmxhcHMuU3RhdHVzKr0ECgdDb21tYW5kEhcKE0NPTU1BTkRfVU5TUEVDSUZJRUQQABIZChVDT01NQU5EX1NUQVJUX1NFU1NJT04QARIbChdDT01NQU5EX0dFVF9ERVZJQ0VfSU5GTxACEhAKDENPTU1BTkRfUElORxADEhkKFUNPTU1BTkRfQ0xPU0VfU0VTU0lPThAEEh0KGUNPTU1BTkRfR0VUX0NPTkZJR1VSQVRJT04QBRIdChlDT01NQU5EX1NFVF9DT05GSUdVUkFUSU9OEAYSHgoaQ09NTUFORF9TQVZFX0NPTkZJR1VSQVRJT04QBxIVChFDT01NQU5EX0dFVF9TVEFURRAIEhgKFENPTU1BTkRfU0VUX0RFVl9NT0RFEAkSHgoaQ09NTUFORF9TRVRfRkxBUFNfT1ZFUlJJREUQChIhCh1DT01NQU5EX0ZJUk1XQVJFX1VQREFURV9CRUdJThALEiAKHENPTU1BTkRfRklSTVdBUkVfVVBEQVRFX0RBVEEQDBIiCh5DT01NQU5EX0ZJUk1XQVJFX1VQREFURV9DT01NSVQQDRIhCh1DT01NQU5EX0ZJUk1XQVJFX1VQREFURV9BQk9SVBAOEhIKDkNPTU1BTkRfUkVCT09UEA8SFQoRQ09NTUFORF9URUxFTUVUUlkQcBIRCg1DT01NQU5EX0VWRU5UEHESDwoLQ09NTUFORF9MT0cQchIWChJDT01NQU5EX0ZMQVBfVFJBQ0UQcxISCg1DT01NQU5EX0VSUk9SEP8BKtsCCgZTdGF0dXMSFgoSU1RBVFVTX1VOU1BFQ0lGSUVEEAASDQoJU1RBVFVTX09LEAESFQoRU1RBVFVTX05PX1NFU1NJT04QAhIeChpTVEFUVVNfVU5TVVBQT1JURURfVkVSU0lPThADEhYKElNUQVRVU19VTktOT1dOX0FQUBAEEhcKE1NUQVRVU19ERUNPREVfRVJST1IQBRIaChZTVEFUVVNfVU5LTk9XTl9DT01NQU5EEAYSIAocU1RBVFVTX0lOVkFMSURfQ09ORklHVVJBVElPThAHEhYKElNUQVRVU19GTEFTSF9FUlJPUhAIEhsKF1NUQVRVU19JTlZBTElEX09WRVJSSURFEAkSDwoLU1RBVFVTX0JVU1kQChIgChxTVEFUVVNfRklSTVdBUkVfVVBEQVRFX0VSUk9SEAsSHAoYU1RBVFVTX05PX1ZBTElEX0ZJUk1XQVJFEAwqYgoKRGV2aWNlTW9kZRIbChdERVZJQ0VfTU9ERV9VTlNQRUNJRklFRBAAEhsKF0RFVklDRV9NT0RFX0FQUExJQ0FUSU9OEAESGgoWREVWSUNFX01PREVfQk9PVExPQURFUhACKqEBChBCb290bG9hZGVyUmVhc29uEiEKHUJPT1RMT0FERVJfUkVBU09OX1VOU1BFQ0lGSUVEEAASJwojQk9PVExPQURFUl9SRUFTT05fTk9fVkFMSURfRklSTVdBUkUQARIgChxCT09UTE9BREVSX1JFQVNPTl9DUkFTSF9MT09QEAISHwobQk9PVExPQURFUl9SRUFTT05fUkVRVUVTVEVEEAMqVwoKRmxhcHNTdGF0ZRIbChdGTEFQU19TVEFURV9VTlNQRUNJRklFRBAAEhYKEkZMQVBTX1NUQVRFX0NMT1NFRBABEhQKEEZMQVBTX1NUQVRFX09QRU4QAiraBwoSQ29uZmlndXJhdGlvbkVycm9yEiMKH0NPTkZJR1VSQVRJT05fRVJST1JfVU5TUEVDSUZJRUQQABInCiNDT05GSUdVUkFUSU9OX0VSUk9SX1RPT19NQU5ZX0ZSQU1FUxABEigKJENPTkZJR1VSQVRJT05fRVJST1JfSU5WQUxJRF9GUkFNRV9JRBACEicKI0NPTkZJR1VSQVRJT05fRVJST1JfRFVQTElDQVRFX0ZSQU1FEAMSKAokQ09ORklHVVJBVElPTl9FUlJPUl9UT09fTUFOWV9TSUdOQUxTEAQSLAooQ09ORklHVVJBVElPTl9FUlJPUl9JTlZBTElEX1NJR05BTF9GUkFNRRAFEi0KKUNPTkZJR1VSQVRJT05fRVJST1JfSU5WQUxJRF9TSUdOQUxfTEFZT1VUEAYSLAooQ09ORklHVVJBVElPTl9FUlJPUl9JTlZBTElEX1NJR05BTF9TQ0FMRRAHEiAKHENPTkZJR1VSQVRJT05fRVJST1JfTk9fTE9HSUMQCBInCiNDT05GSUdVUkFUSU9OX0VSUk9SX1RPT19NQU5ZX0xPR0lDUxAJEi8KK0NPTkZJR1VSQVRJT05fRVJST1JfSU5WQUxJRF9TRUxFQ1RPUl9TSUdOQUwQChIpCiVDT05GSUdVUkFUSU9OX0VSUk9SX1NFTEVDVE9SX1JFUVVJUkVEEAsSMAosQ09ORklHVVJBVElPTl9FUlJPUl9EVVBMSUNBVEVfU0VMRUNUT1JfVkFMVUUQDBItCilDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfREVGQVVMVF9MT0dJQxANEi8KK0NPTkZJR1VSQVRJT05fRVJST1JfSU5WQUxJRF9GQUlMX1NBRkVfU1RBVEUQDhIqCiZDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfTE9HSUNfVFlQRRAPEisKJ0NPTkZJR1VSQVRJT05fRVJST1JfSU5WQUxJRF9MT0dJQ19JTlBVVBAQEisKJ0NPTkZJR1VSQVRJT05fRVJST1JfSU5WQUxJRF9GSVhFRF9TVEFURRAREi0KKUNPTkZJR1VSQVRJT05fRVJST1JfSU5WQUxJRF9TV0lUQ0hfVkFMVUVTEBISKgomQ09ORklHVVJBVElPTl9FUlJPUl9JTlZBTElEX0hZU1RFUkVTSVMQExIpCiVDT05GSUdVUkFUSU9OX0VSUk9SX0lOVkFMSURfTU9WRV9USU1FEBQSKQolQ09ORklHVVJBVElPTl9FUlJPUl9OT19GTEFQX0NPTk5FQ1RFRBAVKtEBCgxGbGFwUG9zaXRpb24SHQoZRkxBUF9QT1NJVElPTl9VTlNQRUNJRklFRBAAEhkKFUZMQVBfUE9TSVRJT05fVU5LTk9XThABEhkKFUZMQVBfUE9TSVRJT05fT1BFTklORxACEhYKEkZMQVBfUE9TSVRJT05fT1BFThADEhkKFUZMQVBfUE9TSVRJT05fQ0xPU0lORxAEEhgKFEZMQVBfUE9TSVRJT05fQ0xPU0VEEAUSHwobRkxBUF9QT1NJVElPTl9OT1RfQ09OTkVDVEVEEAYqbwoITG9nTGV2ZWwSEQoNTE9HX0xFVkVMX09GRhAAEhMKD0xPR19MRVZFTF9FUlJPUhABEhIKDkxPR19MRVZFTF9XQVJOEAISEgoOTE9HX0xFVkVMX0lORk8QAxITCg9MT0dfTEVWRUxfREVCVUcQBCrqAwoTRmlybXdhcmVVcGRhdGVFcnJvchIlCiFGSVJNV0FSRV9VUERBVEVfRVJST1JfVU5TUEVDSUZJRUQQABImCiJGSVJNV0FSRV9VUERBVEVfRVJST1JfSU5WQUxJRF9TSVpFEAESJQohRklSTVdBUkVfVVBEQVRFX0VSUk9SX05PVF9TVEFSVEVEEAISIQodRklSTVdBUkVfVVBEQVRFX0VSUk9SX0VSQVNJTkcQAxIoCiRGSVJNV0FSRV9VUERBVEVfRVJST1JfSU5WQUxJRF9PRkZTRVQQBBIoCiRGSVJNV0FSRV9VUERBVEVfRVJST1JfSU5WQUxJRF9MRU5HVEgQBRInCiNGSVJNV0FSRV9VUERBVEVfRVJST1JfREFUQV9NSVNNQVRDSBAGEiQKIEZJUk1XQVJFX1VQREFURV9FUlJPUl9JTkNPTVBMRVRFEAcSJwojRklSTVdBUkVfVVBEQVRFX0VSUk9SX0lOVkFMSURfSU1BR0UQCBIlCiFGSVJNV0FSRV9VUERBVEVfRVJST1JfV1JPTkdfQk9BUkQQCRImCiJGSVJNV0FSRV9VUERBVEVfRVJST1JfQ1JDX01JU01BVENIEAoSHwobRklSTVdBUkVfVVBEQVRFX0VSUk9SX0ZMQVNIEAtiBnByb3RvMw");
 
 /**
  * @generated from message flaps.ErrorResponse
@@ -134,6 +134,8 @@ export const GetDeviceInfoRequestSchema: GenMessage<GetDeviceInfoRequest> = /*@_
  */
 export type GetDeviceInfoResponse = Message<"flaps.GetDeviceInfoResponse"> & {
   /**
+   * in the bootloader: the installed application, 0 = none
+   *
    * @generated from field: uint32 firmware_version_major = 1;
    */
   firmwareVersionMajor: number;
@@ -154,6 +156,16 @@ export type GetDeviceInfoResponse = Message<"flaps.GetDeviceInfoResponse"> & {
    * @generated from field: bytes device_uid = 4;
    */
   deviceUid: Uint8Array;
+
+  /**
+   * @generated from field: flaps.DeviceMode mode = 5;
+   */
+  mode: DeviceMode;
+
+  /**
+   * @generated from field: flaps.BootloaderReason bootloader_reason = 6;
+   */
+  bootloaderReason: BootloaderReason;
 };
 
 /**
@@ -1189,6 +1201,234 @@ export const FlapTraceSchema: GenMessage<FlapTrace> = /*@__PURE__*/
   messageDesc(file_flaps, 39);
 
 /**
+ * FIRMWARE_UPDATE_BEGIN — erases the staging area, answered when it is done: ~1-2 s per
+ * 128 KB (wait up to 30 s). Sending it again restarts the update (a resent BEGIN with the
+ * same size before any DATA is just answered again).
+ *
+ * @generated from message flaps.FirmwareUpdateBeginRequest
+ */
+export type FirmwareUpdateBeginRequest = Message<"flaps.FirmwareUpdateBeginRequest"> & {
+  /**
+   * bytes of the .bin
+   *
+   * @generated from field: uint32 image_size = 1;
+   */
+  imageSize: number;
+};
+
+/**
+ * Describes the message flaps.FirmwareUpdateBeginRequest.
+ * Use `create(FirmwareUpdateBeginRequestSchema)` to create a new message.
+ */
+export const FirmwareUpdateBeginRequestSchema: GenMessage<FirmwareUpdateBeginRequest> = /*@__PURE__*/
+  messageDesc(file_flaps, 40);
+
+/**
+ * @generated from message flaps.FirmwareUpdateBeginResponse
+ */
+export type FirmwareUpdateBeginResponse = Message<"flaps.FirmwareUpdateBeginResponse"> & {
+  /**
+   * OK or FIRMWARE_UPDATE_ERROR
+   *
+   * @generated from field: flaps.Status status = 1;
+   */
+  status: Status;
+
+  /**
+   * @generated from field: flaps.FirmwareUpdateError error = 2;
+   */
+  error: FirmwareUpdateError;
+
+  /**
+   * largest FirmwareUpdateDataRequest.data
+   *
+   * @generated from field: uint32 max_chunk_size = 3;
+   */
+  maxChunkSize: number;
+
+  /**
+   * @generated from field: uint32 max_image_size = 4;
+   */
+  maxImageSize: number;
+};
+
+/**
+ * Describes the message flaps.FirmwareUpdateBeginResponse.
+ * Use `create(FirmwareUpdateBeginResponseSchema)` to create a new message.
+ */
+export const FirmwareUpdateBeginResponseSchema: GenMessage<FirmwareUpdateBeginResponse> = /*@__PURE__*/
+  messageDesc(file_flaps, 41);
+
+/**
+ * FIRMWARE_UPDATE_DATA — the next chunk, in order, one at a time (wait for the reply).
+ * A resent chunk (lost reply) that matches what was written is answered OK again.
+ *
+ * @generated from message flaps.FirmwareUpdateDataRequest
+ */
+export type FirmwareUpdateDataRequest = Message<"flaps.FirmwareUpdateDataRequest"> & {
+  /**
+   * = received of the previous reply
+   *
+   * @generated from field: uint32 offset = 1;
+   */
+  offset: number;
+
+  /**
+   * multiple of 32 bytes, except the last chunk; max 1024
+   *
+   * @generated from field: bytes data = 2;
+   */
+  data: Uint8Array;
+};
+
+/**
+ * Describes the message flaps.FirmwareUpdateDataRequest.
+ * Use `create(FirmwareUpdateDataRequestSchema)` to create a new message.
+ */
+export const FirmwareUpdateDataRequestSchema: GenMessage<FirmwareUpdateDataRequest> = /*@__PURE__*/
+  messageDesc(file_flaps, 42);
+
+/**
+ * @generated from message flaps.FirmwareUpdateDataResponse
+ */
+export type FirmwareUpdateDataResponse = Message<"flaps.FirmwareUpdateDataResponse"> & {
+  /**
+   * OK or FIRMWARE_UPDATE_ERROR
+   *
+   * @generated from field: flaps.Status status = 1;
+   */
+  status: Status;
+
+  /**
+   * @generated from field: flaps.FirmwareUpdateError error = 2;
+   */
+  error: FirmwareUpdateError;
+
+  /**
+   * bytes written so far — the next offset
+   *
+   * @generated from field: uint32 received = 3;
+   */
+  received: number;
+};
+
+/**
+ * Describes the message flaps.FirmwareUpdateDataResponse.
+ * Use `create(FirmwareUpdateDataResponseSchema)` to create a new message.
+ */
+export const FirmwareUpdateDataResponseSchema: GenMessage<FirmwareUpdateDataResponse> = /*@__PURE__*/
+  messageDesc(file_flaps, 43);
+
+/**
+ * FIRMWARE_UPDATE_COMMIT — checks the whole image (header, board, CRC). OK: the device
+ * restarts right after the reply, the bootloader installs the image (a few s) and starts it.
+ *
+ * @generated from message flaps.FirmwareUpdateCommitRequest
+ */
+export type FirmwareUpdateCommitRequest = Message<"flaps.FirmwareUpdateCommitRequest"> & {
+};
+
+/**
+ * Describes the message flaps.FirmwareUpdateCommitRequest.
+ * Use `create(FirmwareUpdateCommitRequestSchema)` to create a new message.
+ */
+export const FirmwareUpdateCommitRequestSchema: GenMessage<FirmwareUpdateCommitRequest> = /*@__PURE__*/
+  messageDesc(file_flaps, 44);
+
+/**
+ * @generated from message flaps.FirmwareUpdateCommitResponse
+ */
+export type FirmwareUpdateCommitResponse = Message<"flaps.FirmwareUpdateCommitResponse"> & {
+  /**
+   * OK or FIRMWARE_UPDATE_ERROR
+   *
+   * @generated from field: flaps.Status status = 1;
+   */
+  status: Status;
+
+  /**
+   * @generated from field: flaps.FirmwareUpdateError error = 2;
+   */
+  error: FirmwareUpdateError;
+};
+
+/**
+ * Describes the message flaps.FirmwareUpdateCommitResponse.
+ * Use `create(FirmwareUpdateCommitResponseSchema)` to create a new message.
+ */
+export const FirmwareUpdateCommitResponseSchema: GenMessage<FirmwareUpdateCommitResponse> = /*@__PURE__*/
+  messageDesc(file_flaps, 45);
+
+/**
+ * FIRMWARE_UPDATE_ABORT — ends the update, the firmware in use stays (also when the
+ * session ends). Always answered.
+ *
+ * @generated from message flaps.FirmwareUpdateAbortRequest
+ */
+export type FirmwareUpdateAbortRequest = Message<"flaps.FirmwareUpdateAbortRequest"> & {
+};
+
+/**
+ * Describes the message flaps.FirmwareUpdateAbortRequest.
+ * Use `create(FirmwareUpdateAbortRequestSchema)` to create a new message.
+ */
+export const FirmwareUpdateAbortRequestSchema: GenMessage<FirmwareUpdateAbortRequest> = /*@__PURE__*/
+  messageDesc(file_flaps, 46);
+
+/**
+ * @generated from message flaps.FirmwareUpdateAbortResponse
+ */
+export type FirmwareUpdateAbortResponse = Message<"flaps.FirmwareUpdateAbortResponse"> & {
+};
+
+/**
+ * Describes the message flaps.FirmwareUpdateAbortResponse.
+ * Use `create(FirmwareUpdateAbortResponseSchema)` to create a new message.
+ */
+export const FirmwareUpdateAbortResponseSchema: GenMessage<FirmwareUpdateAbortResponse> = /*@__PURE__*/
+  messageDesc(file_flaps, 47);
+
+/**
+ * REBOOT — restarts the device right after the reply
+ *
+ * @generated from message flaps.RebootRequest
+ */
+export type RebootRequest = Message<"flaps.RebootRequest"> & {
+  /**
+   * stay in the bootloader (recovery mode); false = start the application
+   *
+   * @generated from field: bool to_bootloader = 1;
+   */
+  toBootloader: boolean;
+};
+
+/**
+ * Describes the message flaps.RebootRequest.
+ * Use `create(RebootRequestSchema)` to create a new message.
+ */
+export const RebootRequestSchema: GenMessage<RebootRequest> = /*@__PURE__*/
+  messageDesc(file_flaps, 48);
+
+/**
+ * @generated from message flaps.RebootResponse
+ */
+export type RebootResponse = Message<"flaps.RebootResponse"> & {
+  /**
+   * OK or NO_VALID_FIRMWARE (bootloader, no application to start)
+   *
+   * @generated from field: flaps.Status status = 1;
+   */
+  status: Status;
+};
+
+/**
+ * Describes the message flaps.RebootResponse.
+ * Use `create(RebootResponseSchema)` to create a new message.
+ */
+export const RebootResponseSchema: GenMessage<RebootResponse> = /*@__PURE__*/
+  messageDesc(file_flaps, 49);
+
+/**
  * @generated from enum flaps.Command
  */
 export enum Command {
@@ -1268,6 +1508,43 @@ export enum Command {
    * @generated from enum value: COMMAND_SET_FLAPS_OVERRIDE = 10;
    */
   SET_FLAPS_OVERRIDE = 10,
+
+  /**
+   * Firmware update, also handled by the bootloader (recovery mode) — see "Firmware update"
+   *
+   * FirmwareUpdateBeginRequest  -> FirmwareUpdateBeginResponse
+   *
+   * @generated from enum value: COMMAND_FIRMWARE_UPDATE_BEGIN = 11;
+   */
+  FIRMWARE_UPDATE_BEGIN = 11,
+
+  /**
+   * FirmwareUpdateDataRequest   -> FirmwareUpdateDataResponse
+   *
+   * @generated from enum value: COMMAND_FIRMWARE_UPDATE_DATA = 12;
+   */
+  FIRMWARE_UPDATE_DATA = 12,
+
+  /**
+   * FirmwareUpdateCommitRequest -> FirmwareUpdateCommitResponse
+   *
+   * @generated from enum value: COMMAND_FIRMWARE_UPDATE_COMMIT = 13;
+   */
+  FIRMWARE_UPDATE_COMMIT = 13,
+
+  /**
+   * FirmwareUpdateAbortRequest  -> FirmwareUpdateAbortResponse
+   *
+   * @generated from enum value: COMMAND_FIRMWARE_UPDATE_ABORT = 14;
+   */
+  FIRMWARE_UPDATE_ABORT = 14,
+
+  /**
+   * RebootRequest               -> RebootResponse
+   *
+   * @generated from enum value: COMMAND_REBOOT = 15;
+   */
+  REBOOT = 15,
 
   /**
    * 0x70..0x7F: sent without a request (device logs / telemetry, nRF52 link status, NACK)
@@ -1382,6 +1659,27 @@ export enum Status {
    * @generated from enum value: STATUS_INVALID_OVERRIDE = 9;
    */
   INVALID_OVERRIDE = 9,
+
+  /**
+   * SAVE_CONFIGURATION during a firmware update
+   *
+   * @generated from enum value: STATUS_BUSY = 10;
+   */
+  BUSY = 10,
+
+  /**
+   * FIRMWARE_UPDATE_*: see FirmwareUpdateError
+   *
+   * @generated from enum value: STATUS_FIRMWARE_UPDATE_ERROR = 11;
+   */
+  FIRMWARE_UPDATE_ERROR = 11,
+
+  /**
+   * REBOOT to the application from the bootloader without one
+   *
+   * @generated from enum value: STATUS_NO_VALID_FIRMWARE = 12;
+   */
+  NO_VALID_FIRMWARE = 12,
 }
 
 /**
@@ -1389,6 +1687,77 @@ export enum Status {
  */
 export const StatusSchema: GenEnum<Status> = /*@__PURE__*/
   enumDesc(file_flaps, 1);
+
+/**
+ * @generated from enum flaps.DeviceMode
+ */
+export enum DeviceMode {
+  /**
+   * older firmware: the application
+   *
+   * @generated from enum value: DEVICE_MODE_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: DEVICE_MODE_APPLICATION = 1;
+   */
+  APPLICATION = 1,
+
+  /**
+   * recovery mode: only session, device info and firmware update
+   *
+   * @generated from enum value: DEVICE_MODE_BOOTLOADER = 2;
+   */
+  BOOTLOADER = 2,
+}
+
+/**
+ * Describes the enum flaps.DeviceMode.
+ */
+export const DeviceModeSchema: GenEnum<DeviceMode> = /*@__PURE__*/
+  enumDesc(file_flaps, 2);
+
+/**
+ * Why the bootloader stayed in recovery mode instead of starting the application
+ *
+ * @generated from enum flaps.BootloaderReason
+ */
+export enum BootloaderReason {
+  /**
+   * not in the bootloader
+   *
+   * @generated from enum value: BOOTLOADER_REASON_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * no application or a damaged one (CRC)
+   *
+   * @generated from enum value: BOOTLOADER_REASON_NO_VALID_FIRMWARE = 1;
+   */
+  NO_VALID_FIRMWARE = 1,
+
+  /**
+   * the application was reset by the watchdog 3 times in a row
+   *
+   * @generated from enum value: BOOTLOADER_REASON_CRASH_LOOP = 2;
+   */
+  CRASH_LOOP = 2,
+
+  /**
+   * REBOOT { to_bootloader: true }
+   *
+   * @generated from enum value: BOOTLOADER_REASON_REQUESTED = 3;
+   */
+  REQUESTED = 3,
+}
+
+/**
+ * Describes the enum flaps.BootloaderReason.
+ */
+export const BootloaderReasonSchema: GenEnum<BootloaderReason> = /*@__PURE__*/
+  enumDesc(file_flaps, 3);
 
 /**
  * @generated from enum flaps.FlapsState
@@ -1414,7 +1783,7 @@ export enum FlapsState {
  * Describes the enum flaps.FlapsState.
  */
 export const FlapsStateSchema: GenEnum<FlapsState> = /*@__PURE__*/
-  enumDesc(file_flaps, 2);
+  enumDesc(file_flaps, 4);
 
 /**
  * Reason SET_CONFIGURATION was rejected (same order as ConfigurationError in firmware)
@@ -1561,7 +1930,7 @@ export enum ConfigurationError {
  * Describes the enum flaps.ConfigurationError.
  */
 export const ConfigurationErrorSchema: GenEnum<ConfigurationError> = /*@__PURE__*/
-  enumDesc(file_flaps, 3);
+  enumDesc(file_flaps, 5);
 
 /**
  * @generated from enum flaps.FlapPosition
@@ -1611,7 +1980,7 @@ export enum FlapPosition {
  * Describes the enum flaps.FlapPosition.
  */
 export const FlapPositionSchema: GenEnum<FlapPosition> = /*@__PURE__*/
-  enumDesc(file_flaps, 4);
+  enumDesc(file_flaps, 6);
 
 /**
  * @generated from enum flaps.LogLevel
@@ -1647,5 +2016,102 @@ export enum LogLevel {
  * Describes the enum flaps.LogLevel.
  */
 export const LogLevelSchema: GenEnum<LogLevel> = /*@__PURE__*/
-  enumDesc(file_flaps, 5);
+  enumDesc(file_flaps, 7);
+
+/**
+ * Reason a FIRMWARE_UPDATE_* request failed (status FIRMWARE_UPDATE_ERROR)
+ *
+ * @generated from enum flaps.FirmwareUpdateError
+ */
+export enum FirmwareUpdateError {
+  /**
+   * no error
+   *
+   * @generated from enum value: FIRMWARE_UPDATE_ERROR_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * image_size 0 or above max_image_size
+   *
+   * @generated from enum value: FIRMWARE_UPDATE_ERROR_INVALID_SIZE = 1;
+   */
+  INVALID_SIZE = 1,
+
+  /**
+   * DATA / COMMIT without a successful BEGIN
+   *
+   * @generated from enum value: FIRMWARE_UPDATE_ERROR_NOT_STARTED = 2;
+   */
+  NOT_STARTED = 2,
+
+  /**
+   * BEGIN with another size while the flash is erased
+   *
+   * @generated from enum value: FIRMWARE_UPDATE_ERROR_ERASING = 3;
+   */
+  ERASING = 3,
+
+  /**
+   * not `received` (or a resent earlier chunk), not a multiple of 32
+   *
+   * @generated from enum value: FIRMWARE_UPDATE_ERROR_INVALID_OFFSET = 4;
+   */
+  INVALID_OFFSET = 4,
+
+  /**
+   * empty, above max_chunk_size, past the image or not a multiple of 32 (except the last chunk)
+   *
+   * @generated from enum value: FIRMWARE_UPDATE_ERROR_INVALID_LENGTH = 5;
+   */
+  INVALID_LENGTH = 5,
+
+  /**
+   * resent chunk differs from what was written
+   *
+   * @generated from enum value: FIRMWARE_UPDATE_ERROR_DATA_MISMATCH = 6;
+   */
+  DATA_MISMATCH = 6,
+
+  /**
+   * COMMIT before the whole image was sent
+   *
+   * @generated from enum value: FIRMWARE_UPDATE_ERROR_INCOMPLETE = 7;
+   */
+  INCOMPLETE = 7,
+
+  /**
+   * no image header / not built for this address
+   *
+   * @generated from enum value: FIRMWARE_UPDATE_ERROR_INVALID_IMAGE = 8;
+   */
+  INVALID_IMAGE = 8,
+
+  /**
+   * image for another board
+   *
+   * @generated from enum value: FIRMWARE_UPDATE_ERROR_WRONG_BOARD = 9;
+   */
+  WRONG_BOARD = 9,
+
+  /**
+   * image damaged (CRC in its header)
+   *
+   * @generated from enum value: FIRMWARE_UPDATE_ERROR_CRC_MISMATCH = 10;
+   */
+  CRC_MISMATCH = 10,
+
+  /**
+   * erase / program failed
+   *
+   * @generated from enum value: FIRMWARE_UPDATE_ERROR_FLASH = 11;
+   */
+  FLASH = 11,
+}
+
+/**
+ * Describes the enum flaps.FirmwareUpdateError.
+ */
+export const FirmwareUpdateErrorSchema: GenEnum<FirmwareUpdateError> = /*@__PURE__*/
+  enumDesc(file_flaps, 8);
 

@@ -114,12 +114,14 @@ export class ConfigurationService {
   constructor() {
     effect(() => {
       const status = this.connection.status();
+      const bootloader = this.connection.inBootloader();
       untracked(() => {
-        if (status === 'connected' && !this.dirty() && !this._busy()) {
+        if (status === 'disconnected' || (status === 'connected' && bootloader)) {
+          // Bootloader (tryb ratunkowy) nie ma konfiguracji
+          this.reset();
+        } else if (status === 'connected' && !this.dirty() && !this._busy()) {
           // Po połączeniu (także ponownym) — konfiguracja z urządzenia, o ile nie ma zmian
           void this.read();
-        } else if (status === 'disconnected') {
-          this.reset();
         }
       });
     });
@@ -170,6 +172,9 @@ export class ConfigurationService {
         SaveConfigurationResponseSchema,
         { timeoutMs: SAVE_TIMEOUT_MS, retries: 0 },
       );
+      if (reply.status === Status.BUSY) {
+        throw new Error('Trwa aktualizacja firmware — zapisz konfigurację po jej zakończeniu.');
+      }
       if (reply.status !== Status.OK) {
         throw new Error('Nie udało się zapisać konfiguracji we flashu sterownika.');
       }

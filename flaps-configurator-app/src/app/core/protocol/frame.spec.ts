@@ -39,8 +39,8 @@ describe('encodeFrame', () => {
     expect(encodeFrame({ command: 0x01, seq: 1, payload })).toEqual(START_SESSION);
   });
 
-  it('rejects a payload over 256 bytes', () => {
-    expect(() => encodeFrame({ command: 1, seq: 1, payload: new Uint8Array(257) })).toThrow(
+  it('rejects a payload over 2048 bytes', () => {
+    expect(() => encodeFrame({ command: 1, seq: 1, payload: new Uint8Array(2049) })).toThrow(
       RangeError,
     );
   });

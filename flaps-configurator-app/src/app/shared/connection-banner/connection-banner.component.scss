@@ -75,3 +75,13 @@ ion-button {
   font-size: 12px;
   font-weight: 600;
 }
+
+.bootloader-notice {
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  border: 1px solid var(--app-danger-border);
+  border-radius: 12px;
+  background: var(--app-danger-bg);
+  font-size: 13px;
+  color: var(--app-danger-text);
+}

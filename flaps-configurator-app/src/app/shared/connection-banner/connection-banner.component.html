@@ -7,12 +7,18 @@
         <span>
           {{ connection.deviceName() }}
           @if (connection.deviceInfo(); as info) {
-            · FW {{ info.firmwareVersion }}
+            · {{ info.mode === 'bootloader' ? 'bootloader' : 'FW ' + info.firmwareVersion }}
           }
         </span>
       </div>
       <ion-button color="success" (click)="disconnect()">Rozłącz</ion-button>
     </div>
+    @if (connection.inBootloader()) {
+      <p class="bootloader-notice" role="alert">
+        <strong>Tryb ratunkowy</strong> — sterownik nie steruje klapami. Wgraj firmware w zakładce
+        Aktualizacja.
+      </p>
+    }
   }
   @case ('connecting') {
     <div class="banner banner--pending" role="status">

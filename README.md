@@ -22,6 +22,7 @@ na telefonach natywnie, w Electronie przez Web Bluetooth.
 - [Połączenie z urządzeniem](#połączenie-z-urządzeniem)
   - [Konfiguracja (zakładka Config)](#konfiguracja-zakładka-config)
   - [Stan, ręczne sterowanie i tryb deweloperski](#stan-ręczne-sterowanie-i-tryb-deweloperski)
+  - [Aktualizacja firmware (zakładka Aktualizacja)](#aktualizacja-firmware-zakładka-aktualizacja)
 - [Jakość kodu](#jakość-kodu)
 - [Pozostałe komendy](#pozostałe-komendy)
 
@@ -316,6 +317,36 @@ od nowa (`GET_STATE`).
   próbki przebiegu z `FLAP_TRACE` (tryb dev). AMP_OUT to surowy odczyt ADC (0–65535); napięcie
   liczone przy VREF 3,3 V ([`core/amp-out.ts`](flaps-configurator-app/src/app/core/amp-out.ts)).
 - **Dev console → Logi sterownika** — linie `LOG` z czasem od startu sterownika i poziomem.
+
+### Aktualizacja firmware (zakładka Aktualizacja)
+
+Nowy firmware wgrywa się przez BLE, bez ST-Linka (protokół 1.9, bootloader w firmware — README
+firmware „Bootloader i aktualizacja firmware”).
+
+1. **Wybierz plik .bin** — `build/<preset>/exhaust_flaps_controller.bin` z buildu firmware, z pamięci
+   telefonu albo dysku komputera (systemowe okno wyboru pliku). Aplikacja od razu sprawdza nagłówek
+   obrazu (`FAPH`, płytka `EFC1`, adres `0x08020000`), rozmiar i CRC-32 — jak
+   `tools/firmware_image.py --check` — i pokazuje wersję z pliku. Ostrzega, gdy to ta sama albo
+   starsza wersja niż na sterowniku.
+2. **Wgraj firmware** (z potwierdzeniem): `FIRMWARE_UPDATE_BEGIN` (kasowanie stagingu, timeout
+   30 s) → `FIRMWARE_UPDATE_DATA` po jednej paczce 1 KB, zawsze czekając na odpowiedź → `COMMIT`.
+   Postęp widać na pasku. Klapy działają normalnie przez całe pobieranie; ping jest w tym czasie
+   wstrzymany (każda paczka i tak przedłuża sesję, a ping wpleciony w dużą ramkę BLE by ją rozbił).
+3. Po `COMMIT` sterownik się restartuje, a bootloader instaluje obraz. Aplikacja zostaje połączona
+   przez BLE, wysyła `START_SESSION` co ~1 s (do 45 s) i pokazuje wersję przed i po.
+
+**Przerwij** (do `COMMIT`) wysyła `FIRMWARE_UPDATE_ABORT`. Odrzucony obraz (CRC, inna płytka) i
+zerwane połączenie też kończą aktualizację — sterownik zostaje na dotychczasowym firmware. Logika
+w [`core/firmware/`](flaps-configurator-app/src/app/core/firmware) (`firmware-image.ts`,
+`firmware-update.service.ts`).
+
+**Tryb ratunkowy (bootloader).** Gdy `GET_DEVICE_INFO` zwraca `mode: BOOTLOADER` (uszkodzony
+firmware, pętla resetów albo `REBOOT { to_bootloader }`), aplikacja nie czyta konfiguracji ani stanu,
+przechodzi do zakładki Aktualizacja i pokazuje na każdej stronie ostrzeżenie, że klapy nie są
+sterowane. Karta **Restart**: *Uruchom ponownie*, *Tryb ratunkowy* (`REBOOT`), a w bootloaderze
+*Uruchom firmware*.
+
+Ramki protokołu mogą mieć do 2048 B payloadu (limit firmware) — paczka aktualizacji to ok. 1 KB.
 
 Modele protokołu są generowane z `flaps.proto` firmware do
 [`src/app/core/protocol/gen`](flaps-configurator-app/src/app/core/protocol/gen) (plik w repo,

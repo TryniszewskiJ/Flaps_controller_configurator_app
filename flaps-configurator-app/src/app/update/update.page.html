@@ -1,0 +1,178 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="page-toolbar">
+    <h1 slot="start" class="page-title">Aktualizacja</h1>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="page">
+    <app-connection-banner />
+
+    <section class="card">
+      <h2 class="card-label">Sterownik</h2>
+      @if (connection.deviceInfo(); as info) {
+        <div class="kv-row">
+          <span class="text-muted">Firmware</span>
+          <span class="mono">
+            {{ info.firmwareVersion === '0.0.0' ? 'brak' : info.firmwareVersion }}
+          </span>
+        </div>
+        <div class="kv-row">
+          <span class="text-muted">Tryb</span>
+          @if (info.mode === 'bootloader') {
+            <span class="mode--bootloader">
+              ratunkowy ({{ describeBootloaderReason(info.bootloaderReason) }})
+            </span>
+          } @else {
+            <span>normalna praca</span>
+          }
+        </div>
+      } @else {
+        <p class="muted-text">Połącz się ze sterownikiem, żeby zaktualizować firmware.</p>
+      }
+    </section>
+
+    <section class="card">
+      <h2 class="card-label">Plik firmware</h2>
+      <input
+        #fileInput
+        class="file-input"
+        type="file"
+        accept=".bin,application/octet-stream"
+        [disabled]="update.running()"
+        (change)="onFile(fileInput)"
+      />
+      <ion-button
+        expand="block"
+        fill="outline"
+        [disabled]="update.running() || reading()"
+        (click)="fileInput.click()"
+      >
+        <ion-icon slot="start" name="document-outline"></ion-icon>
+        {{ image() ? 'Wybierz inny plik' : 'Wybierz plik .bin' }}
+      </ion-button>
+
+      @if (image(); as image) {
+        <div class="kv-row">
+          <span class="text-muted">Plik</span>
+          <span class="file-name">{{ image.fileName }}</span>
+        </div>
+        <div class="kv-row">
+          <span class="text-muted">Wersja</span>
+          <span class="mono">{{ image.version }}</span>
+        </div>
+        <div class="kv-row">
+          <span class="text-muted">Rozmiar</span>
+          <span class="mono">{{ formatSize(image.data.length) }}</span>
+        </div>
+        @if (versionNote(); as note) {
+          <p class="message message--warning">{{ note }}</p>
+        }
+      } @else if (fileError(); as error) {
+        <p class="message message--danger">{{ error }}</p>
+      } @else {
+        <p class="muted-text">
+          Plik <span class="mono">exhaust_flaps_controller.bin</span> z buildu firmware — np. z
+          pamięci telefonu albo dysku komputera. Aplikacja sprawdzi nagłówek i CRC przed wysłaniem.
+        </p>
+      }
+    </section>
+
+    <section class="card">
+      <h2 class="card-label">Wgrywanie</h2>
+      @switch (update.phase()) {
+        @case ('idle') {
+          <p class="muted-text">
+            Pobieranie nie przerywa sterowania klapami. Po wysłaniu sterownik się restartuje i
+            instaluje nowy firmware (kilka sekund). Przerwanie albo utrata połączenia w trakcie nie
+            psuje działającego firmware.
+          </p>
+        }
+        @case ('done') {
+          <p class="message message--success">
+            {{ phaseLabel() }}: {{ update.versions()?.before }} →
+            <strong>{{ update.versions()?.after }}</strong>
+          </p>
+        }
+        @case ('failed') {
+          <p class="message message--danger">{{ update.error() }}</p>
+        }
+        @case ('aborted') {
+          <p class="message message--warning">{{ phaseLabel() }}</p>
+        }
+        @default {
+          <div class="progress">
+            <div class="progress__text">
+              <span>{{ phaseLabel() }}</span>
+              @if (update.phase() === 'sending') {
+                <span class="mono">
+                  {{ formatSize(update.sent()) }} / {{ formatSize(update.total()) }} ·
+                  {{ percent() }}%
+                </span>
+              }
+            </div>
+            @if (indeterminate()) {
+              <ion-progress-bar type="indeterminate"></ion-progress-bar>
+            } @else {
+              <ion-progress-bar [value]="update.progress()"></ion-progress-bar>
+            }
+            <p class="muted-text">Nie zamykaj aplikacji i nie oddalaj się od sterownika.</p>
+          </div>
+        }
+      }
+
+      <div class="btn-row">
+        @if (update.canAbort()) {
+          <ion-button color="medium" fill="outline" (click)="abort()">Przerwij</ion-button>
+        }
+        <ion-button class="start-button" [disabled]="!canStart()" (click)="start()">
+          @if (update.running()) {
+            <ion-spinner name="crescent"></ion-spinner>
+          } @else {
+            Wgraj firmware
+          }
+        </ion-button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="card-label">Restart</h2>
+      <p class="muted-text">
+        Tryb ratunkowy (bootloader) przyjmuje tylko aktualizację — klapy nie są wtedy sterowane.
+        Sterownik wchodzi w niego sam, gdy firmware jest uszkodzony albo ciągle się resetuje.
+      </p>
+      @if (update.error() && update.phase() === 'idle') {
+        <p class="message message--danger">{{ update.error() }}</p>
+      }
+      <div class="btn-row">
+        @if (connection.inBootloader()) {
+          <ion-button
+            [disabled]="!connection.connected() || update.running() || update.rebooting()"
+            (click)="reboot(false)"
+          >
+            Uruchom firmware
+          </ion-button>
+        } @else {
+          <ion-button
+            fill="outline"
+            color="medium"
+            [disabled]="!connection.connected() || update.running() || update.rebooting()"
+            (click)="reboot(true)"
+          >
+            Tryb ratunkowy
+          </ion-button>
+          <ion-button
+            fill="outline"
+            [disabled]="!connection.connected() || update.running() || update.rebooting()"
+            (click)="reboot(false)"
+          >
+            Uruchom ponownie
+          </ion-button>
+        }
+      </div>
+      @if (update.rebooting()) {
+        <p class="muted-text">Restart sterownika…</p>
+      }
+    </section>
+  </div>
+</ion-content>

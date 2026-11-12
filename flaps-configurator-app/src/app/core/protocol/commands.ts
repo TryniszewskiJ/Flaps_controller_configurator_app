@@ -12,6 +12,14 @@ import {
   Command,
   ErrorResponseSchema,
   EventSchema,
+  FirmwareUpdateAbortRequestSchema,
+  FirmwareUpdateAbortResponseSchema,
+  FirmwareUpdateBeginRequestSchema,
+  FirmwareUpdateBeginResponseSchema,
+  FirmwareUpdateCommitRequestSchema,
+  FirmwareUpdateCommitResponseSchema,
+  FirmwareUpdateDataRequestSchema,
+  FirmwareUpdateDataResponseSchema,
   FlapTraceSchema,
   GetConfigurationRequestSchema,
   GetConfigurationResponseSchema,
@@ -22,6 +30,8 @@ import {
   LogSchema,
   PingRequestSchema,
   PingResponseSchema,
+  RebootRequestSchema,
+  RebootResponseSchema,
   SaveConfigurationRequestSchema,
   SaveConfigurationResponseSchema,
   SetConfigurationRequestSchema,
@@ -78,6 +88,23 @@ export const COMMAND_SCHEMAS: Partial<Record<Command, CommandSchemas>> = {
     request: SetFlapsOverrideRequestSchema,
     response: SetFlapsOverrideResponseSchema,
   },
+  [Command.FIRMWARE_UPDATE_BEGIN]: {
+    request: FirmwareUpdateBeginRequestSchema,
+    response: FirmwareUpdateBeginResponseSchema,
+  },
+  [Command.FIRMWARE_UPDATE_DATA]: {
+    request: FirmwareUpdateDataRequestSchema,
+    response: FirmwareUpdateDataResponseSchema,
+  },
+  [Command.FIRMWARE_UPDATE_COMMIT]: {
+    request: FirmwareUpdateCommitRequestSchema,
+    response: FirmwareUpdateCommitResponseSchema,
+  },
+  [Command.FIRMWARE_UPDATE_ABORT]: {
+    request: FirmwareUpdateAbortRequestSchema,
+    response: FirmwareUpdateAbortResponseSchema,
+  },
+  [Command.REBOOT]: { request: RebootRequestSchema, response: RebootResponseSchema },
 };
 
 /** Modele wiadomości wysyłanych przez urządzenie bez żądania (0x70–0x7F, SEQ = 0). */

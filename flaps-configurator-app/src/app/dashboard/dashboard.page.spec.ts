@@ -53,6 +53,8 @@ describe('DashboardPage', () => {
           useValue: {
             status,
             connected: computed(() => status() === 'connected'),
+            inBootloader: signal(false),
+            application: computed(() => status() === 'connected'),
             error: signal(null),
             deviceName: signal('DK_flaps_controller'),
             deviceInfo: signal(null),

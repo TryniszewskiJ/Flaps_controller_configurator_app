@@ -116,7 +116,7 @@ export class DeviceStateService {
 
     effect(() => {
       const session = this.connection.session();
-      const connected = this.connection.connected();
+      const connected = this.connection.application();
       untracked(() => {
         if (connected && session > 0) {
           // Nowa sesja: urządzenie wyłączyło tryb dev i czeka z raportami na GET_STATE
@@ -158,7 +158,7 @@ export class DeviceStateService {
   /** Tryb dev obowiązuje do końca sesji — aplikacja włącza go ponownie w każdej nowej. */
   async setDevMode(settings: DevModeSettings): Promise<void> {
     this._devMode.set(settings);
-    if (this.connection.connected()) {
+    if (this.connection.application()) {
       await this.applyDevMode();
     }
   }

@@ -11,9 +11,11 @@ import { FrameLogService } from './frame-log.service';
 import { COMMAND_SCHEMAS } from './protocol/commands';
 import { Frame, FrameParser } from './protocol/frame';
 import {
+  BootloaderReason,
   CloseSessionRequestSchema,
   CloseSessionResponseSchema,
   Command,
+  DeviceMode,
   GetDeviceInfoRequestSchema,
   GetDeviceInfoResponseSchema,
   PingRequestSchema,
@@ -40,9 +42,14 @@ export interface ConnectedDevice {
 }
 
 export interface DeviceInfo {
+  /** W bootloaderze — wersja zainstalowanej aplikacji, "0.0.0" = brak. */
   firmwareVersion: string;
   /** 96-bitowy UID MCU w hex. */
   uid: string;
+  /** Bootloader = tryb ratunkowy: tylko sesja, informacje i aktualizacja firmware. */
+  mode: 'application' | 'bootloader';
+  /** Dlaczego bootloader został w trybie ratunkowym. */
+  bootloaderReason: BootloaderReason;
 }
 
 export const DEFAULT_DEVICE_NAME = 'Sterownik klap';
@@ -50,11 +57,13 @@ export const RECONNECT_DELAY_MS = 2000;
 const DEFAULT_SESSION_TIMEOUT_MS = 8000;
 const MIN_PING_INTERVAL_MS = 1000;
 const MAX_PING_FAILURES = 3;
+/** Po restarcie urządzenia: START_SESSION co tyle, aż odpowie. */
+const RESTART_RETRY_MS = 1000;
 
 /** Urządzenie odrzuciło sesję (inna wersja protokołu, obca aplikacja) — ponawianie nic nie da. */
 class SessionRejectedError extends Error {}
 /** Próba połączenia przerwana (Rozłącz / utrata łącza w trakcie). */
-class ConnectionCancelledError extends Error {}
+export class ConnectionCancelledError extends Error {}
 
 /**
  * Połączenie ze sterownikiem: BLE (mostek nRF52) + sesja protokołu STM32.
@@ -77,6 +86,10 @@ export class ConnectionService {
   readonly error = this._error.asReadonly();
   readonly connected = computed(() => this._status() === 'connected');
   readonly deviceName = computed(() => this._device()?.name ?? null);
+  /** Połączono z bootloaderem (tryb ratunkowy) — klapy nie są sterowane, działa tylko aktualizacja. */
+  readonly inBootloader = computed(() => this._deviceInfo()?.mode === 'bootloader');
+  /** Połączono z firmware sterownika — można czytać konfigurację i stan. */
+  readonly application = computed(() => this.connected() && !this.inBootloader());
 
   private readonly _session = signal(0);
   /**
@@ -103,6 +116,8 @@ export class ConnectionService {
   private pingTimer: ReturnType<typeof setTimeout> | null = null;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private pingFailures = 0;
+  /** Ile operacji wstrzymało ping (aktualizacja firmware — każde żądanie i tak przedłuża sesję). */
+  private pingHolds = 0;
 
   async connect(device: FoundDevice): Promise<void> {
     if (this._status() !== 'disconnected') {
@@ -169,6 +184,82 @@ export class ConnectionService {
     await client.request(command, schemas.request, request, schemas.response, { retries: 0 });
   }
 
+  /**
+   * Wstrzymuje PING, dopóki nie zostanie wywołana zwrócona funkcja. Aktualizacja firmware wysyła
+   * po jednej ramce naraz — ping między kawałkami dużej ramki BLE by ją rozbił.
+   */
+  holdPing(): () => void {
+    this.pingHolds++;
+    let released = false;
+    return (): void => {
+      if (!released) {
+        released = true;
+        this.pingHolds--;
+      }
+    };
+  }
+
+  /** Nowa sesja dla stanu i trybu dev (np. po przerwanej aktualizacji raporty wracają po GET_STATE). */
+  resync(): void {
+    if (this.connected()) {
+      this._session.update((session) => session + 1);
+    }
+  }
+
+  /**
+   * Urządzenie restartuje się (po FIRMWARE_UPDATE_COMMIT albo REBOOT), BLE zostaje połączone.
+   * START_SESSION co ~1 s, aż odpowie (bootloader może najpierw instalować obraz), potem
+   * GET_DEVICE_INFO. Bez odpowiedzi w `timeoutMs` — łączenie od nowa jak po utracie łącza.
+   */
+  async awaitRestart(timeoutMs: number): Promise<DeviceInfo> {
+    const generation = this.generation;
+    const client = this.client;
+    if (!client || this._status() !== 'connected') {
+      throw new Error('Brak połączenia z urządzeniem.');
+    }
+
+    this.clearTimers();
+    this._status.set('reconnecting');
+    const deadline = Date.now() + timeoutMs;
+
+    for (;;) {
+      this.ensureCurrent(generation);
+      try {
+        const sessionTimeoutMs = await this.startSession(client, {
+          timeoutMs: RESTART_RETRY_MS,
+          retries: 0,
+        });
+        this.ensureCurrent(generation);
+        const info = await this.loadDeviceInfo(client);
+        this.ensureCurrent(generation);
+        this._status.set('connected');
+        this._session.update((session) => session + 1);
+        this.pingFailures = 0;
+        this.schedulePing(generation, pingInterval(sessionTimeoutMs));
+        return info;
+      } catch (error) {
+        if (error instanceof SessionRejectedError) {
+          this.fail(error);
+          await this.link.disconnect().catch(() => undefined);
+          throw error;
+        }
+        if (error instanceof ConnectionCancelledError || generation !== this.generation) {
+          throw error;
+        }
+        if (Date.now() >= deadline) {
+          await this.link.disconnect().catch(() => undefined);
+          this.onLinkLost(generation);
+          throw new Error('Urządzenie nie odpowiada po restarcie — łączę ponownie.', {
+            cause: error,
+          });
+        }
+        if (!(error instanceof ProtocolTimeoutError)) {
+          await delay(RESTART_RETRY_MS);
+        }
+      }
+    }
+  }
+
   /** Wiadomości bez żądania (TELEMETRY, EVENT, LOG, FLAP_TRACE); zwraca wypisanie. */
   onUnsolicited(listener: (frame: Frame) => void): () => void {
     this.unsolicitedListeners.add(listener);
@@ -217,19 +308,10 @@ export class ConnectionService {
     const sessionTimeoutMs = await this.startSession(client);
     this.ensureCurrent(generation);
 
-    const info = await client.request(
-      Command.GET_DEVICE_INFO,
-      GetDeviceInfoRequestSchema,
-      {},
-      GetDeviceInfoResponseSchema,
-    );
+    await this.loadDeviceInfo(client);
     const name = await this.link.readDeviceName();
     this.ensureCurrent(generation);
 
-    this._deviceInfo.set({
-      firmwareVersion: `${info.firmwareVersionMajor}.${info.firmwareVersionMinor}.${info.firmwareVersionPatch}`,
-      uid: Array.from(info.deviceUid, (byte) => byte.toString(16).padStart(2, '0')).join(''),
-    });
     if (name) {
       this._device.set({ ...device, name });
     }
@@ -240,8 +322,29 @@ export class ConnectionService {
     this.schedulePing(generation, pingInterval(sessionTimeoutMs));
   }
 
+  private async loadDeviceInfo(client: ProtocolClient): Promise<DeviceInfo> {
+    const reply = await client.request(
+      Command.GET_DEVICE_INFO,
+      GetDeviceInfoRequestSchema,
+      {},
+      GetDeviceInfoResponseSchema,
+    );
+    const info: DeviceInfo = {
+      firmwareVersion: `${reply.firmwareVersionMajor}.${reply.firmwareVersionMinor}.${reply.firmwareVersionPatch}`,
+      uid: Array.from(reply.deviceUid, (byte) => byte.toString(16).padStart(2, '0')).join(''),
+      // Starszy firmware nie wysyła trybu (UNSPECIFIED) — to zawsze aplikacja
+      mode: reply.mode === DeviceMode.BOOTLOADER ? 'bootloader' : 'application',
+      bootloaderReason: reply.bootloaderReason,
+    };
+    this._deviceInfo.set(info);
+    return info;
+  }
+
   /** START_SESSION; zwraca timeout sesji urządzenia. */
-  private async startSession(client: ProtocolClient): Promise<number> {
+  private async startSession(
+    client: ProtocolClient,
+    options?: ProtocolClientOptions,
+  ): Promise<number> {
     const reply = await client.request(
       Command.START_SESSION,
       StartSessionRequestSchema,
@@ -251,6 +354,7 @@ export class ConnectionService {
         protocolVersionMinor: PROTOCOL_VERSION_MINOR,
       },
       StartSessionResponseSchema,
+      options,
     );
 
     switch (reply.status) {
@@ -277,6 +381,10 @@ export class ConnectionService {
   private async ping(generation: number, intervalMs: number): Promise<void> {
     const client = this.client;
     if (generation !== this.generation || !client) {
+      return;
+    }
+    if (this.pingHolds > 0) {
+      this.schedulePing(generation, intervalMs);
       return;
     }
 
@@ -323,7 +431,8 @@ export class ConnectionService {
       return;
     }
     this.generation++;
-    const wasConnected = this._status() === 'connected';
+    // Także w trakcie restartu urządzenia (awaitRestart)
+    const wasConnected = this._status() === 'connected' || this._status() === 'reconnecting';
 
     this.clearTimers();
     this.client?.cancelAll(new ConnectionCancelledError('Link lost'));
@@ -393,6 +502,10 @@ export class ConnectionService {
       this.reconnectTimer = null;
     }
   }
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /** 0x70–0x7F: wysyłane przez urządzenie bez żądania (README firmware, zakresy CMD). */

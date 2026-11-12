@@ -21,6 +21,10 @@ export const routes: Routes = [
         path: 'console',
         loadComponent: () => import('./dev-console/dev-console.page').then((m) => m.DevConsolePage),
       },
+      {
+        path: 'update',
+        loadComponent: () => import('./update/update.page').then((m) => m.UpdatePage),
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },

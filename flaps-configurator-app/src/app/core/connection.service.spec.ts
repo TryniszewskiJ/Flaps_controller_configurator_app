@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { BleLinkService } from './ble/ble-link.service';
 import { ConnectionService, RECONNECT_DELAY_MS } from './connection.service';
 import { FrameLogService } from './frame-log.service';
-import { Command, Status } from './protocol/gen/flaps_pb';
+import { BootloaderReason, Command, Status } from './protocol/gen/flaps_pb';
 import { FakeBleLink } from './testing/fake-ble-link';
 
 describe('ConnectionService', () => {
@@ -31,7 +31,12 @@ describe('ConnectionService', () => {
 
     expect(service.status()).toBe('connected');
     expect(service.deviceName()).toBe('DK_flaps_controller');
-    expect(service.deviceInfo()).toEqual({ firmwareVersion: '1.2.3', uid: 'ab'.repeat(12) });
+    expect(service.deviceInfo()).toEqual({
+      firmwareVersion: '1.2.3',
+      uid: 'ab'.repeat(12),
+      mode: 'application',
+      bootloaderReason: BootloaderReason.UNSPECIFIED,
+    });
     expect(commands()).toEqual([Command.START_SESSION, Command.GET_DEVICE_INFO]);
   });
 

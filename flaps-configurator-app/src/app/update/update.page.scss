@@ -1,0 +1,70 @@
+.muted-text {
+  margin: 0;
+  font-size: 12px;
+  color: var(--app-muted);
+}
+
+.file-input {
+  display: none;
+}
+
+.file-name {
+  overflow: hidden;
+  max-width: 60%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mode--bootloader {
+  font-weight: 600;
+  color: var(--ion-color-danger);
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progress__text {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--app-text);
+}
+
+ion-progress-bar {
+  height: 6px;
+  border-radius: 3px;
+}
+
+.message {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  border: 1px solid;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.message--warning {
+  border-color: var(--app-warning-border);
+  background: var(--app-warning-bg);
+  color: var(--app-warning-text);
+}
+
+.message--danger {
+  border-color: var(--app-danger-border);
+  background: var(--app-danger-bg);
+  color: var(--app-danger-text);
+}
+
+.message--success {
+  border-color: var(--app-success-border);
+  background: var(--app-success-bg);
+  color: var(--app-success-text);
+}
+
+.start-button {
+  flex: 1;
+}
