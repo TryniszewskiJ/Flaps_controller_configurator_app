@@ -1,6 +1,7 @@
 import { computed, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { create } from '@bufbuild/protobuf';
+import { ActionSheetController } from '@ionic/angular';
 import { ConfigurationService } from '../core/configuration.service';
 import { ConnectionService, ConnectionStatus } from '../core/connection.service';
 import { DeviceStateService } from '../core/device-state.service';
@@ -12,6 +13,7 @@ import {
   FlapsState,
 } from '../core/protocol/gen/flaps_pb';
 import { defaultConfiguration } from '../core/testing/fake-device';
+import { DashboardLayoutService } from './dashboard-layout.service';
 import { DashboardPage } from './dashboard.page';
 
 describe('DashboardPage', () => {
@@ -22,7 +24,8 @@ describe('DashboardPage', () => {
   const setOverride = vi.fn(() => Promise.resolve());
   const releaseOverride = vi.fn(() => Promise.resolve());
   const device = signal(defaultConfiguration());
-  const devModeEnabled = signal(false);
+  const present = vi.fn(() => Promise.resolve());
+  const createSheet = vi.fn((_options: unknown) => Promise.resolve({ present }));
 
   const text = (): string => fixture.nativeElement.textContent;
   const flapsButton = (): HTMLElement =>
@@ -30,10 +33,10 @@ describe('DashboardPage', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    localStorage.clear();
     status.set('connected');
     overrideUntil.set(null);
     device.set(defaultConfiguration());
-    devModeEnabled.set(false);
     state.set(
       create(DeviceStateSchema, {
         signals: [
@@ -66,19 +69,79 @@ describe('DashboardPage', () => {
           useValue: {
             state,
             overrideUntil,
-            devModeEnabled,
             override: computed(() => {
               const s = state();
               return s && s.overrideState !== FlapsState.UNSPECIFIED ? s.overrideState : null;
             }),
             setOverride,
             releaseOverride,
+            logs: signal([]),
+            droppedLogs: signal(0),
           },
         },
+        { provide: ActionSheetController, useValue: { create: createSheet } },
       ],
     });
     fixture = TestBed.createComponent(DashboardPage);
     fixture.detectChanges();
+  });
+
+  describe('sections', () => {
+    const titles = (): string[] =>
+      Array.from(
+        fixture.nativeElement.querySelectorAll('.card-label') as NodeListOf<HTMLElement>,
+        (el) => el.textContent!.trim(),
+      );
+    const editButton = (): HTMLElement =>
+      fixture.nativeElement.querySelector('ion-buttons ion-button') as HTMLElement;
+    const frameButton = (index: number, label: string): HTMLElement =>
+      fixture.nativeElement
+        .querySelectorAll('app-widget-frame')
+        [index].querySelector(`[aria-label^="${label}"]`) as HTMLElement;
+
+    it('shows the default sections without edit controls', () => {
+      expect(titles()).toEqual(['Tryb jazdy', 'Stan klap', 'Stan zmiennych', 'Akcje']);
+      expect(fixture.nativeElement.querySelector('.widget-bar')).toBeNull();
+    });
+
+    it('removes and moves sections in edit mode', () => {
+      editButton().click();
+      fixture.detectChanges();
+
+      frameButton(0, 'Usuń').click();
+      fixture.detectChanges();
+      frameButton(2, 'Przesuń w górę').click();
+      fixture.detectChanges();
+
+      expect(titles()).toEqual(['Stan klap', 'Akcje', 'Stan zmiennych']);
+      expect(TestBed.inject(DashboardLayoutService).widgets()).toEqual([
+        'flaps',
+        'actions',
+        'signals',
+      ]);
+    });
+
+    it('adds a section from the Dev console with the plus button', async () => {
+      fixture.nativeElement.querySelector('.btn-add').click();
+      await fixture.whenStable();
+
+      const { buttons } = createSheet.mock.calls[0][0] as {
+        buttons: { text: string; handler?: () => void }[];
+      };
+      expect(buttons.map((b) => b.text)).toEqual([
+        'Komenda · Dev console',
+        'AMP_OUT · Dev console',
+        'Logi sterownika · Dev console',
+        'Ramki BLE · Dev console',
+        'Anuluj',
+      ]);
+      expect(present).toHaveBeenCalled();
+
+      buttons[2].handler!();
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('app-device-log-card')).not.toBeNull();
+      expect(titles().at(-1)).toContain('Logi sterownika');
+    });
   });
 
   it('shows a flap on a disconnected output as not connected', () => {
@@ -94,7 +157,9 @@ describe('DashboardPage', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.demo-banner')).toBeNull();
 
-    devModeEnabled.set(true);
+    device.set(
+      create(ConfigurationSchema, { ...defaultConfiguration(), demoMode: true, devMode: true }),
+    );
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.demo-banner')?.textContent).toContain('Tryb demo');
   });

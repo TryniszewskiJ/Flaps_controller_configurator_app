@@ -1,0 +1,165 @@
+:host {
+  display: block;
+}
+
+.header-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.hint {
+  margin: 8px 0 0;
+  font-size: 11px;
+  color: var(--app-muted);
+}
+
+.hint--tight {
+  margin-top: 0;
+}
+
+.flap1 {
+  color: var(--ion-color-primary);
+}
+
+.flap2 {
+  color: var(--ion-color-warning);
+}
+
+.plot {
+  position: relative;
+  min-height: 220px;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  background: var(--app-card-bg);
+  overflow: hidden;
+  touch-action: pan-y;
+
+  svg {
+    display: block;
+    cursor: grab;
+  }
+}
+
+// Widok historii (nie na żywo)
+.plot--history {
+  border-color: var(--ion-color-warning);
+}
+
+.plot--select svg {
+  cursor: crosshair;
+}
+
+.selection {
+  fill: rgba(var(--ion-color-primary-rgb), 0.15);
+}
+
+.scroll-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  ion-range {
+    flex: 1;
+    padding: 0;
+  }
+}
+
+.btn-active {
+  --background: var(--ion-color-primary);
+  --color: #fff;
+}
+
+.plot-empty {
+  margin: 0;
+  padding: 96px 16px;
+  font-size: 12px;
+  text-align: center;
+  color: var(--app-muted);
+}
+
+.grid {
+  stroke: var(--app-border);
+}
+
+.axis {
+  font-size: 10px;
+  fill: var(--app-muted);
+}
+
+.line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+
+.mark {
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-dasharray: 4 3;
+  fill: currentColor;
+  font-size: 10px;
+  font-weight: 700;
+
+  text {
+    stroke: none;
+  }
+}
+
+.mark--open {
+  color: var(--ion-color-success);
+}
+
+.mark--close {
+  color: var(--ion-color-danger);
+}
+
+.cursor {
+  stroke: var(--app-muted);
+}
+
+.tooltip {
+  position: absolute;
+  top: 34px;
+  padding: 4px 6px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-card-bg);
+  font-size: 10px;
+  line-height: 1.5;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.tooltip-time {
+  color: var(--app-muted);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+
+  ion-segment {
+    flex: 1 1 160px;
+  }
+}
+
+ion-segment-button {
+  min-height: 30px;
+  font-size: 11px;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.section-label {
+  margin: 14px 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--app-muted);
+}
+
+.threshold {
+  color: var(--app-muted);
+}

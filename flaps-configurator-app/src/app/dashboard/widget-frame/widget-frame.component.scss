@@ -1,0 +1,48 @@
+:host {
+  display: block;
+}
+
+:host(.editing) {
+  padding: 6px;
+  border: 1px dashed var(--ion-color-primary);
+  border-radius: calc(var(--app-radius) + 4px);
+}
+
+.widget-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 2px 6px 6px;
+}
+
+.widget-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--app-text);
+}
+
+.widget-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  background: var(--app-card-bg);
+  font-size: 16px;
+  color: var(--app-text);
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+}
+
+.widget-btn--remove {
+  color: var(--ion-color-danger);
+}

@@ -4,14 +4,20 @@ import { BleLinkService } from './ble/ble-link.service';
 import {
   ConfigurationService,
   configurationSettings,
+  endStopSettings,
   flapOutputSettings,
 } from './configuration.service';
 import { ConnectionService } from './connection.service';
+import { DeviceStateService } from './device-state.service';
 import {
   CanFrameSchema,
+  ConditionNodeType,
   ConfigurationError,
+  FlapPosition,
   FlapsState,
+  FlapStopMode,
   LogicSchema,
+  LogLevel,
   SignalSchema,
   Status,
 } from './protocol/gen/flaps_pb';
@@ -115,6 +121,28 @@ describe('ConfigurationService', () => {
     expect(service.draft()?.logics.map((logic) => logic.inputSignal)).toEqual([1, 1]);
   });
 
+  it('shifts and protects the signals of a condition logic', async () => {
+    await connect();
+    service.setSettings({ ...configurationSettings(service.draft()!), selectorSignal: undefined });
+    service.removeLogic(1);
+    service.setLogic(
+      0,
+      create(LogicSchema, {
+        parameters: {
+          case: 'condition',
+          value: {
+            nodes: [{ type: ConditionNodeType.CONDITION_NODE_GREATER, signal: 1, value: 1 }],
+          },
+        },
+      }),
+    );
+
+    expect(service.removeSignal(1)).toContain('logika');
+    expect(service.removeSignal(0)).toBeNull();
+    const logic = service.draft()!.logics[0];
+    expect(logic.parameters.case === 'condition' && logic.parameters.value.nodes[0].signal).toBe(0);
+  });
+
   it('does not remove a frame read by a signal', async () => {
     await connect();
 
@@ -157,10 +185,15 @@ describe('ConfigurationService', () => {
       selectorSignal: undefined,
       defaultLogicIndex: 0,
       failSafeState: FlapsState.OPEN,
+      stopMode: FlapStopMode.END_STOP,
       moveTimeMs: 400,
+      endStop: { threshold: 20_000, blankingMs: 200, timeoutMs: 800 },
       fdcanTermination: true,
       flap1: { connected: true, reversed: true },
       flap2: { connected: false, reversed: false },
+      devMode: true,
+      logLevel: LogLevel.DEBUG,
+      readAmpOut: true,
       demoMode: true,
     });
 
@@ -168,9 +201,14 @@ describe('ConfigurationService', () => {
     expect(draft.selectorSignal).toBeUndefined();
     expect(draft.failSafeState).toBe(FlapsState.OPEN);
     expect(draft.moveTimeMs).toBe(400);
+    expect(draft.stopMode).toBe(FlapStopMode.END_STOP);
+    expect(endStopSettings(draft)).toEqual({ threshold: 20_000, blankingMs: 200, timeoutMs: 800 });
     expect(draft.fdcanTermination).toBe(true);
     expect(flapOutputSettings(draft, 1)).toEqual({ connected: true, reversed: true });
     expect(flapOutputSettings(draft, 2)).toEqual({ connected: false, reversed: false });
+    expect(draft.devMode).toBe(true);
+    expect(draft.logLevel).toBe(LogLevel.DEBUG);
+    expect(draft.readAmpOut).toBe(true);
     expect(draft.demoMode).toBe(true);
     expect(service.dirty()).toBe(true);
   });
@@ -188,6 +226,18 @@ describe('ConfigurationService', () => {
     expect(service.dirty()).toBe(false);
   });
 
+  it('treats a missing stop mode and end stop (device < 1.11) as time and defaults', async () => {
+    link.device.configuration.stopMode = FlapStopMode.UNSPECIFIED;
+    link.device.configuration.endStop = undefined;
+    await connect();
+
+    const settings = configurationSettings(service.draft()!);
+    expect(settings.stopMode).toBe(FlapStopMode.TIME);
+    expect(settings.endStop).toEqual({ threshold: 12_000, blankingMs: 150, timeoutMs: 1000 });
+    service.setSettings(settings);
+    expect(service.dirty()).toBe(false);
+  });
+
   it('explains a configuration without any connected flap', async () => {
     await connect();
     const settings = configurationSettings(service.draft()!);
@@ -199,6 +249,23 @@ describe('ConfigurationService', () => {
 
     expect(await service.apply()).toBe(false);
     expect(service.error()).toContain('co najmniej jedna klapa');
+  });
+
+  it('reads the flap positions again after a flap output change', async () => {
+    await connect();
+    const deviceState = TestBed.inject(DeviceStateService);
+    await vi.waitFor(() => expect(deviceState.state()?.flap1).toBe(FlapPosition.CLOSED));
+
+    const settings = configurationSettings(service.draft()!);
+    service.setSettings({ ...settings, flap1: { connected: false, reversed: false } });
+    expect(await service.apply()).toBe(true);
+    expect(deviceState.state()?.flap1).toBe(FlapPosition.NOT_CONNECTED);
+    expect(deviceState.state()?.flap2).toBe(FlapPosition.CLOSED);
+
+    service.setSettings({ ...settings, flap2: { connected: true, reversed: true } });
+    expect(await service.apply()).toBe(true);
+    expect(deviceState.state()?.flap1).toBe(FlapPosition.UNKNOWN);
+    expect(deviceState.state()?.flap2).toBe(FlapPosition.UNKNOWN);
   });
 
   it('discards the draft on disconnect', async () => {

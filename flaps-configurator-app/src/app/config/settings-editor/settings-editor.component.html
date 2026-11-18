@@ -79,21 +79,106 @@
       </div>
 
       <div>
-        <ion-input
-          class="mono"
-          inputmode="numeric"
-          label="Czas ruchu [ms]"
-          labelPlacement="stacked"
-          fill="outline"
-          [value]="moveTimeText()"
-          (ionInput)="onMoveTime($event.detail.value)"
-        ></ion-input>
-        @if (moveTimeError(); as error) {
-          <p class="field-error">{{ error }}</p>
-        } @else {
-          <p class="field-help">Jak długo silnik pracuje przy jednym ruchu klapy.</p>
-        }
+        <p class="field-label">Koniec ruchu</p>
+        <ion-segment
+          [value]="endStopMode() ? 'end-stop' : 'time'"
+          (ionChange)="onStopMode($event.detail.value)"
+        >
+          <ion-segment-button value="time">Po czasie</ion-segment-button>
+          <ion-segment-button value="end-stop">Na ograniczniku</ion-segment-button>
+        </ion-segment>
+        <p class="field-help">
+          @if (endStopMode()) {
+            Silnik pracuje, aż klapa dojdzie do ogranicznika — wtedy AMP_OUT (prąd silnika) rośnie
+            ponad próg. Limit czasu zatrzymuje go, gdy ogranicznik nie zostanie wykryty.
+          } @else {
+            Silnik pracuje stały czas przy każdym ruchu klapy.
+          }
+        </p>
       </div>
+
+      @if (endStopMode()) {
+        <div>
+          <ion-input
+            class="mono"
+            inputmode="numeric"
+            label="Próg AMP_OUT [raw]"
+            labelPlacement="stacked"
+            fill="outline"
+            [value]="thresholdText()"
+            (ionInput)="onThreshold($event.detail.value)"
+          ></ion-input>
+          @if (thresholdError(); as error) {
+            <p class="field-error">{{ error }}</p>
+          } @else {
+            <p class="field-help">
+              ≈ {{ thresholdMillivolts() }}. Ustaw między swobodnym ruchem a utykiem na ograniczniku
+              (pomiar: ~300 mV i ~1100 mV) — sprawdź na wykresie AMP_OUT w Dev console. Domyślnie
+              {{ END_STOP_THRESHOLD.default }}.
+            </p>
+          }
+        </div>
+
+        <div>
+          <ion-input
+            class="mono"
+            inputmode="numeric"
+            label="Wygaszenie rozruchu [ms]"
+            labelPlacement="stacked"
+            fill="outline"
+            [value]="blankingText()"
+            (ionInput)="onBlanking($event.detail.value)"
+          ></ion-input>
+          @if (blankingError(); as error) {
+            <p class="field-error">{{ error }}</p>
+          } @else {
+            <p class="field-help">
+              Tyle ms od startu AMP_OUT jest pomijany — prąd rozruchu jest prawie tak wysoki jak
+              utyk. Domyślnie {{ END_STOP_BLANKING_MS.default }} ms.
+            </p>
+          }
+        </div>
+
+        <div>
+          <ion-input
+            class="mono"
+            inputmode="numeric"
+            label="Limit czasu ruchu [ms]"
+            labelPlacement="stacked"
+            fill="outline"
+            [value]="timeoutText()"
+            (ionInput)="onTimeout($event.detail.value)"
+          ></ion-input>
+          @if (timeoutError(); as error) {
+            <p class="field-error">{{ error }}</p>
+          } @else {
+            <p class="field-help">
+              Zabezpieczenie: bez ogranicznika silnik staje po tym czasie (w Dev console ruch ma
+              wtedy „limit czasu”). Domyślnie {{ END_STOP_TIMEOUT_MS.default }} ms.
+            </p>
+          }
+        </div>
+      } @else {
+        <div>
+          <ion-input
+            class="mono"
+            inputmode="numeric"
+            label="Czas ruchu [ms]"
+            labelPlacement="stacked"
+            fill="outline"
+            [value]="moveTimeText()"
+            (ionInput)="onMoveTime($event.detail.value)"
+          ></ion-input>
+          @if (moveTimeError(); as error) {
+            <p class="field-error">{{ error }}</p>
+          } @else {
+            <p class="field-help">
+              Jak długo silnik pracuje przy jednym ruchu klapy. Dojazd do ogranicznika trwa ok.
+              300–320 ms.
+            </p>
+          }
+        </div>
+      }
     </section>
 
     <section class="card form">
@@ -143,19 +228,63 @@
         </ion-toggle>
         <p class="field-help">Włącz, gdy sterownik jest na końcu magistrali CAN.</p>
       </div>
+    </section>
+
+    <section class="card form">
+      <h2 class="card-label">Tryb deweloperski</h2>
       <div>
         <ion-toggle
           labelPlacement="start"
           justify="space-between"
+          [checked]="devMode()"
+          (ionChange)="devMode.set($event.detail.checked)"
+        >
+          Tryb deweloperski
+        </ion-toggle>
+        <p class="field-help">
+          Główny przełącznik poniższych opcji — wyłączony wyłącza je wszystkie, a ich ustawienia
+          zostają na następny raz. Zapisany we flashu działa także po resecie.
+        </p>
+      </div>
+      <div class="dev-options">
+        <ion-select
+          label="Logi sterownika"
+          labelPlacement="stacked"
+          fill="outline"
+          interface="popover"
+          [disabled]="!devMode()"
+          [value]="logLevel()"
+          (ionChange)="onLogLevel($event.detail.value)"
+        >
+          @for (level of logLevels; track level.value) {
+            <ion-select-option [value]="level.value">{{ level.label }}</ion-select-option>
+          }
+        </ion-select>
+        <ion-toggle
+          labelPlacement="start"
+          justify="space-between"
+          [disabled]="!devMode()"
+          [checked]="readAmpOut()"
+          (ionChange)="readAmpOut.set($event.detail.checked)"
+        >
+          Odczyt AMP_OUT na żywo
+        </ion-toggle>
+        <p class="field-help">
+          Prąd obu klap co 20 ms — wykres w Dev console, także poza ruchem klapy.
+        </p>
+        <ion-toggle
+          labelPlacement="start"
+          justify="space-between"
+          [disabled]="!devMode()"
           [checked]="demoMode()"
           (ionChange)="demoMode.set($event.detail.checked)"
         >
           Tryb demo
         </ion-toggle>
         <p class="field-help">
-          Sterownik odtwarza 65-sekundowy przejazd zamiast CAN auta — tylko gdy w Dev console jest
-          włączony tryb deweloperski. Po rozłączeniu i resecie wraca do CAN auta. Działa z ramkami
-          konfiguracji domyślnej.
+          Sterownik odtwarza 65-sekundowy przejazd zamiast CAN auta — tylko w otwartej sesji z
+          aplikacją. Po rozłączeniu i resecie wraca do CAN auta. Działa z ramkami konfiguracji
+          domyślnej.
         </p>
       </div>
     </section>

@@ -3,6 +3,8 @@ import { clone, create, DescMessage, fromBinary, MessageShape } from '@bufbuild/
 import { ConnectionService } from './connection.service';
 import { Frame } from './protocol/frame';
 import {
+  AmpOut,
+  AmpOutSchema,
   Command,
   DeviceState,
   DeviceStateSchema,
@@ -10,15 +12,12 @@ import {
   EventSchema,
   FlapPosition,
   FlapsState,
-  FlapTrace,
-  FlapTraceSchema,
+  FlapStopReason,
   GetStateRequestSchema,
   GetStateResponseSchema,
   Log,
   LogLevel,
   LogSchema,
-  SetDevModeRequestSchema,
-  SetDevModeResponseSchema,
   SetFlapsOverrideRequestSchema,
   SetFlapsOverrideResponseSchema,
   Status,
@@ -29,14 +28,7 @@ import {
 /** Najdłuższe ręczne sterowanie przyjmowane przez firmware (FlapsOverride::MaxOverrideMs). */
 export const MAX_OVERRIDE_MS = 600_000;
 
-export interface FlapTraceData {
-  /** Próbka i została pobrana interval_ms * i od startu ruchu. */
-  intervalMs: number;
-  /** Surowe AMP_OUT (16-bit ADC). */
-  samples: number[];
-}
-
-/** Ruch klapy: diagnostyka z EVENT flap_move_finished i przebieg z FLAP_TRACE (tryb dev). */
+/** Ruch klapy: diagnostyka z EVENT flap_move_finished. */
 export interface FlapMove {
   id: number;
   time: string;
@@ -46,7 +38,26 @@ export interface FlapMove {
   durationMs: number | null;
   peakAmpOut: number | null;
   ampOutAtStop: number | null;
-  trace: FlapTraceData | null;
+  /** UNSPECIFIED = urządzenie < 1.11. */
+  stopReason: FlapStopReason;
+}
+
+/** Próbka AMP_OUT obu klap (surowy 16-bit ADC) z chwili `uptimeMs` sterownika. */
+export interface AmpOutSample {
+  uptimeMs: number;
+  flap1: number;
+  flap2: number;
+  /** Przed tą próbką brakuje próbek (zajęty link, zapis flasha) — wykres nie łączy ich linią. */
+  gap: boolean;
+}
+
+/** Start ruchu klapy (EVENT flap_move_started) — znacznik na wykresie AMP_OUT. */
+export interface FlapMoveMark {
+  id: number;
+  uptimeMs: number;
+  flap: number;
+  /** OPENING albo CLOSING. */
+  position: FlapPosition;
 }
 
 export interface DeviceLogLine {
@@ -56,18 +67,15 @@ export interface DeviceLogLine {
   text: string;
 }
 
-export interface DevModeSettings {
-  logLevel: LogLevel;
-  flapTrace: boolean;
-}
-
 const LOG_LIMIT = 300;
 const MOVE_LIMIT = 30;
+/** Ile historii AMP_OUT trzymamy (wg czasu sterownika) — do przewijania wykresu. */
+export const AMP_OUT_HISTORY_MS = 5 * 60_000;
 
 /**
  * Stan sterownika na żywo (README firmware, „Stan i telemetria”): GET_STATE po każdym starcie
  * sesji, potem zmiany z TELEMETRY / EVENT. Ręczne sterowanie klapami (SET_FLAPS_OVERRIDE)
- * i tryb dev (SET_DEV_MODE: logi, przebieg AMP_OUT).
+ * oraz to, co wysyła tryb dev z konfiguracji: logi (LOG) i AMP_OUT na żywo.
  */
 @Injectable({ providedIn: 'root' })
 export class DeviceStateService {
@@ -76,29 +84,27 @@ export class DeviceStateService {
   private readonly _state = signal<DeviceState | null>(null);
   /** Kiedy (Date.now) kończy się ręczne sterowanie. */
   private readonly _overrideUntil = signal<number | null>(null);
-  private readonly _devMode = signal<DevModeSettings>({
-    logLevel: LogLevel.OFF,
-    flapTrace: false,
-  });
   private readonly _logs = signal<DeviceLogLine[]>([]);
   private readonly _droppedLogs = signal(0);
   private readonly _moves = signal<FlapMove[]>([]);
+  private readonly _ampOut = signal<AmpOutSample[]>([]);
+  private readonly _moveMarks = signal<FlapMoveMark[]>([]);
   private readonly _error = signal<string | null>(null);
 
   /** Pełny stan; null przed GET_STATE i bez połączenia. */
   readonly state = this._state.asReadonly();
   readonly overrideUntil = this._overrideUntil.asReadonly();
-  readonly devMode = this._devMode.asReadonly();
-  readonly devModeEnabled = computed(
-    () => this._devMode().logLevel !== LogLevel.OFF || this._devMode().flapTrace,
-  );
   /** Logi sterownika (tryb dev), od najstarszych. */
   readonly logs = this._logs.asReadonly();
   /** Linie utracone po stronie sterownika (pełny bufor). */
   readonly droppedLogs = this._droppedLogs.asReadonly();
   /** Ostatnie ruchy klap, od najnowszego. */
   readonly moves = this._moves.asReadonly();
-  /** Powód ostatniej nieudanej operacji (stan, tryb dev). */
+  /** AMP_OUT z ostatnich AMP_OUT_HISTORY_MS, od najstarszej próbki. */
+  readonly ampOut = this._ampOut.asReadonly();
+  /** Starty ruchów klap z tego samego okresu co ampOut. */
+  readonly moveMarks = this._moveMarks.asReadonly();
+  /** Powód ostatniej nieudanej operacji (odczyt stanu). */
   readonly error = this._error.asReadonly();
   /** Kierunek ręcznego sterowania; null — klapy słuchają logiki. */
   readonly override = computed(() => {
@@ -119,7 +125,7 @@ export class DeviceStateService {
       const connected = this.connection.application();
       untracked(() => {
         if (connected && session > 0) {
-          // Nowa sesja: urządzenie wyłączyło tryb dev i czeka z raportami na GET_STATE
+          // Nowa sesja: urządzenie czeka z raportami na GET_STATE
           void this.startSession();
         } else if (!connected) {
           this.resetState();
@@ -155,14 +161,6 @@ export class DeviceStateService {
     this.setOverrideUntil(FlapsState.UNSPECIFIED, 0);
   }
 
-  /** Tryb dev obowiązuje do końca sesji — aplikacja włącza go ponownie w każdej nowej. */
-  async setDevMode(settings: DevModeSettings): Promise<void> {
-    this._devMode.set(settings);
-    if (this.connection.application()) {
-      await this.applyDevMode();
-    }
-  }
-
   clearLogs(): void {
     this._logs.set([]);
     this._droppedLogs.set(0);
@@ -172,12 +170,14 @@ export class DeviceStateService {
     this._moves.set([]);
   }
 
+  clearAmpOut(): void {
+    this._ampOut.set([]);
+    this._moveMarks.set([]);
+  }
+
   private async startSession(): Promise<void> {
     try {
       await this.refresh();
-      if (this.devModeEnabled()) {
-        await this.applyDevMode();
-      }
       this._error.set(null);
     } catch {
       this._error.set('Nie udało się odczytać stanu sterownika.');
@@ -195,16 +195,6 @@ export class DeviceStateService {
     this.sequence = reply.sequence;
     this._state.set(state);
     this.setOverrideUntil(state.overrideState, state.overrideRemainingMs);
-  }
-
-  private async applyDevMode(): Promise<void> {
-    const { logLevel, flapTrace } = this._devMode();
-    await this.connection.request(
-      Command.SET_DEV_MODE,
-      SetDevModeRequestSchema,
-      { logLevel, flapTrace },
-      SetDevModeResponseSchema,
-    );
   }
 
   private async sendOverride(state: FlapsState, durationMs: number): Promise<void> {
@@ -242,10 +232,10 @@ export class DeviceStateService {
         }
         return;
       }
-      case Command.FLAP_TRACE: {
-        const trace = decode(FlapTraceSchema, frame.payload);
-        if (trace) {
-          this.applyTrace(trace);
+      case Command.AMP_OUT: {
+        const ampOut = decode(AmpOutSchema, frame.payload);
+        if (ampOut) {
+          this.applyAmpOut(ampOut);
         }
         return;
       }
@@ -292,6 +282,7 @@ export class DeviceStateService {
         return;
       case 'flapMoveStarted':
         this.updateState((state) => setFlap(state, value.flap, value.position));
+        this.addMoveMark(event.uptimeMs, value.flap, value.position);
         return;
       case 'flapMoveFinished':
         this.updateState((state) => setFlap(state, value.flap, value.position));
@@ -301,7 +292,7 @@ export class DeviceStateService {
           durationMs: value.durationMs,
           peakAmpOut: value.peakAmpOut,
           ampOutAtStop: value.ampOutAtStop,
-          trace: null,
+          stopReason: value.stopReason,
         });
         return;
       case 'flapsOverrideChanged':
@@ -325,25 +316,41 @@ export class DeviceStateService {
     this._droppedLogs.update((dropped) => dropped + log.dropped);
   }
 
-  /** FLAP_TRACE przychodzi po EVENT flap_move_finished tego samego ruchu. */
-  private applyTrace(trace: FlapTrace): void {
-    const data: FlapTraceData = { intervalMs: trace.intervalMs, samples: [...trace.samples] };
-    const moves = this._moves();
-    const index = moves.findIndex(
-      (move) => move.flap === trace.flap && move.position === trace.position && !move.trace,
-    );
-    if (index >= 0) {
-      this._moves.set(moves.map((move, i) => (i === index ? { ...move, trace: data } : move)));
+  /** 5 próbek co interval_ms od uptime_ms; skok uptime_ms między ramkami = brakujące próbki. */
+  private applyAmpOut(ampOut: AmpOut): void {
+    const count = Math.min(ampOut.flap1.length, ampOut.flap2.length);
+    if (count === 0) {
       return;
     }
-    this.addMove({
-      flap: trace.flap,
-      position: trace.position,
-      durationMs: null,
-      peakAmpOut: null,
-      ampOutAtStop: null,
-      trace: data,
-    });
+    let samples = this._ampOut();
+    const last = samples.at(-1);
+    if (last && ampOut.uptimeMs <= last.uptimeMs) {
+      // Czas sterownika się cofnął — reset sterownika, stara historia nie pasuje
+      samples = [];
+      this._moveMarks.set([]);
+    }
+    const previous = samples.at(-1);
+    const gap = !!previous && ampOut.uptimeMs - previous.uptimeMs > ampOut.intervalMs * 1.5;
+    const added: AmpOutSample[] = [];
+    for (let i = 0; i < count; i++) {
+      added.push({
+        uptimeMs: ampOut.uptimeMs + ampOut.intervalMs * i,
+        flap1: ampOut.flap1[i],
+        flap2: ampOut.flap2[i],
+        gap: i === 0 && gap,
+      });
+    }
+    const since = added[added.length - 1].uptimeMs - AMP_OUT_HISTORY_MS;
+    const first = samples.findIndex((sample) => sample.uptimeMs >= since);
+    this._ampOut.set([...(first > 0 ? samples.slice(first) : first < 0 ? [] : samples), ...added]);
+    this._moveMarks.update((marks) =>
+      marks[0] && marks[0].uptimeMs < since ? marks.filter((m) => m.uptimeMs >= since) : marks,
+    );
+  }
+
+  private addMoveMark(uptimeMs: number, flap: number, position: FlapPosition): void {
+    const mark: FlapMoveMark = { id: this.nextId++, uptimeMs, flap, position };
+    this._moveMarks.update((marks) => [...marks, mark]);
   }
 
   private addMove(move: Omit<FlapMove, 'id' | 'time'>): void {

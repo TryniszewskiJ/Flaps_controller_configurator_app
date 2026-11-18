@@ -60,6 +60,9 @@
         <ion-segment-button value="fixed">Stała</ion-segment-button>
         <ion-segment-button value="simpleSwitch">Przełącznik</ion-segment-button>
         <ion-segment-button value="hysteresis">Histereza</ion-segment-button>
+        <ion-segment-button value="condition" [disabled]="!conditionSupported">
+          Warunek
+        </ion-segment-button>
       </ion-segment>
 
       <div class="form">
@@ -86,9 +89,29 @@
               zamknięte, pomiędzy — bez zmian.
             </p>
           }
+          @case ('condition') {
+            <p class="field-help">
+              Warunek spełniony → otwarte, niespełniony → zamknięte. Gdy któryś sygnał z porównań
+              nie przyszedł albo milczy → stan bezpieczny. „Przez” — wynik prawdziwy dopiero, gdy
+              trwa tyle ms (krótkie szpilki nie ruszają klapą). „=” i „≠” porównują wartości
+              zaokrąglone do liczby całkowitej. „Histereza” — prawda powyżej progu włączenia, fałsz
+              poniżej progu wyłączenia, pomiędzy bez zmian (np. tryb = Sport I histereza RPM 4000 /
+              3500).
+            </p>
+            <app-condition-node
+              [node]="condition()"
+              [signals]="signals"
+              [root]="true"
+              (changed)="condition.set($event)"
+            />
+            <p class="field-help">
+              Elementy: {{ conditionSize() }} / {{ MAX_CONDITION_NODES }} (porównania, I / LUB,
+              NIE).
+            </p>
+          }
         }
 
-        @if (type() !== 'fixed') {
+        @if (usesInput()) {
           <div>
             <ion-select
               label="Sygnał wejściowy"

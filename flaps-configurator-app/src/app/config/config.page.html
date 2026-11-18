@@ -12,6 +12,7 @@
         <ion-icon slot="start" name="download-outline"></ion-icon>
         Odczytaj
       </ion-button>
+      <app-theme-toggle />
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -143,8 +144,8 @@
           <span>{{ flapsStateLabel(draft.failSafeState) }}</span>
         </div>
         <div class="kv-row">
-          <span class="text-muted">Czas ruchu</span>
-          <span class="mono">{{ draft.moveTimeMs }} ms</span>
+          <span class="text-muted">Koniec ruchu</span>
+          <span>{{ stopModeLabel(draft) }}</span>
         </div>
         <div class="kv-row">
           <span class="text-muted">Klapa 1</span>
@@ -159,8 +160,8 @@
           <span>{{ draft.fdcanTermination ? 'włączony' : 'wyłączony' }}</span>
         </div>
         <div class="kv-row">
-          <span class="text-muted">Tryb demo</span>
-          <span>{{ draft.demoMode ? 'włączony (w trybie dev)' : 'wyłączony' }}</span>
+          <span class="text-muted">Tryb deweloperski</span>
+          <span>{{ devModeLabel(draft) }}</span>
         </div>
       </section>
 

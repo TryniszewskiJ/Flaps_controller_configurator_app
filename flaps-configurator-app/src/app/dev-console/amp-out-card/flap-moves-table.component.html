@@ -1,0 +1,51 @@
+@if (moves().length > 0) {
+  <div class="table-scroll">
+    <table class="moves mono">
+      <thead>
+        <tr>
+          <th scope="col">Czas</th>
+          <th scope="col">Ruch</th>
+          <th scope="col" class="num">Trwanie</th>
+          <th scope="col" class="num">Szczyt</th>
+          <th scope="col" class="num">Koniec</th>
+          <th scope="col">Zatrzymanie</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (move of moves(); track move.id) {
+          <tr>
+            <td>{{ move.time }}</td>
+            <td>
+              <span class="raw">K{{ move.flap }}</span>
+              <span class="volts">{{ direction(move.position) }}</span>
+            </td>
+            <td class="num">{{ move.durationMs === null ? '—' : move.durationMs + ' ms' }}</td>
+            <td class="num">
+              @if (move.peakAmpOut === null) {
+                —
+              } @else {
+                <span class="raw">{{ move.peakAmpOut }}</span>
+                <span class="volts">{{ millivolts(move.peakAmpOut) }}</span>
+              }
+            </td>
+            <td class="num">
+              @if (move.ampOutAtStop === null) {
+                —
+              } @else {
+                <span class="raw">{{ move.ampOutAtStop }}</span>
+                <span class="volts">{{ millivolts(move.ampOutAtStop) }}</span>
+              }
+            </td>
+            <td [class.warn]="move.stopReason === StopReason.TIMEOUT">
+              {{ stopReasonLabel(move.stopReason) }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+} @else {
+  <p class="hint">
+    Ruchy klap pojawią się tutaj po połączeniu — np. po „Otwórz klapy” na Dashboardzie.
+  </p>
+}

@@ -25,7 +25,7 @@
     @if (dropped() > 0) {
       <p class="dropped">Sterownik pominął {{ dropped() }} linii (pełny bufor).</p>
     }
-    <div #list class="log mono" role="log" aria-live="polite">
+    <div class="log mono" role="log" aria-live="polite" [appStickToBottom]="logs()">
       @for (line of logs(); track line.id) {
         <div class="line">
           <span class="time">{{ uptime(line.uptimeMs) }}</span>
@@ -40,7 +40,9 @@
           <span class="text">{{ line.text }}</span>
         </div>
       } @empty {
-        <p class="empty">Logi pojawią się po włączeniu ich w trybie deweloperskim.</p>
+        <p class="empty">
+          Logi pojawią się po włączeniu trybu deweloperskiego i logów w Config → Ustawienia.
+        </p>
       }
     </div>
   }

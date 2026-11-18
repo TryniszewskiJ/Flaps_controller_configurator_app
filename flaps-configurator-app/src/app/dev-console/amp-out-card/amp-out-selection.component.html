@@ -1,0 +1,82 @@
+<div class="selection">
+  <div class="selection-head">
+    <h3 class="section-label">Zaznaczony zakres</h3>
+    <button type="button" class="link" (click)="cleared.emit()">Usuń zaznaczenie</button>
+  </div>
+
+  @if (stats(); as s) {
+    <p class="summary mono">
+      {{ seconds(s.durationMs) }} · {{ s.count }} próbek
+      @if (selectedMarks().length > 0) {
+        · ruchy: {{ selectedMarks().length }}
+      }
+    </p>
+    <table class="stats mono">
+      <thead>
+        <tr>
+          <th scope="col"></th>
+          <th scope="col" class="num">min</th>
+          <th scope="col" class="num">max</th>
+          <th scope="col" class="num">średnia</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="flap1">
+          <th scope="row">K1</th>
+          <td class="num">{{ millivolts(s.flap1.min) }}</td>
+          <td class="num">{{ millivolts(s.flap1.max) }}</td>
+          <td class="num">{{ millivolts(s.flap1.avg) }}</td>
+        </tr>
+        <tr class="flap2">
+          <th scope="row">K2</th>
+          <td class="num">{{ millivolts(s.flap2.min) }}</td>
+          <td class="num">{{ millivolts(s.flap2.max) }}</td>
+          <td class="num">{{ millivolts(s.flap2.avg) }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="actions">
+      <ion-button class="btn-tint" (click)="copy()">Kopiuj tekst</ion-button>
+      <ion-button class="btn-tint" (click)="save()">Zapisz CSV</ion-button>
+    </div>
+    @if (message(); as m) {
+      <p class="message" [class.message--error]="m.error">{{ m.text }}</p>
+    }
+
+    <div class="samples">
+      <table class="mono">
+        <thead>
+          <tr>
+            <th scope="col" class="num">t [ms]</th>
+            <th scope="col" class="num">K1 [mV]</th>
+            <th scope="col" class="num">K1 raw</th>
+            <th scope="col" class="num">K2 [mV]</th>
+            <th scope="col" class="num">K2 raw</th>
+            <th scope="col">Uwagi</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of rows(); track row.key) {
+            <tr [class.marked]="row.note">
+              <td class="num">{{ row.timeMs }}</td>
+              <td class="num">{{ millivolts(row.flap1) }}</td>
+              <td class="num">{{ row.flap1 }}</td>
+              <td class="num">{{ millivolts(row.flap2) }}</td>
+              <td class="num">{{ row.flap2 }}</td>
+              <td>{{ row.note }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    @if (s.count > tableLimit) {
+      <p class="message">
+        Tabela pokazuje pierwsze {{ tableLimit }} z {{ s.count }} próbek — kopia i plik zawierają
+        wszystkie.
+      </p>
+    }
+  } @else {
+    <p class="summary">W zaznaczeniu nie ma próbek.</p>
+  }
+</div>

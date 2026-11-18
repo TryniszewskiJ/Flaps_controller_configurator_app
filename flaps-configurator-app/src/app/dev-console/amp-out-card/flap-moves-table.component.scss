@@ -1,0 +1,54 @@
+:host {
+  display: block;
+}
+
+.hint {
+  margin: 8px 0 0;
+  font-size: 11px;
+  color: var(--app-muted);
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+th {
+  padding: 4px;
+  border-bottom: 1px solid var(--app-border);
+  font-weight: 600;
+  text-align: start;
+  white-space: nowrap;
+  color: var(--app-muted);
+}
+
+td {
+  padding: 6px 4px;
+  border-bottom: 1px solid var(--app-border);
+  vertical-align: top;
+  white-space: nowrap;
+  color: var(--app-text);
+}
+
+.num {
+  text-align: end;
+}
+
+.raw,
+.volts {
+  display: block;
+}
+
+.volts {
+  color: var(--app-muted);
+}
+
+// Brak ogranicznika w limicie czasu — próg za wysoki albo AMP_OUT nie działa
+.warn {
+  color: var(--app-warning-text);
+}

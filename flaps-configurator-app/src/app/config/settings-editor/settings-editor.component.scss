@@ -36,3 +36,13 @@ ion-toggle {
     color: var(--app-muted);
   }
 }
+
+.dev-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .field-help {
+    margin-top: -2px;
+  }
+}

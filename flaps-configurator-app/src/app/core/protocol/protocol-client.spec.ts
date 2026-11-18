@@ -68,6 +68,24 @@ describe('ProtocolClient', () => {
     expect(device.received.map((frame) => frame.seq)).toEqual([1, 2]);
   });
 
+  it('starts the response timeout once the frame is sent', async () => {
+    // Wysyłka dłuższa niż timeout (małe MTU) — bez ponowienia
+    const slow = new ProtocolClient(
+      async (bytes) => {
+        await new Promise((resolve) => setTimeout(resolve, 60));
+        device.write(bytes);
+      },
+      { timeoutMs: 20, retries: 1 },
+    );
+    const parser = new FrameParser((frame) => slow.handleFrame(frame));
+    device = new FakeDevice((bytes) => queueMicrotask(() => parser.push(bytes)));
+
+    await expect(
+      slow.request(Command.PING, PingRequestSchema, {}, PingResponseSchema),
+    ).rejects.toEqual(new ProtocolError(Status.NO_SESSION));
+    expect(device.received).toHaveLength(1);
+  });
+
   it('rejects pending requests on cancelAll', async () => {
     device.responding = false;
     const request = ping();

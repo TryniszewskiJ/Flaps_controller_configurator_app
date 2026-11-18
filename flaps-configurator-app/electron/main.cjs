@@ -2,7 +2,16 @@
 // Ładuje zbudowaną aplikację (www/) przez protokół app:// i obsługuje to, czego Electron
 // nie robi sam przy Web Bluetooth: wybór urządzenia i parowanie z kluczem.
 
-const { app, BrowserWindow, Menu, ipcMain, net, protocol, shell } = require('electron');
+const {
+  app,
+  BrowserWindow,
+  Menu,
+  ipcMain,
+  nativeTheme,
+  net,
+  protocol,
+  shell,
+} = require('electron');
 const fs = require('node:fs');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
@@ -51,7 +60,8 @@ function createWindow() {
     minWidth: 360,
     minHeight: 600,
     title: 'Flaps Configurator',
-    backgroundColor: '#f4f5f7',
+    // Tło przed załadowaniem strony — jak --app-bg motywu systemu
+    backgroundColor: nativeTheme.shouldUseDarkColors ? '#121417' : '#f4f5f7',
     autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),

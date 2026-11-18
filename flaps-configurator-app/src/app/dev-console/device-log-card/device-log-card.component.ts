@@ -1,9 +1,10 @@
-import { Component, ElementRef, afterRenderEffect, inject, signal, viewChild } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { IonButton, IonIcon } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { chevronDown } from 'ionicons/icons';
 import { DeviceStateService } from '../../core/device-state.service';
 import { LogLevel } from '../../core/protocol/gen/flaps_pb';
+import { StickToBottomDirective } from '../../shared/stick-to-bottom.directive';
 
 const LEVEL_LABELS: Record<LogLevel, string> = {
   [LogLevel.OFF]: '',
@@ -18,7 +19,7 @@ const LEVEL_LABELS: Record<LogLevel, string> = {
   selector: 'app-device-log-card',
   templateUrl: './device-log-card.component.html',
   styleUrls: ['./device-log-card.component.scss'],
-  imports: [IonButton, IonIcon],
+  imports: [IonButton, IonIcon, StickToBottomDirective],
 })
 export class DeviceLogCardComponent {
   private readonly deviceState = inject(DeviceStateService);
@@ -28,19 +29,8 @@ export class DeviceLogCardComponent {
   protected readonly open = signal(true);
   protected readonly LogLevel = LogLevel;
 
-  private readonly list = viewChild<ElementRef<HTMLElement>>('list');
-
   constructor() {
     addIcons({ chevronDown });
-
-    // Przewijanie do najnowszej linii
-    afterRenderEffect(() => {
-      this.logs();
-      const el = this.list()?.nativeElement;
-      if (el) {
-        el.scrollTop = el.scrollHeight;
-      }
-    });
   }
 
   protected level(level: LogLevel): string {

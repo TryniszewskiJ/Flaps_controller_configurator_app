@@ -1,0 +1,46 @@
+<section class="card">
+  <h2 class="card-label" [class.card-label--collapsed]="!open()">
+    <button
+      type="button"
+      class="card-toggle"
+      aria-controls="command-body"
+      [attr.aria-expanded]="open()"
+      (click)="open.set(!open())"
+    >
+      <ion-icon name="chevron-down" aria-hidden="true"></ion-icon>
+      Komenda
+    </button>
+  </h2>
+
+  @if (open()) {
+    <div id="command-body">
+      <div class="chips" role="group" aria-label="Wstaw komendę">
+        @for (item of requestCommands; track item.command) {
+          <button type="button" class="chip" (click)="insertTemplate(item.command)">
+            {{ item.name }}
+          </button>
+        }
+      </div>
+      <ion-textarea
+        class="command-input mono"
+        aria-label="Komenda do wysłania"
+        placeholder='np. PING albo START_SESSION {"appId": 1179402576}'
+        [rows]="2"
+        [value]="command()"
+        (ionInput)="onCommandInput($event.detail.value)"
+        (keydown)="onKeydown($event)"
+      ></ion-textarea>
+      @if (sendError(); as error) {
+        <p class="send-error">{{ error }}</p>
+      }
+      <div class="btn-row">
+        <ion-button fill="outline" [disabled]="!command()" (click)="clearCommand()">
+          Wyczyść
+        </ion-button>
+        <ion-button [disabled]="!connected() || !command().trim() || sending()" (click)="send()">
+          Wyślij
+        </ion-button>
+      </div>
+    </div>
+  }
+</section>

@@ -2,24 +2,29 @@
   <ion-toolbar class="page-toolbar">
     <h1 slot="start" class="page-title">CAN bus</h1>
     <ion-buttons slot="end">
-      <ion-button
-        class="icon-btn"
-        fill="solid"
-        color="success"
-        aria-label="Start nasłuchu"
-        [disabled]="!connected()"
-      >
-        <ion-icon slot="icon-only" name="play"></ion-icon>
-      </ion-button>
-      <ion-button
-        class="icon-btn btn-pause"
-        fill="outline"
-        color="medium"
-        aria-label="Pauza"
-        [disabled]="!connected()"
-      >
-        <ion-icon slot="icon-only" name="pause"></ion-icon>
-      </ion-button>
+      @if (sniff.active()) {
+        <ion-button
+          class="icon-btn"
+          fill="solid"
+          color="danger"
+          aria-label="Zatrzymaj podsłuch"
+          [disabled]="!connected() || sniff.busy()"
+          (click)="stop()"
+        >
+          <ion-icon slot="icon-only" name="stop"></ion-icon>
+        </ion-button>
+      } @else {
+        <ion-button
+          class="icon-btn"
+          fill="solid"
+          color="success"
+          aria-label="Start podsłuchu"
+          [disabled]="!connected() || sniff.busy() || !sniff.supported()"
+          (click)="start()"
+        >
+          <ion-icon slot="icon-only" name="play"></ion-icon>
+        </ion-button>
+      }
       <ion-button
         class="icon-btn"
         fill="solid"
@@ -29,6 +34,7 @@
       >
         <ion-icon slot="icon-only" name="add"></ion-icon>
       </ion-button>
+      <app-theme-toggle />
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -37,10 +43,106 @@
   <div class="page page--fill">
     <app-connection-banner />
 
-    <div class="empty-state">
-      <ion-icon name="pulse-outline" aria-hidden="true"></ion-icon>
-      <h2>Brak danych z magistrali</h2>
-      <p>Ramki CAN pojawią się tutaj po połączeniu z urządzeniem.</p>
-    </div>
+    <section class="card controls">
+      <div class="controls-row">
+        <ion-segment [value]="view()" (ionChange)="onView($event.detail.value)">
+          <ion-segment-button value="history">Historia</ion-segment-button>
+          <ion-segment-button value="latest">Ostatnie</ion-segment-button>
+        </ion-segment>
+        <ion-toggle
+          class="all-toggle"
+          labelPlacement="start"
+          [checked]="allFrames()"
+          [disabled]="sniff.active()"
+          (ionChange)="allFrames.set($event.detail.checked)"
+        >
+          Wszystkie ID
+        </ion-toggle>
+      </div>
+      <p class="status mono">
+        @if (sniff.active()) {
+          <span class="live">● podsłuch</span>
+        }
+        {{ sniff.received() }} ramek
+        @if (view() === 'latest') {
+          · {{ sniff.latest().length }} ID
+        }
+        @if (sniff.dropped() > 0) {
+          · <span class="warn">utracone {{ sniff.dropped() }}</span>
+        }
+        @if (sniff.summary(); as s) {
+          · sterownik odebrał {{ s.frames }}, nie wysłał {{ s.dropped }}
+        }
+      </p>
+      @if (!sniff.supported()) {
+        <p class="message message--warning">
+          Firmware sterownika nie ma podsłuchu CAN — zaktualizuj je (protokół 1.14).
+        </p>
+      }
+      @if (sniff.error(); as error) {
+        <p class="message message--danger">{{ error }}</p>
+      }
+    </section>
+
+    @if (hasFrames()) {
+      @if (view() === 'history') {
+        <div class="frames-wrap">
+          <div class="frames mono" role="log" [appStickToBottom]="history()">
+            @for (frame of history(); track frame.id) {
+              <div class="row">
+                <span class="time">{{ time(frame) }}</span>
+                <span class="id" [class.id--ext]="frame.extendedId">{{ canId(frame) }}</span>
+                <span class="dlc">[{{ frame.data.length }}]</span>
+                <span class="data">{{ bytes(frame).join(' ') }}</span>
+              </div>
+            }
+          </div>
+          @if (newer() > 0) {
+            <ion-button class="jump" size="small" (click)="jumpToLatest()">
+              ↓ {{ newer() }} nowych
+            </ion-button>
+          }
+        </div>
+      } @else {
+        <div class="frames mono">
+          <div class="row row--head">
+            <span class="id">ID</span>
+            <span class="dlc">DLC</span>
+            <span class="data">Dane</span>
+            <span class="num">Liczba</span>
+            <span class="num">Okres</span>
+          </div>
+          @for (item of sniff.latest(); track item.key) {
+            <div class="row">
+              <span class="id" [class.id--ext]="item.frame.extendedId">{{
+                canId(item.frame)
+              }}</span>
+              <span class="dlc">[{{ item.frame.data.length }}]</span>
+              <span class="data">
+                @for (byte of bytes(item.frame); track $index) {
+                  <span class="byte" [class.byte--changed]="item.changed[$index]">{{ byte }}</span>
+                }
+              </span>
+              <span class="num">{{ item.count }}</span>
+              <span class="num">{{ period(item.periodUs) }}</span>
+            </div>
+          }
+        </div>
+      }
+    } @else {
+      <div class="empty-state">
+        <ion-icon name="pulse-outline" aria-hidden="true"></ion-icon>
+        <h2>{{ sniff.active() ? 'Czekam na ramki…' : 'Brak danych z magistrali' }}</h2>
+        <p>
+          {{
+            sniff.active()
+              ? allFrames()
+                ? 'Na magistrali nie ma ruchu.'
+                : 'Ramki z konfiguracji jeszcze nie przyszły.'
+              : 'Naciśnij ▶, aby zacząć podsłuch. Ponowny start czyści historię.'
+          }}
+        </p>
+      </div>
+    }
   </div>
 </ion-content>

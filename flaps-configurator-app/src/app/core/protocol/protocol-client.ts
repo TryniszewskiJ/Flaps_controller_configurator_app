@@ -13,7 +13,7 @@ import { Command, ErrorResponseSchema, Status } from './gen/flaps_pb';
 /** Stała aplikacji w StartSessionRequest ("FLAP"). */
 export const APP_ID = 0x464c4150;
 export const PROTOCOL_VERSION_MAJOR = 1;
-export const PROTOCOL_VERSION_MINOR = 9;
+export const PROTOCOL_VERSION_MINOR = 14;
 
 const UNSOLICITED_FIRST = 0x70;
 const UNSOLICITED_LAST = 0x7f;
@@ -47,7 +47,7 @@ interface PendingRequest {
   command: Command;
   resolve: (payload: Uint8Array) => void;
   reject: (error: Error) => void;
-  timer: ReturnType<typeof setTimeout>;
+  timer?: ReturnType<typeof setTimeout>;
 }
 
 /**
@@ -127,18 +127,27 @@ export class ProtocolClient {
     const seq = this.nextSeq();
 
     return new Promise<Uint8Array>((resolve, reject) => {
-      const timer = setTimeout(() => {
-        this.settle(seq);
-        reject(new ProtocolTimeoutError(command));
-      }, timeoutMs);
-      this.pending.set(seq, { command, resolve, reject, timer });
+      const request: PendingRequest = { command, resolve, reject };
+      this.pending.set(seq, request);
 
       const frame: Frame = { command, seq, payload };
       this.onSend?.(frame);
-      this.send(encodeFrame(frame)).catch((error: unknown) => {
-        this.settle(seq);
-        reject(error instanceof Error ? error : new Error(String(error)));
-      });
+      // Czas na odpowiedź liczony od końca wysyłania: przy małym MTU (Web Bluetooth,
+      // 20 B na zapis) sama wysyłka dużej ramki trwa dłużej niż timeout.
+      this.send(encodeFrame(frame)).then(
+        () => {
+          if (this.pending.get(seq) === request) {
+            request.timer = setTimeout(() => {
+              this.settle(seq);
+              reject(new ProtocolTimeoutError(command));
+            }, timeoutMs);
+          }
+        },
+        (error: unknown) => {
+          this.settle(seq);
+          reject(error instanceof Error ? error : new Error(String(error)));
+        },
+      );
     });
   }
 

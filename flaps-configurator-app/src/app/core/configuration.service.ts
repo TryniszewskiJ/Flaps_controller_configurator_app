@@ -1,16 +1,21 @@
 import { Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
 import { clone, create, equals } from '@bufbuild/protobuf';
+import { conditionUsesSignal, isCompareType } from './condition';
 import { ConnectionService } from './connection.service';
+import { DeviceStateService } from './device-state.service';
 import {
   CanFrame,
   Command,
   Configuration,
   ConfigurationError,
   ConfigurationSchema,
+  EndStopDetectionSchema,
   FlapOutputSchema,
+  FlapStopMode,
   FlapsState,
   GetConfigurationRequestSchema,
   GetConfigurationResponseSchema,
+  LogLevel,
   SaveConfigurationRequestSchema,
   SaveConfigurationResponseSchema,
   SetConfigurationRequestSchema,
@@ -33,6 +38,10 @@ export const MAX_EXTENDED_ID = 0x1fffffff;
 export const MAX_FRAME_TIMEOUT_MS = 65535;
 export const MIN_MOVE_TIME_MS = 50;
 export const MAX_MOVE_TIME_MS = 5000;
+/** Wykrywanie ogranicznika (EndStopDetection) — zakresy i wartości domyślne firmware. */
+export const END_STOP_THRESHOLD = { min: 1000, max: 60_000, default: 12_000 };
+export const END_STOP_BLANKING_MS = { min: 20, max: 2000, default: 150 };
+export const END_STOP_TIMEOUT_MS = { min: 100, max: 5000, default: 1000 };
 
 /** SAVE_CONFIGURATION kasuje sektor flasha (1–2 s), urządzenie w tym czasie nie odpowiada. */
 const SAVE_TIMEOUT_MS = 5000;
@@ -45,13 +54,44 @@ export interface ConfigurationSettings {
   selectorSignal?: number;
   defaultLogicIndex: number;
   failSafeState: FlapsState;
+  /** Koniec ruchu: TIME (po moveTimeMs) albo END_STOP (na ograniczniku po AMP_OUT). */
+  stopMode: FlapStopMode;
   moveTimeMs: number;
+  endStop: EndStopSettings;
   fdcanTermination: boolean;
   /** Wyjścia silników 1MA/1MB i 2MA/2MB. */
   flap1: FlapOutputSettings;
   flap2: FlapOutputSettings;
-  /** Przejazd demo zamiast CAN auta — działa tylko w trybie deweloperskim. */
+  /** Główny przełącznik logów, AMP_OUT i trybu demo; bez niego nic z nich nie działa. */
+  devMode: boolean;
+  /** Logi sterownika (LOG) do tego poziomu, OFF = bez logów. */
+  logLevel: LogLevel;
+  /** AMP_OUT obu klap co 20 ms (wykres w Dev console). */
+  readAmpOut: boolean;
+  /** Przejazd demo zamiast CAN auta — tylko w trybie deweloperskim i w sesji. */
   demoMode: boolean;
+}
+
+/** Wykrywanie ogranicznika: próg AMP_OUT (surowy ADC), wygaszenie rozruchu i limit czasu ruchu. */
+export interface EndStopSettings {
+  threshold: number;
+  blankingMs: number;
+  timeoutMs: number;
+}
+
+/** Brak pola (urządzenie < 1.11) = TIME. */
+export function stopModeOf(config: Configuration): FlapStopMode {
+  return config.stopMode === FlapStopMode.END_STOP ? FlapStopMode.END_STOP : FlapStopMode.TIME;
+}
+
+/** Wykrywanie ogranicznika z konfiguracji; brak albo 0 = wartość domyślna firmware. */
+export function endStopSettings(config: Configuration): EndStopSettings {
+  const endStop = config.endStop;
+  return {
+    threshold: endStop?.threshold || END_STOP_THRESHOLD.default,
+    blankingMs: endStop?.blankingMs || END_STOP_BLANKING_MS.default,
+    timeoutMs: endStop?.timeoutMs || END_STOP_TIMEOUT_MS.default,
+  };
 }
 
 /** Wyjście silnika: czy jest na nim klapa i czy silnik jest podłączony odwrotnie. */
@@ -72,10 +112,15 @@ export function configurationSettings(config: Configuration): ConfigurationSetti
     selectorSignal: config.selectorSignal,
     defaultLogicIndex: config.defaultLogicIndex,
     failSafeState: config.failSafeState,
+    stopMode: stopModeOf(config),
     moveTimeMs: config.moveTimeMs,
+    endStop: endStopSettings(config),
     fdcanTermination: config.fdcanTermination,
     flap1: flapOutputSettings(config, 1),
     flap2: flapOutputSettings(config, 2),
+    devMode: config.devMode,
+    logLevel: config.logLevel,
+    readAmpOut: config.readAmpOut,
     demoMode: config.demoMode,
   };
 }
@@ -87,6 +132,7 @@ export function configurationSettings(config: Configuration): ConfigurationSetti
 @Injectable({ providedIn: 'root' })
 export class ConfigurationService {
   private readonly connection = inject(ConnectionService);
+  private readonly deviceState = inject(DeviceStateService);
 
   private readonly _draft = signal<Configuration | null>(null);
   /** Konfiguracja w użyciu na urządzeniu (ostatnio odczytana albo ustawiona). */
@@ -254,6 +300,13 @@ export class ConfigurationService {
         if (logic.inputSignal !== undefined && logic.inputSignal > index) {
           logic.inputSignal--;
         }
+        if (logic.parameters.case === 'condition') {
+          for (const node of logic.parameters.value.nodes) {
+            if (isCompareType(node.type) && node.signal > index) {
+              node.signal--;
+            }
+          }
+        }
       }
     });
     return null;
@@ -297,9 +350,20 @@ export class ConfigurationService {
       config.defaultLogicIndex = settings.defaultLogicIndex;
       config.failSafeState = settings.failSafeState;
       config.moveTimeMs = settings.moveTimeMs;
+      // Bez zmiany pola zostają, jak przyszły (urządzenie < 1.11 ich nie wysyła) — inaczej
+      // wersja robocza różniłaby się od urządzenia po samym otwarciu Ustawień
+      if (stopModeOf(config) !== settings.stopMode) {
+        config.stopMode = settings.stopMode;
+      }
+      if (!sameEndStop(endStopSettings(config), settings.endStop)) {
+        config.endStop = create(EndStopDetectionSchema, settings.endStop);
+      }
       config.fdcanTermination = settings.fdcanTermination;
       config.flap1 = flapOutput(settings.flap1);
       config.flap2 = flapOutput(settings.flap2);
+      config.devMode = settings.devMode;
+      config.logLevel = settings.logLevel;
+      config.readAmpOut = settings.readAmpOut;
       config.demoMode = settings.demoMode;
     });
   }
@@ -318,6 +382,10 @@ export class ConfigurationService {
     }
     this._device.set(clone(ConfigurationSchema, configuration));
     this._unsavedOnDevice.set(true);
+
+    // Odłączenie wyjścia albo zmiana kierunku silnika zmienia pozycję klapy bez ruchu,
+    // więc bez EVENT — stan od nowa. Konfiguracja już przyjęta, błąd odczytu jej nie cofa.
+    await this.deviceState.refresh().catch(() => undefined);
   }
 
   private edit(change: (config: Configuration) => void): void {
@@ -362,7 +430,10 @@ export function signalUsage(config: Configuration, index: number): string[] {
     usage.push('selektor logik');
   }
   config.logics.forEach((logic, i) => {
-    if (logic.inputSignal === index) {
+    const inCondition =
+      logic.parameters.case === 'condition' &&
+      conditionUsesSignal(logic.parameters.value.nodes, index);
+    if (logic.inputSignal === index || inCondition) {
       usage.push(`logika „${logic.description || i + 1}”`);
     }
   });
@@ -374,6 +445,12 @@ function flapOutput(settings: FlapOutputSettings): Configuration['flap1'] {
     disconnected: !settings.connected,
     reversed: settings.reversed,
   });
+}
+
+function sameEndStop(a: EndStopSettings, b: EndStopSettings): boolean {
+  return (
+    a.threshold === b.threshold && a.blankingMs === b.blankingMs && a.timeoutMs === b.timeoutMs
+  );
 }
 
 export function describeConfigurationError(error: ConfigurationError): string {
@@ -403,6 +480,10 @@ const CONFIGURATION_ERRORS: Partial<Record<ConfigurationError, string>> = {
   [ConfigurationError.INVALID_HYSTERESIS]: 'próg zamknięcia histerezy jest powyżej progu otwarcia.',
   [ConfigurationError.INVALID_MOVE_TIME]: 'czas ruchu klapy spoza 50–5000 ms.',
   [ConfigurationError.NO_FLAP_CONNECTED]: 'co najmniej jedna klapa musi być podłączona.',
+  [ConfigurationError.INVALID_CONDITION]:
+    'niepoprawny warunek logiki (sygnał, wartość, kolejność albo ponad 12 elementów).',
+  [ConfigurationError.INVALID_END_STOP]:
+    'ustawienia ogranicznika spoza zakresu (próg 1000–60000, wygaszenie 20–2000 ms, limit 100–5000 ms i dłuższy niż wygaszenie).',
 };
 
 function describeError(error: unknown): string {

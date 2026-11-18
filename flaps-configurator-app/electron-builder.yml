@@ -1,13 +1,13 @@
 # Instalatory aplikacji desktopowej: npm run electron:dist:win / electron:dist:mac
 appId: com.dkcustoms.flapsConfigurator
 productName: Flaps Configurator
-copyright: Copyright Â© DK Customs
+copyright: Copyright © DK Customs
 
 directories:
   output: release
 
-# Tylko proces Electrona i zbudowana aplikacja â€” zaleĹĽnoĹ›ci z node_modules sÄ… juĹĽ
-# w bundlu Angulara, a main/preload nie uĹĽywajÄ… ĹĽadnych pakietĂłw
+# Tylko proces Electrona i zbudowana aplikacja — zależności z node_modules są już
+# w bundlu Angulara, a main/preload nie używają żadnych pakietów
 files:
   - electron/**/*
   - '!electron/dev.cjs'
@@ -16,7 +16,9 @@ files:
   - '!node_modules/**/*'
 npmRebuild: false
 
+# Ikony z icons/logo.png (npm run icons:gen); electron-builder robi z nich .ico i .icns
 win:
+  icon: icons/generated/desktop-win.png
   target:
     - target: nsis
       arch: [x64]
@@ -27,10 +29,11 @@ nsis:
   artifactName: ${productName}-Setup-${version}.${ext}
 
 mac:
+  icon: icons/generated/desktop-mac.png
   category: public.app-category.utilities
   target:
     - target: dmg
       arch: [universal]
-  # Bez tego macOS zamknie aplikacjÄ™ przy pierwszym uĹĽyciu Bluetooth
+  # Bez tego macOS zamknie aplikację przy pierwszym użyciu Bluetooth
   extendInfo:
-    NSBluetoothAlwaysUsageDescription: Bluetooth sĹ‚uĹĽy do poĹ‚Ä…czenia ze sterownikiem klap.
+    NSBluetoothAlwaysUsageDescription: Bluetooth służy do połączenia ze sterownikiem klap.

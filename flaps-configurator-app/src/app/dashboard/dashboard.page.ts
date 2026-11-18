@@ -1,17 +1,29 @@
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import {
+  ActionSheetController,
   IonButton,
+  IonButtons,
   IonContent,
   IonHeader,
+  IonIcon,
   IonSelect,
   IonSelectOption,
   IonToolbar,
 } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import { add, checkmark, createOutline } from 'ionicons/icons';
 import { ConfigurationService } from '../core/configuration.service';
 import { ConnectionService } from '../core/connection.service';
 import { DeviceStateService } from '../core/device-state.service';
 import { FlapPosition, FlapsState } from '../core/protocol/gen/flaps_pb';
+import { AmpOutCardComponent } from '../dev-console/amp-out-card/amp-out-card.component';
+import { CommandCardComponent } from '../dev-console/command-card/command-card.component';
+import { DeviceLogCardComponent } from '../dev-console/device-log-card/device-log-card.component';
+import { FrameLogCardComponent } from '../dev-console/frame-log-card/frame-log-card.component';
 import { ConnectionBannerComponent } from '../shared/connection-banner/connection-banner.component';
+import { DashboardLayoutService, widgetTitle } from './dashboard-layout.service';
+import { WidgetFrameComponent } from './widget-frame/widget-frame.component';
+import { ThemeToggleComponent } from '../shared/theme-toggle/theme-toggle.component';
 
 interface FlapView {
   name: string;
@@ -44,18 +56,35 @@ const OVERRIDE_MINUTES = [1, 5, 10];
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
   imports: [
+    ThemeToggleComponent,
     IonHeader,
     IonToolbar,
+    IonButtons,
     IonButton,
+    IonIcon,
     IonContent,
     IonSelect,
     IonSelectOption,
     ConnectionBannerComponent,
+    WidgetFrameComponent,
+    CommandCardComponent,
+    AmpOutCardComponent,
+    DeviceLogCardComponent,
+    FrameLogCardComponent,
   ],
 })
 export class DashboardPage {
   private readonly deviceState = inject(DeviceStateService);
   private readonly configuration = inject(ConfigurationService);
+  private readonly actionSheet = inject(ActionSheetController);
+  protected readonly layout = inject(DashboardLayoutService);
+
+  /** Sekcje na Dashboard (kolejność z układu) i te, które można dodać przyciskiem +. */
+  protected readonly widgets = this.layout.widgets;
+  protected readonly available = this.layout.available;
+  protected readonly widgetTitle = widgetTitle;
+  /** Tryb edycji: przy każdej sekcji przesuwanie i usuwanie. */
+  protected readonly editing = signal(false);
 
   protected readonly connected = inject(ConnectionService).connected;
   protected readonly state = this.deviceState.state;
@@ -100,10 +129,11 @@ export class DashboardPage {
       }));
   });
 
-  /** Tryb demo: sterownik odtwarza przejazd zamiast CAN auta (demo w konfiguracji + tryb dev). */
-  protected readonly demo = computed(
-    () => !!this.configuration.device()?.demoMode && this.deviceState.devModeEnabled(),
-  );
+  /** Tryb demo: sterownik odtwarza przejazd zamiast CAN auta (demo i tryb dev w konfiguracji). */
+  protected readonly demo = computed(() => {
+    const config = this.configuration.device();
+    return !!config?.demoMode && !!config.devMode;
+  });
 
   /** Klapy otwarte albo w trakcie otwierania — przycisk je zamyka. */
   protected readonly flapsOpen = computed(() => {
@@ -122,8 +152,24 @@ export class DashboardPage {
   });
 
   constructor() {
+    addIcons({ add, checkmark, createOutline });
     const timer = setInterval(() => this.now.set(Date.now()), 1000);
     inject(DestroyRef).onDestroy(() => clearInterval(timer));
+  }
+
+  /** Lista sekcji spoza Dashboardu (także z Dev console); wybrana trafia na dół. */
+  protected async addWidget(): Promise<void> {
+    const sheet = await this.actionSheet.create({
+      header: 'Dodaj sekcję',
+      buttons: [
+        ...this.available().map((widget) => ({
+          text: widget.source === 'Dashboard' ? widget.title : `${widget.title} · Dev console`,
+          handler: (): void => this.layout.add(widget.id),
+        })),
+        { text: 'Anuluj', role: 'cancel' },
+      ],
+    });
+    await sheet.present();
   }
 
   /** Otwiera albo zamyka klapy na wybrany czas zamiast logiki. */

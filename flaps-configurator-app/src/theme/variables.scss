@@ -62,3 +62,57 @@
   --app-success-border: #b7e1c1;
   --app-success-text: #1e6b33;
 }
+
+// Ciemny motyw (ThemeService ustawia klasę na <html>; paleta Ionic: dark.class.css)
+:root.ion-palette-dark {
+  --ion-color-primary: #6b84f5;
+  --ion-color-primary-rgb: 107, 132, 245;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #5e74d8;
+  --ion-color-primary-tint: #7a90f6;
+
+  --ion-color-success: #40c057;
+  --ion-color-success-rgb: 64, 192, 87;
+  --ion-color-success-shade: #38a94d;
+  --ion-color-success-tint: #53c668;
+
+  --ion-color-warning: #fd7e14;
+  --ion-color-warning-rgb: 253, 126, 20;
+  --ion-color-warning-shade: #df6f12;
+  --ion-color-warning-tint: #fd8b2c;
+
+  --ion-color-danger: #fa5252;
+  --ion-color-danger-rgb: 250, 82, 82;
+  --ion-color-danger-shade: #dc4848;
+  --ion-color-danger-tint: #fb6363;
+
+  --ion-color-medium: #8b939d;
+  --ion-color-medium-rgb: 139, 147, 157;
+  --ion-color-medium-shade: #7a818a;
+  --ion-color-medium-tint: #979ea7;
+
+  --ion-background-color: #121417;
+  --ion-background-color-rgb: 18, 20, 23;
+  --ion-text-color: #e6e8eb;
+  --ion-text-color-rgb: 230, 232, 235;
+
+  --app-bg: #121417;
+  --app-card-bg: #1c1f24;
+  --app-border: #2e333a;
+  --app-text: #e6e8eb;
+  --app-muted: #8b939d;
+  --app-code-bg: #15181c;
+
+  --app-danger-bg: #3a1d1f;
+  --app-danger-border: #6b2b2e;
+  --app-danger-text: #f3a6a6;
+
+  --app-warning-bg: #36270f;
+  --app-warning-border: #6e4a1e;
+  --app-warning-text: #f7bd74;
+
+  --app-success-bg: #16301e;
+  --app-success-border: #2e5c3a;
+  --app-success-text: #8fd6a1;
+}

@@ -1,0 +1,143 @@
+@let n = node();
+@switch (n.kind) {
+  @case ('compare') {
+    <div class="box compare">
+      <div class="fields" [class.fields--hysteresis]="isHysteresis(n)">
+        <ion-select
+          aria-label="Sygnał"
+          fill="outline"
+          interface="popover"
+          placeholder="Sygnał"
+          [value]="n.signal"
+          (ionChange)="onSignal($event.detail.value)"
+        >
+          @for (item of signals(); track $index) {
+            <ion-select-option [value]="$index">{{ item.name }}</ion-select-option>
+          }
+        </ion-select>
+        <ion-select
+          aria-label="Porównanie"
+          fill="outline"
+          interface="popover"
+          [value]="n.type"
+          (ionChange)="onCompareType($event.detail.value)"
+        >
+          @for (c of compareTypes; track c.value) {
+            <ion-select-option [value]="c.value">{{ c.label }}</ion-select-option>
+          }
+        </ion-select>
+        @if (!isHysteresis(n)) {
+          <ion-input
+            class="mono"
+            aria-label="Wartość"
+            inputmode="decimal"
+            fill="outline"
+            [value]="n.valueText"
+            (ionInput)="update({ valueText: text($event.detail.value) })"
+          ></ion-input>
+        }
+      </div>
+      @if (isHysteresis(n)) {
+        <div class="fields fields--pair">
+          <ion-input
+            class="mono"
+            aria-label="Włącz powyżej"
+            label="włącz >"
+            labelPlacement="start"
+            inputmode="decimal"
+            fill="outline"
+            [value]="n.valueText"
+            (ionInput)="update({ valueText: text($event.detail.value) })"
+          ></ion-input>
+          <ion-input
+            class="mono"
+            aria-label="Wyłącz poniżej"
+            label="wyłącz <"
+            labelPlacement="start"
+            inputmode="decimal"
+            fill="outline"
+            [value]="n.closeText"
+            (ionInput)="update({ closeText: text($event.detail.value) })"
+          ></ion-input>
+        </div>
+      }
+      <div class="footer">
+        <ng-container *ngTemplateOutlet="forField; context: { label: 'przez' }" />
+        <span class="spacer"></span>
+        <ion-button class="btn-tint" (click)="negate()">NIE</ion-button>
+        <ion-button class="btn-tint btn-remove" (click)="removed.emit()">Usuń</ion-button>
+      </div>
+    </div>
+  }
+
+  @case ('group') {
+    <div class="box group" [class.group--root]="root()" [class.group--or]="n.op === 'or'">
+      <ion-segment [value]="n.op" (ionChange)="onOp($event.detail.value)">
+        <ion-segment-button value="and">Wszystkie (I)</ion-segment-button>
+        <ion-segment-button value="or">Którykolwiek (LUB)</ion-segment-button>
+      </ion-segment>
+
+      @for (child of n.children; track child.id; let i = $index) {
+        @if (i > 0) {
+          <p class="joiner">{{ n.op === 'and' ? 'I' : 'LUB' }}</p>
+        }
+        <app-condition-node
+          [node]="child"
+          [signals]="signals()"
+          (changed)="setChild(i, $event)"
+          (removed)="removeChild(i)"
+        />
+      } @empty {
+        <p class="empty">Dodaj porównanie.</p>
+      }
+
+      <div class="footer">
+        <ion-button class="btn-tint" (click)="addCompare()">+ Porównanie</ion-button>
+        <ion-button class="btn-tint" (click)="addGroup()">
+          + Grupa {{ n.op === 'and' ? 'LUB' : 'I' }}
+        </ion-button>
+        @if (!root()) {
+          <ion-button class="btn-tint" (click)="negate()">NIE</ion-button>
+          <ion-button class="btn-tint btn-remove" (click)="removed.emit()">Usuń</ion-button>
+        }
+      </div>
+      <div class="footer">
+        <ng-container
+          *ngTemplateOutlet="forField; context: { label: root() ? 'całość przez' : 'grupa przez' }"
+        />
+      </div>
+    </div>
+  }
+
+  @case ('not') {
+    <div class="box not">
+      <div class="footer">
+        <span class="not-label">NIE</span>
+        <ng-container *ngTemplateOutlet="forField; context: { label: 'przez' }" />
+        <span class="spacer"></span>
+        <ion-button class="btn-tint" (click)="unwrap()">Bez NIE</ion-button>
+      </div>
+      <app-condition-node
+        [node]="n.child"
+        [signals]="signals()"
+        (changed)="setChild(0, $event)"
+        (removed)="removed.emit()"
+      />
+    </div>
+  }
+}
+
+<!-- Czas „przez” — wynik prawdziwy dopiero, gdy trwa tyle ms -->
+<ng-template #forField let-label="label">
+  <span class="for-label">{{ label }}</span>
+  <ion-input
+    class="mono for"
+    [attr.aria-label]="label + ' [ms]'"
+    inputmode="numeric"
+    placeholder="0"
+    fill="outline"
+    [value]="n.forText"
+    (ionInput)="update({ forText: text($event.detail.value) })"
+  ></ion-input>
+  <span class="for-label">ms</span>
+</ng-template>

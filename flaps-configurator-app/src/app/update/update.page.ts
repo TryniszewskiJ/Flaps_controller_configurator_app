@@ -2,6 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import {
   AlertController,
   IonButton,
+  IonButtons,
   IonContent,
   IonHeader,
   IonIcon,
@@ -26,6 +27,7 @@ import {
   describeBootloaderReason,
 } from '../core/firmware/firmware-update.service';
 import { ConnectionBannerComponent } from '../shared/connection-banner/connection-banner.component';
+import { ThemeToggleComponent } from '../shared/theme-toggle/theme-toggle.component';
 
 const PHASE_LABELS: Record<UpdatePhase, string> = {
   idle: '',
@@ -47,6 +49,8 @@ const PHASE_LABELS: Record<UpdatePhase, string> = {
   templateUrl: './update.page.html',
   styleUrls: ['./update.page.scss'],
   imports: [
+    IonButtons,
+    ThemeToggleComponent,
     IonHeader,
     IonToolbar,
     IonButton,

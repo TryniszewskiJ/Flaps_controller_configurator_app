@@ -10,6 +10,9 @@ import { FirmwareImageError, MAX_IMAGE_SIZE, parseFirmwareImage } from '../firmw
 import { encodeFrame, Frame, FrameParser } from '../protocol/frame';
 import {
   BootloaderReason,
+  CanSniffStartRequestSchema,
+  CanSniffStartResponseSchema,
+  CanSniffStopResponseSchema,
   CloseSessionResponseSchema,
   Command,
   Configuration,
@@ -28,18 +31,16 @@ import {
   FirmwareUpdateError,
   FlapPosition,
   FlapsState,
+  FlapStopMode,
   GetConfigurationResponseSchema,
   GetDeviceInfoResponseSchema,
   GetStateResponseSchema,
-  LogLevel,
   PingResponseSchema,
   RebootRequestSchema,
   RebootResponseSchema,
   SaveConfigurationResponseSchema,
   SetConfigurationRequestSchema,
   SetConfigurationResponseSchema,
-  SetDevModeRequestSchema,
-  SetDevModeResponseSchema,
   SetFlapsOverrideRequestSchema,
   SetFlapsOverrideResponseSchema,
   StartSessionResponseSchema,
@@ -78,6 +79,8 @@ export function defaultConfiguration(): Configuration {
     selectorSignal: 1,
     failSafeState: FlapsState.CLOSED,
     moveTimeMs: 250,
+    stopMode: FlapStopMode.TIME,
+    endStop: { threshold: 12_000, blankingMs: 150, timeoutMs: 1000 },
     flap1: {},
     flap2: {},
   });
@@ -111,7 +114,6 @@ export class FakeDevice {
   });
   /** Licznik TELEMETRY / EVENT; GET_STATE zwraca ostatni numer. */
   sequence = 10;
-  devMode = { logLevel: LogLevel.OFF, flapTrace: false };
   readonly received: Frame[] = [];
   firmwareVersion: [number, number, number] = [1, 2, 3];
   mode = DeviceMode.APPLICATION;
@@ -124,12 +126,14 @@ export class FakeDevice {
   update: { image: Uint8Array; received: number } | null = null;
   /** Ile razy urządzenie się zrestartowało. */
   restarts = 0;
+  /** Trwający podsłuch CAN (CAN_SNIFF_START); null — brak. */
+  sniff: { allFrames: boolean } | null = null;
 
   private readonly parser = new FrameParser((frame) => this.handle(frame));
 
   constructor(private readonly reply: (bytes: Uint8Array) => void) {}
 
-  /** Ramka bez żądania (TELEMETRY, EVENT, LOG, FLAP_TRACE) — SEQ = 0 jak w firmware. */
+  /** Ramka bez żądania (TELEMETRY, EVENT, LOG, AMP_OUT) — SEQ = 0 jak w firmware. */
   sendUnsolicited<T extends DescMessage>(
     command: Command,
     schema: T,
@@ -154,12 +158,10 @@ export class FakeDevice {
       case Command.START_SESSION:
         this.sessionActive = this.startSessionStatus === Status.OK;
         this.update = null; // nowa sesja kończy aktualizację
-        // Tryb dev wyłącza się przy każdym START_SESSION
-        this.devMode = { logLevel: LogLevel.OFF, flapTrace: false };
         this.respond(frame, StartSessionResponseSchema, {
           status: this.startSessionStatus,
           protocolVersionMajor: 1,
-          protocolVersionMinor: 9,
+          protocolVersionMinor: 14,
           sessionTimeoutMs: this.sessionTimeoutMs,
         });
         return;
@@ -224,6 +226,7 @@ export class FakeDevice {
           });
           return;
         }
+        this.applyFlapOutputs(configuration);
         this.configuration = configuration;
         this.unsavedChanges = true;
         this.respond(frame, SetConfigurationResponseSchema, { status: Status.OK });
@@ -241,12 +244,6 @@ export class FakeDevice {
           sequence: this.sequence,
         });
         return;
-      case Command.SET_DEV_MODE: {
-        const { logLevel, flapTrace } = fromBinary(SetDevModeRequestSchema, frame.payload);
-        this.devMode = { logLevel, flapTrace };
-        this.respond(frame, SetDevModeResponseSchema, { status: Status.OK });
-        return;
-      }
       case Command.SET_FLAPS_OVERRIDE: {
         const { state, durationMs } = fromBinary(SetFlapsOverrideRequestSchema, frame.payload);
         const ending = state === FlapsState.UNSPECIFIED;
@@ -259,6 +256,19 @@ export class FakeDevice {
         this.respond(frame, SetFlapsOverrideResponseSchema, { status: Status.OK });
         return;
       }
+      case Command.CAN_SNIFF_START: {
+        const request = fromBinary(CanSniffStartRequestSchema, frame.payload);
+        const valid = request.durationMs <= 3_600_000;
+        this.sniff = valid ? { allFrames: request.allFrames } : this.sniff;
+        this.respond(frame, CanSniffStartResponseSchema, {
+          status: valid ? Status.OK : Status.INVALID_SNIFF,
+        });
+        return;
+      }
+      case Command.CAN_SNIFF_STOP:
+        this.sniff = null;
+        this.respond(frame, CanSniffStopResponseSchema, { frames: 3, dropped: 1 });
+        return;
       default:
         this.error(frame, Status.UNKNOWN_COMMAND);
     }
@@ -363,6 +373,28 @@ export class FakeDevice {
         return;
       }
     }
+  }
+
+  /**
+   * Jak FlapsBridgeController::setConnected / setReversed: zmiana wyjścia zapomina pozycję
+   * (odłączone = NOT_CONNECTED), bez EVENT.
+   */
+  private applyFlapOutputs(next: Configuration): void {
+    const position = (
+      before: Configuration['flap1'],
+      after: Configuration['flap1'],
+      current: FlapPosition,
+    ): FlapPosition => {
+      if (after?.disconnected) {
+        return FlapPosition.NOT_CONNECTED;
+      }
+      const changed =
+        !!before?.disconnected !== !!after?.disconnected ||
+        !!before?.reversed !== !!after?.reversed;
+      return changed ? FlapPosition.UNKNOWN : current;
+    };
+    this.state.flap1 = position(this.configuration.flap1, next.flap1, this.state.flap1);
+    this.state.flap2 = position(this.configuration.flap2, next.flap2, this.state.flap2);
   }
 
   /** Reset STM32: sesja i aktualizacja znikają, przez restartMs brak odpowiedzi. */

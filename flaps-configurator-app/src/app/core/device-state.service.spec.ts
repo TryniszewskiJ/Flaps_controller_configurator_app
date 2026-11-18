@@ -3,11 +3,12 @@ import { BleLinkService } from './ble/ble-link.service';
 import { ConnectionService } from './connection.service';
 import { DeviceStateService } from './device-state.service';
 import {
+  AmpOutSchema,
   Command,
   EventSchema,
   FlapPosition,
   FlapsState,
-  FlapTraceSchema,
+  FlapStopReason,
   LogLevel,
   LogSchema,
   TelemetrySchema,
@@ -124,18 +125,73 @@ describe('DeviceStateService', () => {
     expect(service.override()).toBeNull();
   });
 
-  it('enables dev mode and turns it on again in every new session', async () => {
-    await service.setDevMode({ logLevel: LogLevel.DEBUG, flapTrace: true });
-    expect(link.device.devMode).toEqual({ logLevel: LogLevel.DEBUG, flapTrace: true });
-
-    // Reset STM32: sesja wygasa, ping dostaje NO_SESSION, aplikacja otwiera ją ponownie
-    link.device.sessionActive = false;
-    await vi.advanceTimersByTimeAsync(2666);
+  it('collects AMP_OUT samples and marks gaps between frames', async () => {
+    link.device.sendUnsolicited(Command.AMP_OUT, AmpOutSchema, {
+      uptimeMs: 1000,
+      intervalMs: 20,
+      flap1: [100, 200],
+      flap2: [300, 400],
+    });
+    link.device.sendUnsolicited(Command.AMP_OUT, AmpOutSchema, {
+      uptimeMs: 1040,
+      intervalMs: 20,
+      flap1: [500],
+      flap2: [600],
+    });
+    // 1060 i 1080 zgubione
+    link.device.sendUnsolicited(Command.AMP_OUT, AmpOutSchema, {
+      uptimeMs: 1100,
+      intervalMs: 20,
+      flap1: [700],
+      flap2: [800],
+    });
     await settle();
 
-    expect(count(Command.START_SESSION)).toBe(2);
-    expect(link.device.devMode).toEqual({ logLevel: LogLevel.DEBUG, flapTrace: true });
-    expect(count(Command.GET_STATE)).toBe(2);
+    expect(service.ampOut()).toEqual([
+      { uptimeMs: 1000, flap1: 100, flap2: 300, gap: false },
+      { uptimeMs: 1020, flap1: 200, flap2: 400, gap: false },
+      { uptimeMs: 1040, flap1: 500, flap2: 600, gap: false },
+      { uptimeMs: 1100, flap1: 700, flap2: 800, gap: true },
+    ]);
+  });
+
+  it('keeps AMP_OUT history for five minutes and starts over after a device reset', async () => {
+    const send = (uptimeMs: number): void =>
+      link.device.sendUnsolicited(Command.AMP_OUT, AmpOutSchema, {
+        uptimeMs,
+        intervalMs: 20,
+        flap1: [1],
+        flap2: [2],
+      });
+    send(1000);
+    send(30_000);
+    send(302_000);
+    await settle();
+    expect(service.ampOut().map((s) => s.uptimeMs)).toEqual([30_000, 302_000]);
+
+    send(500); // uptime się cofnął
+    await settle();
+    expect(service.ampOut().map((s) => s.uptimeMs)).toEqual([500]);
+  });
+
+  it('marks flap move starts on the AMP_OUT timeline', async () => {
+    link.device.sendUnsolicited(Command.EVENT, EventSchema, {
+      sequence: 11,
+      uptimeMs: 5000,
+      event: { case: 'flapMoveStarted', value: { flap: 1, position: FlapPosition.OPENING } },
+    });
+    link.device.sendUnsolicited(Command.EVENT, EventSchema, {
+      sequence: 12,
+      uptimeMs: 5400,
+      event: { case: 'flapMoveStarted', value: { flap: 2, position: FlapPosition.CLOSING } },
+    });
+    await settle();
+
+    expect(service.state()?.flap1).toBe(FlapPosition.OPENING);
+    expect(service.moveMarks()).toMatchObject([
+      { uptimeMs: 5000, flap: 1, position: FlapPosition.OPENING },
+      { uptimeMs: 5400, flap: 2, position: FlapPosition.CLOSING },
+    ]);
   });
 
   it('collects device log lines', async () => {
@@ -155,7 +211,7 @@ describe('DeviceStateService', () => {
     expect(service.droppedLogs()).toBe(3);
   });
 
-  it('joins a finished move with its AMP_OUT trace', async () => {
+  it('records a finished move with its AMP_OUT diagnostics', async () => {
     link.device.sendUnsolicited(Command.EVENT, EventSchema, {
       sequence: 11,
       event: {
@@ -166,14 +222,9 @@ describe('DeviceStateService', () => {
           durationMs: 250,
           peakAmpOut: 41000,
           ampOutAtStop: 30000,
+          stopReason: FlapStopReason.END_STOP,
         },
       },
-    });
-    link.device.sendUnsolicited(Command.FLAP_TRACE, FlapTraceSchema, {
-      flap: 2,
-      position: FlapPosition.OPEN,
-      intervalMs: 5,
-      samples: [1000, 20000, 41000],
     });
     await settle();
 
@@ -184,7 +235,7 @@ describe('DeviceStateService', () => {
       durationMs: 250,
       peakAmpOut: 41000,
       ampOutAtStop: 30000,
-      trace: { intervalMs: 5, samples: [1000, 20000, 41000] },
+      stopReason: FlapStopReason.END_STOP,
     });
   });
 

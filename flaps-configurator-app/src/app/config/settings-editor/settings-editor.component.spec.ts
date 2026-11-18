@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { create } from '@bufbuild/protobuf';
 import { ModalController } from '@ionic/angular';
 import { ConfigurationSettings, configurationSettings } from '../../core/configuration.service';
-import { FlapsState, LogicSchema } from '../../core/protocol/gen/flaps_pb';
+import { FlapsState, FlapStopMode, LogicSchema, LogLevel } from '../../core/protocol/gen/flaps_pb';
 import { defaultConfiguration } from '../../core/testing/fake-device';
 import { SettingsEditorComponent } from './settings-editor.component';
 
@@ -40,18 +40,59 @@ describe('SettingsEditorComponent', () => {
     editor['onMoveTime']('400');
     editor['termination'].set(true);
     editor['setFlapOutput'](2, { reversed: true });
+    editor['devMode'].set(true);
+    editor['onLogLevel'](LogLevel.WARN);
+    editor['readAmpOut'].set(true);
     editor['demoMode'].set(true);
 
     expect(await save()).toEqual({
       selectorSignal: 1,
       defaultLogicIndex: 0,
       failSafeState: FlapsState.OPEN,
+      stopMode: FlapStopMode.TIME,
       moveTimeMs: 400,
+      endStop: { threshold: 12_000, blankingMs: 150, timeoutMs: 1000 },
       fdcanTermination: true,
       flap1: { connected: true, reversed: false },
       flap2: { connected: true, reversed: true },
+      devMode: true,
+      logLevel: LogLevel.WARN,
+      readAmpOut: true,
       demoMode: true,
     });
+  });
+
+  it('stops at the end stop with the edited detection', async () => {
+    open();
+    editor['onStopMode']('end-stop');
+    editor['onMoveTime'](''); // ukryte w tym trybie — zostaje poprzednie
+    editor['onThreshold']('20000');
+    editor['onBlanking']('200');
+    editor['onTimeout']('800');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('≈ 1007.1 mV');
+    expect(await save()).toMatchObject({
+      stopMode: FlapStopMode.END_STOP,
+      moveTimeMs: 250,
+      endStop: { threshold: 20_000, blankingMs: 200, timeoutMs: 800 },
+    });
+  });
+
+  it('validates the end stop detection only in the end stop mode', () => {
+    open();
+    editor['onThreshold']('500');
+    expect(editor['valid']()).toBe(true);
+
+    editor['onStopMode']('end-stop');
+    expect(editor['thresholdError']()).toContain('od 1000 do 60000');
+    expect(editor['valid']()).toBe(false);
+
+    editor['onThreshold']('12000');
+    editor['onBlanking']('600');
+    editor['onTimeout']('500');
+    expect(editor['timeoutError']()).toContain('dłuższy niż wygaszenie');
+    expect(editor['valid']()).toBe(false);
   });
 
   it('requires at least one connected flap', () => {

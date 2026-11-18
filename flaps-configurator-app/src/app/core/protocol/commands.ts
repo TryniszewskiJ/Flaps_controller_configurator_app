@@ -7,6 +7,12 @@ import {
   toJson,
 } from '@bufbuild/protobuf';
 import {
+  AmpOutSchema,
+  CanSniffSchema,
+  CanSniffStartRequestSchema,
+  CanSniffStartResponseSchema,
+  CanSniffStopRequestSchema,
+  CanSniffStopResponseSchema,
   CloseSessionRequestSchema,
   CloseSessionResponseSchema,
   Command,
@@ -20,7 +26,6 @@ import {
   FirmwareUpdateCommitResponseSchema,
   FirmwareUpdateDataRequestSchema,
   FirmwareUpdateDataResponseSchema,
-  FlapTraceSchema,
   GetConfigurationRequestSchema,
   GetConfigurationResponseSchema,
   GetDeviceInfoRequestSchema,
@@ -36,8 +41,6 @@ import {
   SaveConfigurationResponseSchema,
   SetConfigurationRequestSchema,
   SetConfigurationResponseSchema,
-  SetDevModeRequestSchema,
-  SetDevModeResponseSchema,
   SetFlapsOverrideRequestSchema,
   SetFlapsOverrideResponseSchema,
   StartSessionRequestSchema,
@@ -80,10 +83,6 @@ export const COMMAND_SCHEMAS: Partial<Record<Command, CommandSchemas>> = {
     response: SaveConfigurationResponseSchema,
   },
   [Command.GET_STATE]: { request: GetStateRequestSchema, response: GetStateResponseSchema },
-  [Command.SET_DEV_MODE]: {
-    request: SetDevModeRequestSchema,
-    response: SetDevModeResponseSchema,
-  },
   [Command.SET_FLAPS_OVERRIDE]: {
     request: SetFlapsOverrideRequestSchema,
     response: SetFlapsOverrideResponseSchema,
@@ -105,6 +104,14 @@ export const COMMAND_SCHEMAS: Partial<Record<Command, CommandSchemas>> = {
     response: FirmwareUpdateAbortResponseSchema,
   },
   [Command.REBOOT]: { request: RebootRequestSchema, response: RebootResponseSchema },
+  [Command.CAN_SNIFF_START]: {
+    request: CanSniffStartRequestSchema,
+    response: CanSniffStartResponseSchema,
+  },
+  [Command.CAN_SNIFF_STOP]: {
+    request: CanSniffStopRequestSchema,
+    response: CanSniffStopResponseSchema,
+  },
 };
 
 /** Modele wiadomości wysyłanych przez urządzenie bez żądania (0x70–0x7F, SEQ = 0). */
@@ -112,7 +119,8 @@ export const UNSOLICITED_SCHEMAS: Partial<Record<Command, DescMessage>> = {
   [Command.TELEMETRY]: TelemetrySchema,
   [Command.EVENT]: EventSchema,
   [Command.LOG]: LogSchema,
-  [Command.FLAP_TRACE]: FlapTraceSchema,
+  [Command.AMP_OUT]: AmpOutSchema,
+  [Command.CAN_SNIFF]: CanSniffSchema,
 };
 
 /** Komendy, które aplikacja może wysłać (do podpowiedzi i filtra). */

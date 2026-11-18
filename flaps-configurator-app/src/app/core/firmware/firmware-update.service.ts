@@ -248,7 +248,7 @@ export class FirmwareUpdateService {
         FirmwareUpdateAbortResponseSchema,
       )
       .catch(() => undefined);
-    // Raporty i tryb dev wracają po GET_STATE / SET_DEV_MODE, jak w nowej sesji
+    // Raporty (także LOG i AMP_OUT) wracają po GET_STATE, jak w nowej sesji
     this.connection.resync();
   }
 

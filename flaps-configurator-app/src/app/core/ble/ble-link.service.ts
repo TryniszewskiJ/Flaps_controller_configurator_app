@@ -33,6 +33,8 @@ export class BleLinkService {
   private initialized = false;
   private deviceId: string | null = null;
   private chunkSize = DEFAULT_ATT_MTU - 3;
+  private writeQueue: Promise<void> = Promise.resolve();
+  private initializing: Promise<void> | null = null;
 
   /** Na webie urządzenie wybiera się w oknie przeglądarki, bez własnej listy. */
   get usesBrowserPicker(): boolean {
@@ -42,11 +44,26 @@ export class BleLinkService {
   /** Uprawnienia Bluetooth i włączenie modułu (Android pyta użytkownika). */
   async prepare(): Promise<void> {
     if (!this.initialized) {
-      await BleClient.initialize({ androidNeverForLocation: true });
+      // Wspólna inicjalizacja dla warmUp() i kliknięcia „Połącz”
+      this.initializing ??= BleClient.initialize({ androidNeverForLocation: true }).finally(
+        () => (this.initializing = null),
+      );
+      await this.initializing;
       this.initialized = true;
     }
     if (Capacitor.getPlatform() === 'android' && !(await BleClient.isEnabled())) {
       await BleClient.requestEnable();
+    }
+  }
+
+  /**
+   * Web / Electron: inicjalizacja przy starcie aplikacji. requestDevice() musi paść zaraz po
+   * kliknięciu — gdy pierwsze „Połącz” czekało na getAvailability() (na macOS adapter
+   * startuje chwilę), Chromium przerywał wybór urządzenia i okno od razu znikało.
+   */
+  warmUp(): void {
+    if (this.usesBrowserPicker) {
+      this.prepare().catch(() => undefined); // błąd (np. brak Bluetooth) pokaże „Połącz”
     }
   }
 
@@ -69,7 +86,9 @@ export class BleLinkService {
 
   /** Okno wyboru urządzenia przeglądarki (Web Bluetooth). */
   async requestDeviceInBrowser(): Promise<FoundDevice> {
-    await this.prepare();
+    if (!this.initialized) {
+      await this.prepare();
+    }
     const device = await BleClient.requestDevice({
       services: [BRIDGE_SERVICE_UUID],
       optionalServices: [GAP_SERVICE_UUID],
@@ -96,7 +115,10 @@ export class BleLinkService {
         deviceId,
         BRIDGE_SERVICE_UUID,
         BRIDGE_TX_CHARACTERISTIC_UUID,
-        (value) => onData(new Uint8Array(value.buffer, value.byteOffset, value.byteLength)),
+        (value) => {
+          this.learnMtuFromNotification(value.byteLength);
+          onData(new Uint8Array(value.buffer, value.byteOffset, value.byteLength));
+        },
         { timeout: PAIRING_TIMEOUT_MS },
       );
       this.chunkSize = (await this.readMtu(deviceId)) - 3;
@@ -114,8 +136,17 @@ export class BleLinkService {
     }
   }
 
-  /** Zapis z potwierdzeniem, w kawałkach mieszczących się w MTU. */
-  async write(bytes: Uint8Array): Promise<void> {
+  /**
+   * Zapis z potwierdzeniem, w kawałkach mieszczących się w MTU. Zapisy idą po kolei —
+   * kawałki dwóch ramek (np. ponowienie i odczyt stanu) nie mogą się przeplatać.
+   */
+  write(bytes: Uint8Array): Promise<void> {
+    const write = this.writeQueue.then(() => this.writeChunks(bytes));
+    this.writeQueue = write.catch(() => undefined);
+    return write;
+  }
+
+  private async writeChunks(bytes: Uint8Array): Promise<void> {
     const deviceId = this.deviceId;
     if (!deviceId) {
       throw new Error('Not connected');
@@ -145,9 +176,22 @@ export class BleLinkService {
     }
   }
 
+  /**
+   * Web Bluetooth (Electron na Windows/macOS) nie podaje MTU. Mostek wysyła notyfikacje
+   * o długości do MTU - 3, więc najdłuższa odebrana to dolna granica kawałka zapisu.
+   * Na Androidzie i iOS MTU podaje system (readMtu).
+   */
+  private learnMtuFromNotification(length: number): void {
+    if (!Capacitor.isNativePlatform() && length > this.chunkSize) {
+      this.chunkSize = length;
+    }
+  }
+
   private async readMtu(deviceId: string): Promise<number> {
     try {
-      return await BleClient.getMtu(deviceId);
+      // Android zwraca -1, gdy negocjacja MTU się nie udała
+      const mtu = await BleClient.getMtu(deviceId);
+      return mtu > DEFAULT_ATT_MTU ? mtu : DEFAULT_ATT_MTU;
     } catch {
       return DEFAULT_ATT_MTU; // getMtu nie jest dostępne na każdej platformie
     }

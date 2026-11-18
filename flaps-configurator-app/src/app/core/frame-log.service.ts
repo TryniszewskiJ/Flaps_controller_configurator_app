@@ -1,6 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { baseCommand, commandName, decodePayload, hexByte, toHex } from './protocol/commands';
 import { Frame } from './protocol/frame';
+import { Command } from './protocol/gen/flaps_pb';
 
 export type FrameDirection = 'tx' | 'rx';
 
@@ -23,15 +24,36 @@ export interface FrameLogEntry {
 
 export const FRAME_LOG_LIMIT = 500;
 
+/** Strumienie danych (co 100 ms) — domyślnie poza logiem. */
+const STREAM_COMMANDS: number[] = [Command.AMP_OUT, Command.CAN_SNIFF];
+
 /** Wysłane i odebrane ramki protokołu (Dev console). */
 @Injectable({ providedIn: 'root' })
 export class FrameLogService {
   private readonly _entries = signal<FrameLogEntry[]>([]);
+  private readonly _showAmpOut = signal(false);
   private nextId = 0;
 
   readonly entries = this._entries.asReadonly();
+  /**
+   * AMP_OUT (10 ramek/s w trybie dev) i CAN_SNIFF (podsłuch CAN) domyślnie nie trafiają do logu —
+   * wypierałyby odpowiedzi na komendy, a dane są na wykresie i w zakładce CAN bus.
+   */
+  readonly showAmpOut = this._showAmpOut.asReadonly();
+
+  setShowAmpOut(show: boolean): void {
+    this._showAmpOut.set(show);
+    if (!show) {
+      this._entries.update((entries) =>
+        entries.filter((e) => !STREAM_COMMANDS.includes(e.command)),
+      );
+    }
+  }
 
   add(direction: FrameDirection, frame: Frame): void {
+    if (STREAM_COMMANDS.includes(frame.command) && !this._showAmpOut()) {
+      return;
+    }
     const json = decodePayload(frame.command, frame.payload);
     const entry: FrameLogEntry = {
       id: this.nextId++,

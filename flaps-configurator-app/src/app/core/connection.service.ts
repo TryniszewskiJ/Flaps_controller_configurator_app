@@ -77,11 +77,14 @@ export class ConnectionService {
   private readonly _status = signal<ConnectionStatus>('disconnected');
   private readonly _device = signal<ConnectedDevice | null>(null);
   private readonly _deviceInfo = signal<DeviceInfo | null>(null);
+  private readonly _protocolMinor = signal<number | null>(null);
   private readonly _error = signal<string | null>(null);
 
   readonly status = this._status.asReadonly();
   readonly device = this._device.asReadonly();
   readonly deviceInfo = this._deviceInfo.asReadonly();
+  /** Wersja minor protokołu urządzenia (z START_SESSION) — co urządzenie obsługuje. */
+  readonly protocolMinor = this._protocolMinor.asReadonly();
   /** Powód ostatniego nieudanego połączenia. */
   readonly error = this._error.asReadonly();
   readonly connected = computed(() => this._status() === 'connected');
@@ -94,7 +97,7 @@ export class ConnectionService {
   private readonly _session = signal(0);
   /**
    * Rośnie przy każdym otwarciu sesji (także ponownym START_SESSION po NO_SESSION).
-   * Urządzenie wysyła stan i tryb dev dopiero po GET_STATE / SET_DEV_MODE w nowej sesji.
+   * Urządzenie wysyła stan, logi i AMP_OUT dopiero po GET_STATE w nowej sesji.
    */
   readonly session = this._session.asReadonly();
 
@@ -164,6 +167,7 @@ export class ConnectionService {
     this._status.set('disconnected');
     this._device.set(null);
     this._deviceInfo.set(null);
+    this._protocolMinor.set(null);
   }
 
   /**
@@ -260,7 +264,7 @@ export class ConnectionService {
     }
   }
 
-  /** Wiadomości bez żądania (TELEMETRY, EVENT, LOG, FLAP_TRACE); zwraca wypisanie. */
+  /** Wiadomości bez żądania (TELEMETRY, EVENT, LOG, AMP_OUT); zwraca wypisanie. */
   onUnsolicited(listener: (frame: Frame) => void): () => void {
     this.unsolicitedListeners.add(listener);
     return () => this.unsolicitedListeners.delete(listener);
@@ -359,6 +363,7 @@ export class ConnectionService {
 
     switch (reply.status) {
       case Status.OK:
+        this._protocolMinor.set(reply.protocolVersionMinor);
         return reply.sessionTimeoutMs || DEFAULT_SESSION_TIMEOUT_MS;
       case Status.UNSUPPORTED_VERSION:
         throw new SessionRejectedError(
@@ -490,6 +495,7 @@ export class ConnectionService {
     this._status.set('disconnected');
     this._device.set(null);
     this._deviceInfo.set(null);
+    this._protocolMinor.set(null);
   }
 
   private clearTimers(): void {

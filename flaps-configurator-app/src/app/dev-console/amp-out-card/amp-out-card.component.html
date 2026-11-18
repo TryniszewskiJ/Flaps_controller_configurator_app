@@ -1,0 +1,228 @@
+<section class="card">
+  <div class="card-header" [class.card-header--collapsed]="!open()">
+    <h2 class="card-label">
+      <button
+        type="button"
+        class="card-toggle"
+        [attr.aria-expanded]="open()"
+        (click)="open.set(!open())"
+      >
+        <ion-icon name="chevron-down" aria-hidden="true"></ion-icon>
+        AMP_OUT
+        @if (!open() && enabled()) {
+          <span class="card-count">na żywo</span>
+        }
+      </button>
+    </h2>
+    @if (open()) {
+      <div class="header-actions">
+        <ion-button
+          class="btn-tint"
+          [class.btn-active]="selectMode()"
+          [attr.aria-pressed]="selectMode()"
+          [disabled]="!latest()"
+          (click)="selectMode.set(!selectMode())"
+        >
+          Zaznacz
+        </ion-button>
+        <ion-button
+          class="btn-tint"
+          [disabled]="!latest() && moves().length === 0"
+          (click)="clear()"
+        >
+          Wyczyść
+        </ion-button>
+      </div>
+    }
+  </div>
+
+  @if (open()) {
+    @if (!enabled()) {
+      <p class="hint">
+        Wykres na żywo wymaga „Trybu deweloperskiego” i „Odczytu AMP_OUT na żywo” w Config →
+        Ustawienia (wystarczy „Testuj”, bez zapisu).
+      </p>
+    }
+
+    <app-amp-out-legend [latest]="latest()" [(showFlap1)]="showFlap1" [(showFlap2)]="showFlap2" />
+
+    <div #plot class="plot" [class.plot--history]="!live()" [class.plot--select]="selectMode()">
+      @if (chart(); as c) {
+        <svg
+          [attr.width]="width()"
+          [attr.height]="height"
+          [attr.viewBox]="'0 0 ' + width() + ' ' + height"
+          role="img"
+          aria-label="Wykres napięcia AMP_OUT obu klap w mV"
+          (pointerdown)="onPointerDown($event)"
+          (pointermove)="onPointerMove($event)"
+          (pointerup)="onPointerUp($event)"
+          (pointercancel)="onPointerUp($event)"
+          (pointerleave)="onPointerLeave()"
+          (wheel)="onWheel($event)"
+        >
+          <defs>
+            <clipPath [attr.id]="clipId">
+              <rect
+                [attr.x]="margin.left"
+                [attr.y]="margin.top"
+                [attr.width]="width() - margin.left - margin.right"
+                [attr.height]="plotBottom - margin.top"
+              />
+            </clipPath>
+          </defs>
+          @if (selectionBox(); as box) {
+            <rect
+              class="selection"
+              [attr.x]="box.x"
+              [attr.y]="margin.top"
+              [attr.width]="box.width"
+              [attr.height]="plotBottom - margin.top"
+            />
+          }
+          @for (tick of c.yTicks; track tick.label) {
+            <line
+              class="grid"
+              [attr.x1]="margin.left"
+              [attr.x2]="width() - margin.right"
+              [attr.y1]="tick.pos"
+              [attr.y2]="tick.pos"
+            />
+            <text class="axis" [attr.x]="margin.left - 6" [attr.y]="tick.pos + 3" text-anchor="end">
+              {{ tick.label }}
+            </text>
+          }
+          <text class="axis" x="4" y="10">AMP_OUT [mV]</text>
+          @for (tick of c.xTicks; track tick.label) {
+            <text class="axis" [attr.x]="tick.pos" [attr.y]="height - 6" text-anchor="middle">
+              {{ tick.label }}
+            </text>
+          }
+
+          @for (mark of c.marks; track mark.id) {
+            <g [class]="mark.opening ? 'mark mark--open' : 'mark mark--close'">
+              <line
+                [attr.x1]="mark.x"
+                [attr.x2]="mark.x"
+                [attr.y1]="margin.top"
+                [attr.y2]="plotBottom"
+              />
+              <text [attr.x]="mark.x" y="26" text-anchor="middle">{{ mark.label }}</text>
+            </g>
+          }
+
+          @if (threshold(); as th) {
+            <g class="mark threshold">
+              <line
+                [attr.x1]="margin.left"
+                [attr.x2]="width() - margin.right"
+                [attr.y1]="th.y"
+                [attr.y2]="th.y"
+              />
+              <text [attr.x]="width() - margin.right - 4" [attr.y]="th.y - 4" text-anchor="end">
+                {{ th.label }}
+              </text>
+            </g>
+          }
+
+          <g [attr.clip-path]="'url(#' + clipId + ')'">
+            @if (showFlap2()) {
+              <path class="line flap2" [attr.d]="c.flap2" />
+            }
+            @if (showFlap1()) {
+              <path class="line flap1" [attr.d]="c.flap1" />
+            }
+          </g>
+
+          @if (cursor(); as cur) {
+            <line
+              class="cursor"
+              [attr.x1]="cur.x"
+              [attr.x2]="cur.x"
+              [attr.y1]="margin.top"
+              [attr.y2]="plotBottom"
+            />
+          }
+        </svg>
+        @if (cursor(); as cur) {
+          <div
+            class="tooltip mono"
+            [class.tooltip--left]="cur.left"
+            [style.left.px]="cur.left ? null : cur.x + 8"
+            [style.right.px]="cur.left ? width() - cur.x + 8 : null"
+          >
+            <div class="tooltip-time">{{ cur.time }}</div>
+            <div class="flap1">K1 {{ millivolts(cur.flap1) }} · {{ cur.flap1 }}</div>
+            <div class="flap2">K2 {{ millivolts(cur.flap2) }} · {{ cur.flap2 }}</div>
+          </div>
+        }
+      } @else {
+        <p class="plot-empty">
+          {{ enabled() ? 'Czekam na AMP_OUT ze sterownika…' : 'Brak danych AMP_OUT.' }}
+        </p>
+      }
+    </div>
+
+    @if (scroll(); as s) {
+      <div class="scroll-row">
+        <ion-range
+          class="scroll"
+          aria-label="Przewijanie historii AMP_OUT"
+          [min]="s.min"
+          [max]="s.max"
+          [step]="20"
+          [value]="s.value"
+          [disabled]="s.max <= s.min"
+          (ionInput)="onScroll($event.detail.value)"
+        ></ion-range>
+        <ion-button class="btn-tint live-toggle" (click)="toggleLive()">
+          {{ live() ? 'Pauza' : 'Na żywo' }}
+        </ion-button>
+      </div>
+      <p class="hint hint--tight">
+        @if (selectMode()) {
+          Przeciągnij po wykresie, aby zaznaczyć fragment; stuknięcie usuwa zaznaczenie.
+        } @else {
+          Przeciągnij wykres w bok albo użyj suwaka, aby przewinąć historię (5 min). Shift +
+          przeciągnięcie zaznacza fragment.
+        }
+      </p>
+    }
+
+    @if (selection(); as range) {
+      <app-amp-out-selection
+        [range]="range"
+        [samples]="samples()"
+        [marks]="marks()"
+        (cleared)="selection.set(null)"
+      />
+    }
+
+    <div class="controls">
+      <ion-segment
+        aria-label="Zakres czasu"
+        [value]="windowMs()"
+        (ionChange)="setWindow($event.detail.value)"
+      >
+        @for (ms of windows; track ms) {
+          <ion-segment-button [value]="ms">{{ windowLabel(ms) }}</ion-segment-button>
+        }
+      </ion-segment>
+      <ion-segment
+        aria-label="Skala napięcia"
+        [value]="yMax() === null ? 'auto' : 'fixed'"
+        (ionChange)="setScale($event.detail.value)"
+      >
+        <ion-segment-button value="auto">Auto</ion-segment-button>
+        <ion-segment-button value="fixed">0–{{ vref }} mV</ion-segment-button>
+      </ion-segment>
+    </div>
+
+    <h3 class="section-label">Ruchy klap</h3>
+    <app-flap-moves-table />
+    <p class="hint">
+      AMP_OUT to napięcie z linii pomiaru, nie prąd: U [mV] = raw × {{ vref }} / 65535 (ADC 16-bit,
+      3,3 V). Każda próbka to średnia z ok. 22 ms.
+    </p>
+  }
+</section>

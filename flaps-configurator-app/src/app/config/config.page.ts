@@ -25,16 +25,19 @@ import { ConnectionService } from '../core/connection.service';
 import { CanFrame, Logic, Signal } from '../core/protocol/gen/flaps_pb';
 import { ConnectionBannerComponent } from '../shared/connection-banner/connection-banner.component';
 import {
+  devModeLabel,
   flapsStateLabel,
   frameLabel,
   logicSummary,
   signalLayoutLabel,
   signalScaleLabel,
+  stopModeLabel,
 } from './config-format';
 import { FrameEditorComponent } from './frame-editor/frame-editor.component';
 import { LogicEditorComponent } from './logic-editor/logic-editor.component';
 import { SettingsEditorComponent } from './settings-editor/settings-editor.component';
 import { SignalEditorComponent } from './signal-editor/signal-editor.component';
+import { ThemeToggleComponent } from '../shared/theme-toggle/theme-toggle.component';
 
 type EditorComponent =
   | typeof FrameEditorComponent
@@ -47,6 +50,7 @@ type EditorComponent =
   templateUrl: './config.page.html',
   styleUrls: ['./config.page.scss'],
   imports: [
+    ThemeToggleComponent,
     IonHeader,
     IonToolbar,
     IonButtons,
@@ -61,7 +65,8 @@ export class ConfigPage {
   private readonly modal = inject(ModalController);
   private readonly alert = inject(AlertController);
   protected readonly config = inject(ConfigurationService);
-  protected readonly connected = inject(ConnectionService).connected;
+  private readonly connection = inject(ConnectionService);
+  protected readonly connected = this.connection.connected;
 
   protected readonly draft = this.config.draft;
   protected readonly busy = this.config.busy;
@@ -103,6 +108,8 @@ export class ConfigPage {
   protected readonly signalScaleLabel = signalScaleLabel;
   protected readonly logicSummary = logicSummary;
   protected readonly flapsStateLabel = flapsStateLabel;
+  protected readonly devModeLabel = devModeLabel;
+  protected readonly stopModeLabel = stopModeLabel;
 
   /** Wyjście klapy w skrócie: „podłączona”, „odwrócona”, „niepodłączona”. */
   protected flapOutputLabel(flap: 1 | 2): string {
@@ -204,6 +211,8 @@ export class ConfigPage {
       signals: draft.signals,
       index,
       selectorSignal: draft.selectorSignal,
+      // Starsze urządzenie odrzuci warunek (1.12) albo histerezę w warunku (1.13)
+      protocolMinor: this.connection.protocolMinor() ?? 0,
     });
 
     this.notice.set(null);

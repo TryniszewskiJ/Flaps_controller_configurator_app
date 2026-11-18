@@ -1,0 +1,28 @@
+<button
+  type="button"
+  class="legend-item"
+  [class.legend-item--off]="!showFlap1()"
+  [attr.aria-pressed]="showFlap1()"
+  (click)="showFlap1.set(!showFlap1())"
+>
+  <span class="swatch flap1" aria-hidden="true"></span>
+  Klapa 1
+  @if (latest(); as sample) {
+    <span class="mono value">{{ millivolts(sample.flap1) }}</span>
+  }
+</button>
+<button
+  type="button"
+  class="legend-item"
+  [class.legend-item--off]="!showFlap2()"
+  [attr.aria-pressed]="showFlap2()"
+  (click)="showFlap2.set(!showFlap2())"
+>
+  <span class="swatch flap2" aria-hidden="true"></span>
+  Klapa 2
+  @if (latest(); as sample) {
+    <span class="mono value">{{ millivolts(sample.flap2) }}</span>
+  }
+</button>
+<span class="legend-mark legend-mark--open">otwieranie</span>
+<span class="legend-mark legend-mark--close">zamykanie</span>

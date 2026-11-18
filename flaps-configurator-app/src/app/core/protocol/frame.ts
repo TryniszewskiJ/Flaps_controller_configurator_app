@@ -7,8 +7,8 @@
  */
 
 export const FRAME_SOF = 0xa5;
-/** Limit firmware (README: LEN maks. 2048 B — cała konfiguracja, paczka aktualizacji). */
-export const MAX_PAYLOAD_LENGTH = 2048;
+/** Limit firmware (README: LEN maks. 6144 B — cała konfiguracja z warunkami, paczka aktualizacji). */
+export const MAX_PAYLOAD_LENGTH = 6144;
 
 const HEADER_LENGTH = 5; // SOF, CMD, SEQ, LEN_L, LEN_H
 const CRC_LENGTH = 2;

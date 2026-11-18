@@ -16,8 +16,20 @@ import {
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { close } from 'ionicons/icons';
-import { LOGIC_DESCRIPTION_MAX_BYTES } from '../../core/configuration.service';
 import {
+  CONDITION_HYSTERESIS_MINOR,
+  CONDITION_MINOR,
+  conditionError,
+  conditionNodes,
+  conditionSize,
+  conditionTree,
+  conditionUsesHysteresis,
+  MAX_CONDITION_NODES,
+} from '../../core/condition';
+import { LOGIC_DESCRIPTION_MAX_BYTES } from '../../core/configuration.service';
+import { PROTOCOL_VERSION_MINOR } from '../../core/protocol/protocol-client';
+import {
+  ConditionLogicSchema,
   FixedLogicSchema,
   FlapsState,
   HysteresisLogicSchema,
@@ -27,14 +39,24 @@ import {
   SimpleSwitchLogicSchema,
 } from '../../core/protocol/gen/flaps_pb';
 import { parseInteger, parseNumber, roundFloat, utf8Length } from '../config-format';
+import {
+  conditionFromEdit,
+  EditNode,
+  editRoot,
+  newCompare,
+  newGroup,
+} from './condition-node/condition-edit';
+import { ConditionNodeComponent } from './condition-node/condition-node.component';
 
-export type LogicType = 'fixed' | 'simpleSwitch' | 'hysteresis';
+export type LogicType = 'fixed' | 'simpleSwitch' | 'hysteresis' | 'condition';
+const LOGIC_TYPES: LogicType[] = ['fixed', 'simpleSwitch', 'hysteresis', 'condition'];
 
 const INT32_MIN = -(2 ** 31);
 const INT32_MAX = 2 ** 31 - 1;
 
 /**
- * Okno edycji logiki: opis, wartość selektora, typ i jego parametry.
+ * Okno edycji logiki: opis, wartość selektora, typ i jego parametry (warunek: drzewo I / LUB / NIE
+ * z porównań sygnałów).
  * Zamyka się z logiką (rola 'save'), 'delete' albo 'cancel'.
  */
 @Component({
@@ -53,6 +75,7 @@ const INT32_MAX = 2 ** 31 - 1;
     IonSegmentButton,
     IonSelect,
     IonSelectOption,
+    ConditionNodeComponent,
   ],
 })
 export class LogicEditorComponent implements OnInit {
@@ -65,6 +88,12 @@ export class LogicEditorComponent implements OnInit {
   index: number | null = null;
   /** Sygnał selektora; brak = jedna logika, wartość selektora nieużywana. */
   selectorSignal?: number;
+  /** Wersja minor protokołu urządzenia — co z warunków zna jego firmware. */
+  protocolMinor = PROTOCOL_VERSION_MINOR;
+
+  protected get conditionSupported(): boolean {
+    return this.protocolMinor >= CONDITION_MINOR;
+  }
 
   protected readonly description = signal('');
   protected readonly type = signal<LogicType>('hysteresis');
@@ -81,6 +110,10 @@ export class LogicEditorComponent implements OnInit {
   protected readonly closeValue = computed(() => parseInteger(this.closeValueText()));
   protected readonly openAbove = computed(() => parseNumber(this.openAboveText()));
   protected readonly closeBelow = computed(() => parseNumber(this.closeBelowText()));
+  protected readonly condition = signal<EditNode>(newGroup('and', []));
+  private readonly conditionTree = computed(() => conditionFromEdit(this.condition()));
+  protected readonly conditionSize = computed(() => conditionSize(this.conditionTree()));
+  protected readonly MAX_CONDITION_NODES = MAX_CONDITION_NODES;
 
   protected readonly FlapsState = FlapsState;
 
@@ -115,8 +148,13 @@ export class LogicEditorComponent implements OnInit {
       : null;
   });
 
+  /** Stała i warunek nie mają jednego sygnału wejściowego. */
+  protected readonly usesInput = computed(
+    () => this.type() !== 'fixed' && this.type() !== 'condition',
+  );
+
   protected readonly inputError = computed(() => {
-    if (this.type() === 'fixed' || this.input() !== null) {
+    if (!this.usesInput() || this.input() !== null) {
       return null;
     }
     return this.signals.length > 0 ? 'Wybierz sygnał wejściowy.' : 'Dodaj najpierw sygnał.';
@@ -140,6 +178,17 @@ export class LogicEditorComponent implements OnInit {
         return this.closeBelow() > this.openAbove()
           ? 'Próg zamknięcia nie może być wyżej niż próg otwarcia.'
           : null;
+      case 'condition':
+        if (!this.conditionSupported) {
+          return 'Firmware sterownika nie zna logiki warunkowej — zaktualizuj je (protokół 1.12).';
+        }
+        if (
+          this.protocolMinor < CONDITION_HYSTERESIS_MINOR &&
+          conditionUsesHysteresis(this.conditionTree())
+        ) {
+          return 'Firmware sterownika nie zna histerezy w warunku — zaktualizuj je (protokół 1.13).';
+        }
+        return conditionError(this.conditionTree(), this.signals.length);
     }
   });
 
@@ -177,6 +226,14 @@ export class LogicEditorComponent implements OnInit {
           this.openAboveText.set(String(roundFloat(parameters.value.openAbove)));
           this.closeBelowText.set(String(roundFloat(parameters.value.closeBelow)));
           break;
+        case 'condition': {
+          this.type.set('condition');
+          const tree = conditionTree(parameters.value.nodes);
+          if (tree) {
+            this.condition.set(editRoot(tree));
+          }
+          break;
+        }
       }
     } else {
       // Pierwsza wolna wartość selektora i pierwszy sygnał, który nie jest selektorem
@@ -188,11 +245,14 @@ export class LogicEditorComponent implements OnInit {
         this.type.set('fixed');
       }
     }
+    if (this.condition().kind === 'group' && conditionSize(this.conditionTree()) === 0) {
+      this.condition.set(newGroup('and', [newCompare(this.input())]));
+    }
   }
 
   protected onType(value: unknown): void {
-    if (value === 'fixed' || value === 'simpleSwitch' || value === 'hysteresis') {
-      this.type.set(value);
+    if (LOGIC_TYPES.includes(value as LogicType)) {
+      this.type.set(value as LogicType);
     }
   }
 
@@ -231,7 +291,7 @@ export class LogicEditorComponent implements OnInit {
           ? this.logics[this.index].selectorValue
           : 0,
       description: this.description().trim(),
-      inputSignal: this.type() === 'fixed' ? undefined : (this.input() ?? undefined),
+      inputSignal: this.usesInput() ? (this.input() ?? undefined) : undefined,
       parameters: this.parameters(),
     });
     await this.modal.dismiss(logic, 'save');
@@ -265,6 +325,11 @@ export class LogicEditorComponent implements OnInit {
             openAbove: Math.fround(this.openAbove()),
             closeBelow: Math.fround(this.closeBelow()),
           }),
+        };
+      case 'condition':
+        return {
+          case: 'condition',
+          value: create(ConditionLogicSchema, { nodes: conditionNodes(this.conditionTree()) }),
         };
     }
   }

@@ -1,0 +1,92 @@
+:host {
+  display: block;
+  margin-top: 12px;
+}
+
+.selection-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.section-label {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--app-muted);
+}
+
+.link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  color: var(--ion-color-primary);
+  cursor: pointer;
+}
+
+.summary,
+.message {
+  margin: 4px 0;
+  font-size: 11px;
+  color: var(--app-muted);
+}
+
+.message--error {
+  color: var(--ion-color-danger);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+th,
+td {
+  padding: 3px 6px;
+  border-bottom: 1px solid var(--app-border);
+  white-space: nowrap;
+  text-align: start;
+}
+
+th {
+  font-weight: 600;
+  color: var(--app-muted);
+}
+
+.num {
+  text-align: end;
+}
+
+.flap1 th {
+  color: var(--ion-color-primary);
+}
+
+.flap2 th {
+  color: var(--ion-color-warning);
+}
+
+.samples {
+  max-height: 260px;
+  margin-top: 8px;
+  overflow: auto;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+
+  thead th {
+    position: sticky;
+    top: 0;
+    background: var(--app-card-bg);
+  }
+}
+
+.marked td {
+  font-weight: 700;
+}

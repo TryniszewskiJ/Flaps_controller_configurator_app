@@ -1,0 +1,86 @@
+<section class="card log-card" [class.log-card--collapsed]="!open()">
+  <div class="card-header" [class.card-header--collapsed]="!open()">
+    <h2 class="card-label">
+      <button
+        type="button"
+        class="card-toggle"
+        aria-controls="log-body"
+        [attr.aria-expanded]="open()"
+        (click)="open.set(!open())"
+      >
+        <ion-icon name="chevron-down" aria-hidden="true"></ion-icon>
+        Ramki BLE
+        @if (!open()) {
+          <span class="card-count">{{ entries().length }}</span>
+        }
+      </button>
+    </h2>
+    @if (open()) {
+      <ion-button class="btn-tint" [disabled]="entries().length === 0" (click)="clearLog()">
+        Wyczyść
+      </ion-button>
+    }
+  </div>
+
+  @if (open()) {
+    <div id="log-body" class="log-body">
+      <div class="filter-row">
+        <ion-select
+          class="filter-select mono"
+          aria-label="Filtr komend"
+          interface="popover"
+          placeholder="Wszystkie komendy"
+          cancelText="Anuluj"
+          okText="OK"
+          [multiple]="true"
+          [value]="selectedCommands()"
+          [selectedText]="selectedText()"
+          (ionChange)="onFilterChange($event.detail.value)"
+        >
+          @for (filter of filters(); track filter.command) {
+            <ion-select-option [value]="filter.command">
+              {{ filter.name }} ({{ filter.count }})
+            </ion-select-option>
+          }
+        </ion-select>
+        @if (selectedCommands().length > 0) {
+          <ion-button class="btn-tint" (click)="showAll()">Wszystkie</ion-button>
+        }
+        <ion-toggle
+          class="amp-out-toggle"
+          labelPlacement="start"
+          [checked]="showAmpOut()"
+          (ionChange)="onShowAmpOut($event.detail.checked)"
+        >
+          Pokaż AMP_OUT i CAN_SNIFF
+        </ion-toggle>
+      </div>
+
+      <div class="log mono" role="log" aria-live="polite" [appStickToBottom]="entries()">
+        @for (entry of entries(); track entry.id) {
+          <div class="log-entry" [class.log-entry--rx]="entry.direction === 'rx'">
+            <div class="log-head">
+              <span class="log-time">{{ entry.time }}</span>
+              <span class="log-dir">{{ entry.direction === 'tx' ? 'TX' : 'RX' }}</span>
+              <span class="log-name" [class.log-name--error]="entry.name === 'ERROR'">
+                {{ entry.name }}
+              </span>
+              <span class="log-meta">{{ entry.code }} · seq {{ entry.seq }}</span>
+            </div>
+            <div class="log-payload" [class.log-payload--raw]="!entry.decoded">
+              {{ entry.payload }}
+            </div>
+          </div>
+        } @empty {
+          <p class="log-empty">
+            {{
+              selectedCommands().length === 0
+                ? 'Wysłane i odebrane ramki pojawią się tutaj po połączeniu z urządzeniem.'
+                : 'Brak ramek wybranych komend.'
+            }}
+          </p>
+        }
+      </div>
+    </div>
+  }
+</section>

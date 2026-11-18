@@ -1,0 +1,32 @@
+@if (editing()) {
+  <div class="widget-bar">
+    <span class="widget-title">{{ title() }}</span>
+    <button
+      type="button"
+      class="widget-btn"
+      [attr.aria-label]="'Przesuń w górę: ' + title()"
+      [disabled]="first()"
+      (click)="moved.emit(-1)"
+    >
+      <ion-icon name="arrow-up" aria-hidden="true"></ion-icon>
+    </button>
+    <button
+      type="button"
+      class="widget-btn"
+      [attr.aria-label]="'Przesuń w dół: ' + title()"
+      [disabled]="last()"
+      (click)="moved.emit(1)"
+    >
+      <ion-icon name="arrow-down" aria-hidden="true"></ion-icon>
+    </button>
+    <button
+      type="button"
+      class="widget-btn widget-btn--remove"
+      [attr.aria-label]="'Usuń z Dashboardu: ' + title()"
+      (click)="removed.emit()"
+    >
+      <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
+    </button>
+  </div>
+}
+<ng-content />
