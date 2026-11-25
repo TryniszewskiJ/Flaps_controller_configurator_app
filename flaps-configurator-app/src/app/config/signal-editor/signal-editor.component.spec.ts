@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ModalController } from '@ionic/angular';
-import { Signal } from '../../core/protocol/gen/flaps_pb';
+import { Signal } from '../../core/protocol/messages';
 import { defaultConfiguration } from '../../core/testing/fake-device';
 import { SignalEditorComponent } from './signal-editor.component';
 

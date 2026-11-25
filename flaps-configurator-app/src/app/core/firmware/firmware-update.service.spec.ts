@@ -3,7 +3,7 @@ import { BleLinkService } from '../ble/ble-link.service';
 import { ConfigurationService } from '../configuration.service';
 import { ConnectionService } from '../connection.service';
 import { DeviceStateService } from '../device-state.service';
-import { Command, DeviceMode, FirmwareUpdateError } from '../protocol/gen/flaps_pb';
+import { Command, DeviceMode, FirmwareUpdateError, TechnicianCommand } from '../protocol/messages';
 import { FakeBleLink } from '../testing/fake-ble-link';
 import { buildFirmwareImage } from '../testing/firmware-image-builder';
 import { FirmwareImage, parseFirmwareImage } from './firmware-image';
@@ -14,8 +14,8 @@ describe('FirmwareUpdateService', () => {
   let connection: ConnectionService;
   let service: FirmwareUpdateService;
 
-  const commands = (): Command[] => link.device.received.map((frame) => frame.command);
-  const count = (command: Command): number => commands().filter((c) => c === command).length;
+  const commands = (): number[] => link.device.received.map((frame) => frame.command);
+  const count = (command: number): number => commands().filter((c) => c === command).length;
   const image = (version: [number, number, number] = [1, 3, 0], size = 3000): FirmwareImage =>
     parseFirmwareImage('app.bin', buildFirmwareImage({ version, size }));
 
@@ -122,14 +122,14 @@ describe('FirmwareUpdateService', () => {
 
     expect(connection.inBootloader()).toBe(true);
     expect(config.draft()).toBeNull();
-    const before = count(Command.GET_CONFIGURATION);
+    const before = count(TechnicianCommand.GET_CONFIGURATION);
 
     await run(service.start(image([1, 4, 0])));
 
     expect(service.phase()).toBe('done');
     expect(link.device.mode).toBe(DeviceMode.APPLICATION);
     expect(connection.inBootloader()).toBe(false);
-    expect(count(Command.GET_CONFIGURATION)).toBe(before + 1);
+    expect(count(TechnicianCommand.GET_CONFIGURATION)).toBe(before + 1);
   });
 
   it('fails clearly when the link is lost during the transfer', async () => {

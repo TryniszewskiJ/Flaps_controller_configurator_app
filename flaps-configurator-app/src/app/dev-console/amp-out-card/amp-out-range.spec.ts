@@ -1,5 +1,5 @@
-import { AmpOutSample, FlapMoveMark } from '../../core/device-state.service';
-import { FlapPosition } from '../../core/protocol/gen/flaps_pb';
+import { AmpOutSample, FlapMoveMark } from '../../core/dev-telemetry.service';
+import { FlapPosition } from '../../core/protocol/messages';
 import { ampOutCsv, rangeStats, samplesInRange } from './amp-out-range';
 
 const sample = (uptimeMs: number, flap1: number, flap2: number, gap = false): AmpOutSample => ({

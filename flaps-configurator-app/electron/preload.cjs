@@ -15,6 +15,7 @@ contextBridge.exposeInMainWorld('flapsDesktop', {
     onDevices: (callback) => subscribe('bluetooth:devices', callback),
     selectDevice: (deviceId) => ipcRenderer.send('bluetooth:select', deviceId),
     cancelSelection: () => ipcRenderer.send('bluetooth:cancel'),
+    autoSelect: (deviceId) => ipcRenderer.invoke('bluetooth:auto-select', String(deviceId)),
     onPairingRequest: (callback) => subscribe('bluetooth:pairing', callback),
     respondToPairing: (response) => ipcRenderer.send('bluetooth:pairing-response', response),
   },

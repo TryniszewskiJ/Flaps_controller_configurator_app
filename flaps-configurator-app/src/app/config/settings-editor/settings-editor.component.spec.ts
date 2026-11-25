@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { create } from '@bufbuild/protobuf';
 import { ModalController } from '@ionic/angular';
 import { ConfigurationSettings, configurationSettings } from '../../core/configuration.service';
-import { FlapsState, FlapStopMode, LogicSchema, LogLevel } from '../../core/protocol/gen/flaps_pb';
+import { FlapsState, FlapStopMode, LogicSchema, LogLevel } from '../../core/protocol/messages';
 import { defaultConfiguration } from '../../core/testing/fake-device';
 import { SettingsEditorComponent } from './settings-editor.component';
 

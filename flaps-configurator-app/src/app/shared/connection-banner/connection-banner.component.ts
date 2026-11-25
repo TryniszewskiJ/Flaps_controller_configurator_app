@@ -1,22 +1,26 @@
 import { Component, inject, signal } from '@angular/core';
 import { IonButton, IonSpinner, ModalController } from '@ionic/angular';
+import { AutoConnectService } from '../../core/auto-connect.service';
 import { BleLinkService, FoundDevice } from '../../core/ble/ble-link.service';
 import { DesktopBluetoothService } from '../../core/ble/desktop-bluetooth.service';
 import { ConnectionService } from '../../core/connection.service';
+import { t } from '../../core/i18n/i18n';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { DevicePickerComponent } from '../device-picker/device-picker.component';
 
 /**
- * Baner stanu połączenia: brak połączenia (czerwony), łączenie / ponowne łączenie
- * (pomarańczowy), połączono (zielony).
+ * Baner stanu połączenia: brak połączenia (czerwony), łączenie / ponowne łączenie / szukanie
+ * ostatniego sterownika (pomarańczowy), połączono (zielony).
  */
 @Component({
   selector: 'app-connection-banner',
   templateUrl: './connection-banner.component.html',
   styleUrls: ['./connection-banner.component.scss'],
-  imports: [IonButton, IonSpinner],
+  imports: [IonButton, IonSpinner, TranslatePipe],
 })
 export class ConnectionBannerComponent {
   protected readonly connection = inject(ConnectionService);
+  protected readonly autoConnect = inject(AutoConnectService);
   private readonly link = inject(BleLinkService);
   private readonly desktopBluetooth = inject(DesktopBluetoothService);
   private readonly modal = inject(ModalController);
@@ -46,7 +50,7 @@ export class ConnectionBannerComponent {
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         if (!/cancel/i.test(message)) {
-          this.pickerError.set(`Nie można wyszukać urządzeń: ${message}`);
+          this.pickerError.set(t('banner.scanError', { message }));
         }
         return null;
       }
@@ -66,7 +70,7 @@ export class ConnectionBannerComponent {
     const request = this.link.requestDeviceInBrowser().catch((error: unknown) => {
       const message = error instanceof Error ? error.message : String(error);
       if (!/cancel/i.test(message)) {
-        this.pickerError.set(`Nie można wyszukać urządzeń: ${message}`);
+        this.pickerError.set(t('banner.scanError', { message }));
       }
       return null;
     });

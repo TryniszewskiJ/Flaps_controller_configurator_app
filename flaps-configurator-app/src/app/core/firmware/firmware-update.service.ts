@@ -1,8 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { ConnectionCancelledError, ConnectionService } from '../connection.service';
+import { BootloaderReason, Command, Status } from '../protocol/gen/flaps_common_pb';
 import {
-  BootloaderReason,
-  Command,
   FirmwareUpdateAbortRequestSchema,
   FirmwareUpdateAbortResponseSchema,
   FirmwareUpdateBeginRequestSchema,
@@ -14,10 +13,10 @@ import {
   FirmwareUpdateError,
   RebootRequestSchema,
   RebootResponseSchema,
-  Status,
-} from '../protocol/gen/flaps_pb';
+} from '../protocol/gen/flaps_firmware_pb';
 import { ProtocolError, ProtocolTimeoutError } from '../protocol/protocol-client';
 import { FirmwareImage } from './firmware-image';
+import { TranslationKey, t } from '../i18n/i18n';
 
 export type UpdatePhase =
   | 'idle'
@@ -110,7 +109,9 @@ export class FirmwareUpdateService {
       this._versions.set({ before, after: info.firmwareVersion });
       if (info.mode === 'bootloader') {
         throw new FirmwareUpdateFailure(
-          `Sterownik został w trybie ratunkowym (${describeBootloaderReason(info.bootloaderReason)}).`,
+          t('update.error.stuckInRecovery', {
+            reason: describeBootloaderReason(info.bootloaderReason),
+          }),
         );
       }
       this._phase.set('done');
@@ -163,12 +164,10 @@ export class FirmwareUpdateService {
         { retries: 0 },
       );
       if (reply.status === Status.NO_VALID_FIRMWARE) {
-        throw new FirmwareUpdateFailure(
-          'Na sterowniku nie ma poprawnego firmware do uruchomienia — wgraj obraz.',
-        );
+        throw new FirmwareUpdateFailure(t('update.error.noFirmware'));
       }
       if (reply.status !== Status.OK) {
-        throw new FirmwareUpdateFailure('Sterownik odrzucił restart.');
+        throw new FirmwareUpdateFailure(t('update.error.rebootRejected'));
       }
       await this.connection.awaitRestart(RESTART_TIMEOUT_MS);
     } catch (error) {
@@ -190,9 +189,7 @@ export class FirmwareUpdateService {
     );
     checkStatus(reply.status, reply.error);
     if (reply.maxImageSize && imageSize > reply.maxImageSize) {
-      throw new FirmwareUpdateFailure(
-        `Obraz jest za duży dla tego sterownika (max ${reply.maxImageSize} B).`,
-      );
+      throw new FirmwareUpdateFailure(t('update.error.tooBig', { max: reply.maxImageSize }));
     }
     const max = Math.min(reply.maxChunkSize || MAX_CHUNK_SIZE, MAX_CHUNK_SIZE);
     return Math.max(FLASH_WORD, max - (max % FLASH_WORD));
@@ -267,46 +264,42 @@ function checkStatus(status: Status, error: FirmwareUpdateError): void {
   if (status === Status.OK) {
     return;
   }
-  throw new FirmwareUpdateFailure(
-    `${
-      status === Status.FIRMWARE_UPDATE_ERROR
-        ? describeUpdateError(error)
-        : `Sterownik odrzucił aktualizację (${Status[status] ?? status}).`
-    } Sterownik działa na dotychczasowym firmware.`,
-  );
+  const message =
+    status === Status.FIRMWARE_UPDATE_ERROR
+      ? describeUpdateError(error)
+      : t('update.error.rejected', { status: Status[status] ?? status });
+  throw new FirmwareUpdateFailure(t('update.error.oldFirmwareKept', { message }));
 }
 
 export function describeUpdateError(error: FirmwareUpdateError): string {
-  return UPDATE_ERRORS[error] ?? `Błąd aktualizacji (kod ${error}).`;
+  const key = UPDATE_ERRORS[error];
+  return key ? t(key) : t('update.error.code', { code: error });
 }
 
-const UPDATE_ERRORS: Partial<Record<FirmwareUpdateError, string>> = {
-  [FirmwareUpdateError.INVALID_SIZE]: 'Sterownik nie przyjmie obrazu tego rozmiaru.',
-  [FirmwareUpdateError.NOT_STARTED]:
-    'Sterownik przerwał aktualizację (np. wygasła sesja) — spróbuj ponownie.',
-  [FirmwareUpdateError.ERASING]: 'Sterownik jeszcze kasuje pamięć — spróbuj za chwilę.',
-  [FirmwareUpdateError.INVALID_OFFSET]: 'Paczki dotarły w złej kolejności — spróbuj ponownie.',
-  [FirmwareUpdateError.INVALID_LENGTH]: 'Niepoprawna długość paczki.',
-  [FirmwareUpdateError.DATA_MISMATCH]:
-    'Ponowiona paczka różni się od zapisanej — spróbuj ponownie.',
-  [FirmwareUpdateError.INCOMPLETE]: 'Sterownik nie dostał całego obrazu — spróbuj ponownie.',
-  [FirmwareUpdateError.INVALID_IMAGE]: 'Sterownik odrzucił obraz: brak nagłówka albo zły adres.',
-  [FirmwareUpdateError.WRONG_BOARD]: 'Sterownik odrzucił obraz: jest na inną płytkę.',
-  [FirmwareUpdateError.CRC_MISMATCH]:
-    'Obraz uszkodził się po drodze (CRC się nie zgadza) — spróbuj ponownie.',
-  [FirmwareUpdateError.FLASH]: 'Błąd zapisu pamięci flash sterownika.',
+const UPDATE_ERRORS: Partial<Record<FirmwareUpdateError, TranslationKey>> = {
+  [FirmwareUpdateError.INVALID_SIZE]: 'update.error.INVALID_SIZE',
+  [FirmwareUpdateError.NOT_STARTED]: 'update.error.NOT_STARTED',
+  [FirmwareUpdateError.ERASING]: 'update.error.ERASING',
+  [FirmwareUpdateError.INVALID_OFFSET]: 'update.error.INVALID_OFFSET',
+  [FirmwareUpdateError.INVALID_LENGTH]: 'update.error.INVALID_LENGTH',
+  [FirmwareUpdateError.DATA_MISMATCH]: 'update.error.DATA_MISMATCH',
+  [FirmwareUpdateError.INCOMPLETE]: 'update.error.INCOMPLETE',
+  [FirmwareUpdateError.INVALID_IMAGE]: 'update.error.INVALID_IMAGE',
+  [FirmwareUpdateError.WRONG_BOARD]: 'update.error.WRONG_BOARD',
+  [FirmwareUpdateError.CRC_MISMATCH]: 'update.error.CRC_MISMATCH',
+  [FirmwareUpdateError.FLASH]: 'update.error.FLASH',
 };
 
 export function describeBootloaderReason(reason: BootloaderReason): string {
   switch (reason) {
     case BootloaderReason.NO_VALID_FIRMWARE:
-      return 'brak poprawnego firmware';
+      return t('update.reason.noFirmware');
     case BootloaderReason.CRASH_LOOP:
-      return 'firmware 3 razy z rzędu zresetował watchdog';
+      return t('update.reason.crashLoop');
     case BootloaderReason.REQUESTED:
-      return 'na żądanie';
+      return t('update.reason.requested');
     default:
-      return 'nieznany powód';
+      return t('update.reason.unknown');
   }
 }
 
@@ -316,20 +309,16 @@ function describeError(error: unknown, stage: 'transfer' | 'restart'): string {
     return error.message;
   }
   if (error instanceof ProtocolTimeoutError) {
-    return stage === 'restart'
-      ? 'Sterownik nie odpowiada po restarcie.'
-      : 'Sterownik przestał odpowiadać — aktualizacja przerwana, działa dotychczasowy firmware.';
+    return stage === 'restart' ? t('update.error.noRestartResponse') : t('update.error.stopped');
   }
   if (error instanceof ProtocolError) {
     return error.status === Status.UNKNOWN_COMMAND
-      ? 'Firmware sterownika nie obsługuje aktualizacji przez BLE — wgraj bootloader ST-Linkiem.'
-      : `Urządzenie zwróciło błąd (${Status[error.status] ?? error.status}).`;
+      ? t('update.error.unsupported')
+      : t('common.deviceError', { status: Status[error.status] ?? error.status });
   }
   if (error instanceof ConnectionCancelledError && stage === 'restart') {
-    return 'Połączenie przerwane w trakcie restartu — połącz się ponownie i sprawdź wersję firmware.';
+    return t('update.error.restartInterrupted');
   }
   const message = error instanceof Error ? error.message : String(error);
-  return stage === 'restart'
-    ? message
-    : 'Połączenie przerwane — aktualizacja nie doszła do skutku, działa dotychczasowy firmware.';
+  return stage === 'restart' ? message : t('update.error.interrupted');
 }

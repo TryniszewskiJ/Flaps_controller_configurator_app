@@ -80,7 +80,7 @@ function waitForServer(url, timeoutMs) {
 async function main() {
   await ensurePortFree(PORT);
 
-  const ng = start(process.execPath, [NG_CLI, 'serve', '--port', String(PORT)]);
+  const ng = start(process.execPath, [NG_CLI, 'serve', 'app', '--port', String(PORT)]);
   ng.on('exit', (code) => shutdown(code ?? 0));
 
   await waitForServer(DEV_URL, STARTUP_TIMEOUT_MS);

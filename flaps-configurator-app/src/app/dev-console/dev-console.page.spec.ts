@@ -6,16 +6,15 @@ import { DevConsolePage } from './dev-console.page';
 describe('DevConsolePage', () => {
   let fixture: ComponentFixture<DevConsolePage>;
   const status = signal<ConnectionStatus>('connected');
-  const sendCommand = vi.fn(() => Promise.resolve());
 
   beforeEach(() => {
     status.set('connected');
-    sendCommand.mockClear();
     TestBed.configureTestingModule({
       providers: [
         {
           provide: ConnectionService,
           useValue: {
+            device: signal(null),
             status,
             connected: computed(() => status() === 'connected'),
             inBootloader: signal(false),
@@ -25,7 +24,6 @@ describe('DevConsolePage', () => {
             deviceInfo: signal(null),
             session: signal(0),
             onUnsolicited: () => (): void => undefined,
-            sendCommand,
           },
         },
       ],

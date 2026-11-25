@@ -31,6 +31,12 @@ export interface FlapsDesktopBridge {
     onDevices(callback: (devices: DesktopBluetoothDevice[]) => void): () => void;
     selectDevice(deviceId: string): void;
     cancelSelection(): void;
+    /**
+     * Następny wybór urządzenia (requestDevice) wybierze samo `deviceId`, gdy pojawi się na
+     * liście, bez okna wyboru. Daje stronie aktywację użytkownika — requestDevice() przy
+     * starcie aplikacji, bez kliknięcia. Wywołać tuż przed requestDevice().
+     */
+    autoSelect(deviceId: string): Promise<void>;
     onPairingRequest(callback: (request: DesktopPairingRequest) => void): () => void;
     respondToPairing(response: DesktopPairingResponse): void;
   };

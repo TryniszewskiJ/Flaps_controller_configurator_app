@@ -5,34 +5,33 @@ import { ConnectionService } from './connection.service';
 import { DeviceStateService } from './device-state.service';
 import {
   CanFrame,
-  Command,
   Configuration,
   ConfigurationError,
   ConfigurationSchema,
   EndStopDetectionSchema,
   FlapOutputSchema,
-  FlapStopMode,
   FlapsState,
+  FlapStopMode,
   GetConfigurationRequestSchema,
   GetConfigurationResponseSchema,
+  Logic,
   LogLevel,
   SaveConfigurationRequestSchema,
   SaveConfigurationResponseSchema,
   SetConfigurationRequestSchema,
   SetConfigurationResponseSchema,
-  Logic,
   Signal,
   Status,
-} from './protocol/gen/flaps_pb';
+  TechnicianCommand,
+} from './protocol/messages';
 import { ProtocolError, ProtocolTimeoutError } from './protocol/protocol-client';
 
 /** Limity firmware (flaps_controller_configuration.h, flaps.options). */
 export const MAX_FRAMES = 16;
 export const MAX_SIGNALS = 16;
-export const MAX_LOGICS = 10;
+export { MAX_LOGICS } from '../shared/logic-format';
 /** Bajty UTF-8, bez NUL. */
 export const SIGNAL_NAME_MAX_BYTES = 15;
-export const LOGIC_DESCRIPTION_MAX_BYTES = 31;
 export const MAX_STANDARD_ID = 0x7ff;
 export const MAX_EXTENDED_ID = 0x1fffffff;
 export const MAX_FRAME_TIMEOUT_MS = 65535;
@@ -177,7 +176,7 @@ export class ConfigurationService {
   async read(): Promise<boolean> {
     return this.run('read', async () => {
       const reply = await this.connection.request(
-        Command.GET_CONFIGURATION,
+        TechnicianCommand.GET_CONFIGURATION,
         GetConfigurationRequestSchema,
         {},
         GetConfigurationResponseSchema,
@@ -212,7 +211,7 @@ export class ConfigurationService {
         await this.setConfiguration(draft);
       }
       const reply = await this.connection.request(
-        Command.SAVE_CONFIGURATION,
+        TechnicianCommand.SAVE_CONFIGURATION,
         SaveConfigurationRequestSchema,
         {},
         SaveConfigurationResponseSchema,
@@ -370,7 +369,7 @@ export class ConfigurationService {
 
   private async setConfiguration(configuration: Configuration): Promise<void> {
     const reply = await this.connection.request(
-      Command.SET_CONFIGURATION,
+      TechnicianCommand.SET_CONFIGURATION,
       SetConfigurationRequestSchema,
       { configuration },
       SetConfigurationResponseSchema,

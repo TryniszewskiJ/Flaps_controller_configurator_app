@@ -1,15 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 import { BleLinkService } from './ble/ble-link.service';
+import { DevCommandService } from './dev-command.service';
 import { ConnectionService, RECONNECT_DELAY_MS } from './connection.service';
 import { FrameLogService } from './frame-log.service';
-import { BootloaderReason, Command, Status } from './protocol/gen/flaps_pb';
+import { BootloaderReason, Command, Status } from './protocol/messages';
 import { FakeBleLink } from './testing/fake-ble-link';
 
 describe('ConnectionService', () => {
   let service: ConnectionService;
   let link: FakeBleLink;
 
-  const commands = (): Command[] => link.device.received.map((frame) => frame.command);
+  const commands = (): number[] => link.device.received.map((frame) => frame.command);
 
   beforeEach(() => {
     link = new FakeBleLink();
@@ -56,13 +57,15 @@ describe('ConnectionService', () => {
   it('sends a console command with a JSON payload', async () => {
     await service.connect({ deviceId: 'AA:BB' });
 
-    await service.sendCommand(Command.PING, {});
+    await TestBed.inject(DevCommandService).send(Command.PING, {});
 
     expect(commands()).toContain(Command.PING);
   });
 
   it('rejects console commands while disconnected', async () => {
-    await expect(service.sendCommand(Command.PING, {})).rejects.toThrow('Brak połączenia');
+    await expect(TestBed.inject(DevCommandService).send(Command.PING, {})).rejects.toThrow(
+      'Brak połączenia',
+    );
   });
 
   it('sends CLOSE_SESSION and disconnects BLE on disconnect', async () => {

@@ -1,3 +1,5 @@
+import { t } from '../i18n/i18n';
+
 /**
  * Plik aktualizacji: .bin aplikacji z buildu firmware, z nagłówkiem AppImageHeader pod 0x400
  * (README firmware „Obraz aplikacji”, Libs/firmware_update/include/firmware_update/image_header.h).
@@ -30,13 +32,11 @@ export class FirmwareImageError extends Error {}
 
 export function parseFirmwareImage(fileName: string, data: Uint8Array): FirmwareImage {
   if (data.length < IMAGE_HEADER_OFFSET + IMAGE_HEADER_SIZE) {
-    throw new FirmwareImageError(
-      'Plik jest za mały na obraz firmware — wybierz exhaust_flaps_controller.bin z buildu.',
-    );
+    throw new FirmwareImageError(t('image.error.tooSmall'));
   }
   if (data.length > MAX_IMAGE_SIZE) {
     throw new FirmwareImageError(
-      `Plik ma ${formatSize(data.length)}, a sterownik przyjmuje najwyżej ${formatSize(MAX_IMAGE_SIZE)}.`,
+      t('image.error.tooBig', { size: formatSize(data.length), max: formatSize(MAX_IMAGE_SIZE) }),
     );
   }
 
@@ -48,32 +48,28 @@ export function parseFirmwareImage(fileName: string, data: Uint8Array): Firmware
   const versionParts: [number, number, number] = [field(6), field(7), field(8)];
 
   if (magic !== APP_IMAGE_MAGIC) {
-    throw new FirmwareImageError(
-      'To nie jest obraz firmware sterownika (brak nagłówka). Plik sprzed bootloadera albo z innego projektu?',
-    );
+    throw new FirmwareImageError(t('image.error.noHeader'));
   }
   if (headerVersion !== APP_IMAGE_HEADER_VERSION) {
-    throw new FirmwareImageError(
-      `Nieznana wersja nagłówka obrazu (${headerVersion}) — zaktualizuj aplikację.`,
-    );
+    throw new FirmwareImageError(t('image.error.headerVersion', { version: headerVersion }));
   }
   if (boardId !== APP_IMAGE_BOARD_ID) {
-    throw new FirmwareImageError('Obraz jest na inną płytkę.');
+    throw new FirmwareImageError(t('image.error.wrongBoard'));
   }
   if (loadAddress !== APP_LOAD_ADDRESS) {
     throw new FirmwareImageError(
-      `Obraz jest zbudowany pod adres 0x${loadAddress.toString(16).toUpperCase()} — sterownik wymaga 0x08020000.`,
+      t('image.error.address', { address: `0x${loadAddress.toString(16).toUpperCase()}` }),
     );
   }
   if (imageSize !== data.length) {
     throw new FirmwareImageError(
       imageSize === 0
-        ? 'Obraz bez rozmiaru i CRC w nagłówku — to plik przed tools/firmware_image.py.'
-        : `Rozmiar w nagłówku (${imageSize} B) nie zgadza się z plikiem (${data.length} B) — plik jest ucięty albo zmieniony.`,
+        ? t('image.error.noSize')
+        : t('image.error.size', { header: imageSize, file: data.length }),
     );
   }
   if (imageCrcOf(data) !== imageCrc) {
-    throw new FirmwareImageError('Plik jest uszkodzony (CRC się nie zgadza).');
+    throw new FirmwareImageError(t('image.error.crc'));
   }
 
   return {

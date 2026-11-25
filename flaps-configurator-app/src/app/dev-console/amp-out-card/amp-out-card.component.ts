@@ -17,8 +17,8 @@ import {
   endStopSettings,
   stopModeOf,
 } from '../../core/configuration.service';
-import { DeviceStateService } from '../../core/device-state.service';
-import { FlapStopMode } from '../../core/protocol/gen/flaps_pb';
+import { DevTelemetryService } from '../../core/dev-telemetry.service';
+import { FlapStopMode } from '../../core/protocol/messages';
 import { CHART_MARGIN, ChartSize, buildChart, nearestSample } from './amp-out-chart';
 import { AmpOutLegendComponent } from './amp-out-legend.component';
 import { AmpOutRange } from './amp-out-range';
@@ -66,7 +66,7 @@ interface Drag {
   ],
 })
 export class AmpOutCardComponent {
-  private readonly deviceState = inject(DeviceStateService);
+  private readonly devTelemetry = inject(DevTelemetryService);
   private readonly configuration = inject(ConfigurationService);
 
   protected readonly open = signal(true);
@@ -89,9 +89,9 @@ export class AmpOutCardComponent {
   protected readonly height = CHART_HEIGHT;
   protected readonly plotBottom = CHART_HEIGHT - CHART_MARGIN.bottom;
   protected readonly clipId = `amp-out-plot-${nextClipId++}`;
-  protected readonly moves = this.deviceState.moves;
-  protected readonly samples = this.deviceState.ampOut;
-  protected readonly marks = this.deviceState.moveMarks;
+  protected readonly moves = this.devTelemetry.moves;
+  protected readonly samples = this.devTelemetry.ampOut;
+  protected readonly marks = this.devTelemetry.moveMarks;
 
   private readonly size = signal<ChartSize>({ width: 0, height: CHART_HEIGHT });
   private readonly plot = viewChild<ElementRef<HTMLElement>>('plot');
@@ -241,8 +241,8 @@ export class AmpOutCardComponent {
     this.viewEnd.set(null);
     this.selection.set(null);
     this.pointerX.set(null);
-    this.deviceState.clearAmpOut();
-    this.deviceState.clearMoves();
+    this.devTelemetry.clearAmpOut();
+    this.devTelemetry.clearMoves();
   }
 
   protected onPointerDown(event: PointerEvent): void {

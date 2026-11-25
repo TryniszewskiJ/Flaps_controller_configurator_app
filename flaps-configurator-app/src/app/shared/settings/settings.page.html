@@ -1,0 +1,79 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="page-toolbar">
+    <h1 slot="start" class="page-title">{{ 'settings.title' | t }}</h1>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="page">
+    <app-connection-banner />
+
+    @if (i18n.choice) {
+      <section class="card">
+        <h2 class="card-label">{{ 'settings.language' | t }}</h2>
+        <ion-segment
+          aria-label="Język · Language"
+          [value]="i18n.language()"
+          (ionChange)="onLanguageChange($event.detail.value)"
+        >
+          @for (option of i18n.languages; track option.value) {
+            <ion-segment-button [value]="option.value">{{ option.label }}</ion-segment-button>
+          }
+        </ion-segment>
+      </section>
+    }
+
+    <section class="card">
+      <h2 class="card-label">{{ 'settings.appearance' | t }}</h2>
+      <ion-segment
+        [attr.aria-label]="'settings.theme' | t"
+        [value]="theme.mode()"
+        (ionChange)="onThemeChange($event.detail.value)"
+      >
+        @for (option of themes; track option.value) {
+          <ion-segment-button [value]="option.value">{{ option.label | t }}</ion-segment-button>
+        }
+      </ion-segment>
+    </section>
+
+    <section class="card">
+      <h2 class="card-label">{{ 'settings.connection' | t }}</h2>
+      <ion-toggle
+        class="setting-toggle"
+        justify="space-between"
+        [checked]="settings.autoConnect()"
+        [disabled]="!autoConnect.supported"
+        (ionChange)="onAutoConnectChange($event.detail.checked)"
+      >
+        <span class="setting-toggle__label">{{ 'settings.autoConnect' | t }}</span>
+      </ion-toggle>
+      <p class="hint">
+        {{
+          (autoConnect.supported ? 'settings.autoConnectHint' : 'settings.autoConnectUnsupported')
+            | t
+        }}
+      </p>
+
+      @if (autoConnect.supported) {
+        <div class="device">
+          @if (settings.lastDevice(); as device) {
+            <div class="device__text">
+              <span class="text-muted">{{ 'settings.lastDevice' | t }}</span>
+              <strong>{{ device.name }}</strong>
+              @if (device.uid) {
+                <span class="mono text-muted">
+                  {{ 'settings.uid' | t: { uid: formatUid(device.uid) } }}
+                </span>
+              }
+            </div>
+            <button type="button" class="link-button" (click)="settings.forgetDevice()">
+              {{ 'settings.forget' | t }}
+            </button>
+          } @else {
+            <span class="text-muted">{{ 'settings.noDevice' | t }}</span>
+          }
+        </div>
+      }
+    </section>
+  </div>
+</ion-content>

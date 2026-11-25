@@ -1,5 +1,10 @@
 import { create } from '@bufbuild/protobuf';
-import { ConditionNode, ConditionNodeSchema, ConditionNodeType } from './protocol/gen/flaps_pb';
+import {
+  ConditionNode,
+  ConditionNodeSchema,
+  ConditionNodeType,
+} from './protocol/gen/flaps_logic_pb';
+import { t } from './i18n/i18n';
 
 /** Limity firmware (flaps.options, validateConfiguration). */
 export const MAX_CONDITION_NODES = 12;
@@ -25,7 +30,12 @@ export const COMPARE_TYPES: { value: CompareType; label: string }[] = [
   { value: ConditionNodeType.CONDITION_NODE_LESS_OR_EQUAL, label: '≤' },
   { value: ConditionNodeType.CONDITION_NODE_EQUAL, label: '=' },
   { value: ConditionNodeType.CONDITION_NODE_NOT_EQUAL, label: '≠' },
-  { value: ConditionNodeType.CONDITION_NODE_HYSTERESIS, label: 'histereza' },
+  {
+    value: ConditionNodeType.CONDITION_NODE_HYSTERESIS,
+    get label(): string {
+      return t('condition.hysteresis');
+    },
+  },
 ];
 
 /**
@@ -107,11 +117,11 @@ export function conditionNodes(tree: ConditionTree): ConditionNode[] {
 export function conditionError(tree: ConditionTree, signalCount: number): string | null {
   const simple = simplify(tree);
   if (!simple) {
-    return 'Dodaj co najmniej jedno porównanie.';
+    return t('condition.error.empty');
   }
   const count = countNodes(simple);
   if (count > MAX_CONDITION_NODES) {
-    return `Warunek ma ${count} elementów — firmware przyjmuje najwyżej ${MAX_CONDITION_NODES} (porównania, I / LUB, NIE).`;
+    return t('condition.error.tooBig', { count, max: MAX_CONDITION_NODES });
   }
   return nodeError(simple, signalCount);
 }
@@ -125,7 +135,7 @@ export function conditionSize(tree: ConditionTree): number {
 /** Warunek w jednej linii, np. "(RPM > 4000 LUB pedał > 80 przez 300 ms) I NIE tryb = 2". */
 export function conditionText(tree: ConditionTree, signalName: (index: number) => string): string {
   const simple = simplify(tree);
-  return simple ? text(simple, signalName, true) : '(pusty warunek)';
+  return simple ? text(simple, signalName, true) : t('condition.empty');
 }
 
 /** Czy warunek ma węzeł histerezy (urządzenie < 1.13 go nie zna). */
@@ -225,23 +235,23 @@ function countNodes(tree: ConditionTree): number {
 
 function nodeError(tree: ConditionTree, signalCount: number): string | null {
   if (!Number.isInteger(tree.forMs) || tree.forMs < 0 || tree.forMs > MAX_CONDITION_FOR_MS) {
-    return `Czas „przez” musi być od 0 do ${MAX_CONDITION_FOR_MS} ms.`;
+    return t('condition.error.forRange', { max: MAX_CONDITION_FOR_MS });
   }
   switch (tree.kind) {
     case 'compare':
       if (tree.signal >= signalCount) {
-        return 'Porównanie bez sygnału — wybierz sygnał.';
+        return t('condition.error.noSignal');
       }
       if (!Number.isFinite(tree.value)) {
-        return 'Wartość porównania musi być liczbą.';
+        return t('condition.error.value');
       }
       if (tree.type === ConditionNodeType.CONDITION_NODE_HYSTERESIS) {
         const closeBelow = tree.closeBelow ?? NaN;
         if (!Number.isFinite(closeBelow)) {
-          return 'Próg wyłączenia histerezy musi być liczbą.';
+          return t('condition.error.hysteresisValue');
         }
         if (closeBelow > tree.value) {
-          return 'Próg wyłączenia histerezy nie może być wyżej niż próg włączenia.';
+          return t('condition.error.hysteresisOrder');
         }
       }
       return null;
@@ -263,7 +273,8 @@ function text(tree: ConditionTree, signalName: (index: number) => string, top: b
   switch (tree.kind) {
     case 'compare': {
       if (tree.type === ConditionNodeType.CONDITION_NODE_HYSTERESIS) {
-        body = `${signalName(tree.signal)} > ${formatValue(tree.value)} (do < ${formatValue(tree.closeBelow ?? 0)})`;
+        const until = t('condition.until', { value: formatValue(tree.closeBelow ?? 0) });
+        body = `${signalName(tree.signal)} > ${formatValue(tree.value)} (${until})`;
         break;
       }
       const op = COMPARE_TYPES.find((c) => c.value === tree.type)?.label ?? '?';
@@ -271,17 +282,17 @@ function text(tree: ConditionTree, signalName: (index: number) => string, top: b
       break;
     }
     case 'not':
-      body = `NIE ${text(tree.child, signalName, false)}`;
+      body = `${t('condition.not')} ${text(tree.child, signalName, false)}`;
       break;
     case 'group': {
       const joined = tree.children
         .map((child) => text(child, signalName, false))
-        .join(tree.op === 'and' ? ' I ' : ' LUB ');
+        .join(` ${t(tree.op === 'and' ? 'condition.and' : 'condition.or')} `);
       body = top && tree.forMs === 0 ? joined : `(${joined})`;
       break;
     }
   }
-  return tree.forMs > 0 ? `${body} przez ${tree.forMs} ms` : body;
+  return tree.forMs > 0 ? `${body} ${t('condition.for', { ms: tree.forMs })}` : body;
 }
 
 function formatValue(value: number): string {

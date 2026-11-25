@@ -1,0 +1,109 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="page-toolbar">
+    <div slot="start" class="brand-title">
+      <img class="brand-logo" src="assets/user/dk-customs-logo.png" alt="DK Customs" />
+      <h1 class="page-title">{{ 'dashboard.title' | t }}</h1>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="page">
+    <app-connection-banner />
+
+    <section class="card">
+      <h2 class="card-label">{{ 'dashboard.status' | t }}</h2>
+      @if (summary(); as summary) {
+        <p class="summary" [class]="'summary summary--' + summary.tone" aria-live="polite">
+          <span class="summary__dot" aria-hidden="true"></span>
+          {{ summary.label }}
+        </p>
+        <p class="control" [class.control--manual]="mode() !== 'auto'">{{ control() }}</p>
+      } @else {
+        <p class="muted-text">{{ 'dashboard.connectHint' | t }}</p>
+      }
+
+      <div class="mode" role="radiogroup" [attr.aria-label]="'dashboard.switch' | t">
+        @for (option of modes; track option.value) {
+          <button
+            type="button"
+            role="radio"
+            class="mode__option"
+            [class]="'mode__option mode__option--' + option.value"
+            [class.mode__option--selected]="mode() === option.value"
+            [class.mode__option--pending]="pending() === option.value"
+            [class.mode__option--moving]="mode() === option.value && !!movingLabel()"
+            [attr.aria-checked]="mode() === option.value"
+            [disabled]="!canControl()"
+            (click)="select(option.value)"
+          >
+            <span class="mode__label">{{ option.label | t }}</span>
+            @if (mode() === option.value && movingLabel(); as moving) {
+              <span class="mode__sub">{{ moving }}</span>
+            } @else if (option.value === 'auto') {
+              <span class="mode__sub">
+                {{ state() ? activeLogic() : ('dashboard.mode.autoFallback' | t) }}
+              </span>
+            } @else {
+              <span class="mode__sub">{{ 'dashboard.mode.manual' | t }}</span>
+            }
+          </button>
+        }
+      </div>
+
+      <div class="duration">
+        <span class="duration__label">{{ 'dashboard.duration' | t }}</span>
+        <ion-select
+          class="duration__select"
+          interface="popover"
+          [attr.aria-label]="'dashboard.durationLabel' | t"
+          [value]="durationKey()"
+          [selectedText]="durationLabel()"
+          [disabled]="!canControl()"
+          (ionChange)="onDurationChange($event.detail.value)"
+        >
+          @for (option of durationOptions; track option.value) {
+            <ion-select-option [value]="option.value + ''">{{ option.label }}</ion-select-option>
+          }
+        </ion-select>
+        <button
+          type="button"
+          class="info-button"
+          [class.info-button--active]="showHint()"
+          [attr.aria-label]="'dashboard.durationInfo' | t"
+          [attr.aria-expanded]="showHint()"
+          (click)="showHint.set(!showHint())"
+        >
+          <ion-icon name="information-circle-outline" aria-hidden="true"></ion-icon>
+        </button>
+      </div>
+      @if (showHint()) {
+        <p class="hint">
+          {{
+            (duration() === 'permanent' ? 'dashboard.hint.permanent' : 'dashboard.hint.timed') | t
+          }}
+        </p>
+      }
+
+      @if (actionError(); as error) {
+        <p class="message message--danger">{{ error }}</p>
+      }
+
+      @if (flaps().length) {
+        <div class="flap-list">
+          @for (flap of flaps(); track flap.name) {
+            <div class="kv-row">
+              <span class="text-muted">{{ flap.name }}</span>
+              <span [class]="'flap-state flap-state--' + flap.tone">{{ flap.label }}</span>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="card">
+      <h2 class="card-label">{{ 'dashboard.carData' | t }}</h2>
+      <app-car-data [signals]="signals()" />
+    </section>
+  </div>
+</ion-content>

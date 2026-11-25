@@ -1,61 +1,38 @@
-import { DOCUMENT, Injectable, computed, inject, signal } from '@angular/core';
+import { DOCUMENT, Injectable, computed, effect, inject, signal } from '@angular/core';
+import { SettingsService, ThemeMode } from './settings.service';
 
-/** Wybór użytkownika; 'system' — jak w ustawieniach systemu. */
-export type ThemeMode = 'system' | 'light' | 'dark';
+export type { ThemeMode } from './settings.service';
 
-const STORAGE_KEY = 'flaps.theme';
 const DARK_CLASS = 'ion-palette-dark';
 
-/** Jasny / ciemny motyw: klasa palety Ionic na <html>, wybór zapamiętany w localStorage. */
+/** Jasny / ciemny motyw: klasa palety Ionic na <html>, wybór w ustawieniach aplikacji. */
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
   private readonly document = inject(DOCUMENT);
+  private readonly settings = inject(SettingsService);
   private readonly media = this.document.defaultView?.matchMedia?.('(prefers-color-scheme: dark)');
   private readonly systemDark = signal(!!this.media?.matches);
-  private readonly _mode = signal<ThemeMode>(readMode());
 
-  readonly mode = this._mode.asReadonly();
+  readonly mode = this.settings.theme;
   readonly dark = computed(() =>
-    this._mode() === 'system' ? this.systemDark() : this._mode() === 'dark',
+    this.mode() === 'system' ? this.systemDark() : this.mode() === 'dark',
   );
 
   constructor() {
-    this.media?.addEventListener?.('change', (event) => {
-      this.systemDark.set(event.matches);
-      this.apply();
-    });
-    this.apply();
-  }
-
-  /** Przełącza na przeciwny do tego, co widać (od tej chwili niezależnie od systemu). */
-  toggle(): void {
-    this.setMode(this.dark() ? 'light' : 'dark');
+    this.media?.addEventListener?.('change', (event) => this.systemDark.set(event.matches));
+    // Od razu (pierwszy ekran) i przy każdej zmianie motywu albo ustawienia systemu
+    this.apply(this.dark());
+    effect(() => this.apply(this.dark()));
   }
 
   setMode(mode: ThemeMode): void {
-    this._mode.set(mode);
-    try {
-      localStorage.setItem(STORAGE_KEY, mode);
-    } catch {
-      // Bez localStorage wybór działa do zamknięcia aplikacji
-    }
-    this.apply();
+    this.settings.setTheme(mode);
   }
 
-  private apply(): void {
+  private apply(dark: boolean): void {
     const root = this.document.documentElement;
-    const dark = this.dark();
     root.classList.toggle(DARK_CLASS, dark);
     // Paski przewijania i pola formularzy przeglądarki w tym samym motywie
     root.style.colorScheme = dark ? 'dark' : 'light';
-  }
-}
-
-function readMode(): ThemeMode {
-  try {
-    const value = localStorage.getItem(STORAGE_KEY);
-    return value === 'light' || value === 'dark' ? value : 'system';
-  } catch {
-    return 'system';
   }
 }

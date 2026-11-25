@@ -1,15 +1,23 @@
 import { formatAmpOutMillivolts } from '../core/amp-out';
-import { conditionText, conditionTree } from '../core/condition';
 import { endStopSettings, stopModeOf } from '../core/configuration.service';
 import {
   CanFrame,
   Configuration,
   FlapsState,
   FlapStopMode,
-  Logic,
   LogLevel,
   Signal,
-} from '../core/protocol/gen/flaps_pb';
+} from '../core/protocol/messages';
+import { roundFloat } from '../shared/logic-format';
+
+// Wspólne z edytorem logik (także w aplikacji użytkownika)
+export {
+  logicSummary,
+  parseInteger,
+  parseNumber,
+  roundFloat,
+  utf8Length,
+} from '../shared/logic-format';
 
 /** ID ramki w hex: 0x180, extended z 8 cyframi (0x18FF0001). */
 export function frameId(frame: Pick<CanFrame, 'id' | 'extendedId'>): string {
@@ -73,50 +81,4 @@ export function stopModeLabel(config: Configuration): string {
   }
   const endStop = endStopSettings(config);
   return `ogranicznik: próg ${endStop.threshold} (${formatAmpOutMillivolts(endStop.threshold)}) · limit ${endStop.timeoutMs} ms`;
-}
-
-/** Działanie logiki w jednym zdaniu, z nazwą sygnału wejściowego. */
-export function logicSummary(logic: Logic, signals: Signal[]): string {
-  const input = logic.inputSignal !== undefined ? signals[logic.inputSignal]?.name : undefined;
-  const name = input ?? '(brak sygnału)';
-
-  switch (logic.parameters.case) {
-    case 'fixed':
-      return logic.parameters.value.state === FlapsState.OPEN
-        ? 'Zawsze otwarte'
-        : 'Zawsze zamknięte';
-    case 'simpleSwitch':
-      return `${name} = ${logic.parameters.value.openValue} otwórz, = ${logic.parameters.value.closeValue} zamknij`;
-    case 'hysteresis':
-      return `${name} > ${roundFloat(logic.parameters.value.openAbove)} otwórz, < ${roundFloat(logic.parameters.value.closeBelow)} zamknij`;
-    case 'condition': {
-      const tree = conditionTree(logic.parameters.value.nodes);
-      return tree
-        ? `Otwórz, gdy ${conditionText(tree, (i) => signals[i]?.name ?? `sygnał ${i + 1}`)}`
-        : 'Niepoprawny warunek';
-    }
-    default:
-      return 'Brak parametrów';
-  }
-}
-
-/** Liczba z pola tekstowego (przecinek dziesiętny też działa); NaN, gdy to nie liczba. */
-export function parseNumber(value: string): number {
-  const text = value.trim().replace(',', '.');
-  return text === '' ? NaN : Number(text);
-}
-
-export function parseInteger(value: string): number {
-  const number = parseNumber(value);
-  return Number.isInteger(number) ? number : NaN;
-}
-
-/** Długość tekstu w bajtach UTF-8 — tak liczy firmware. */
-export function utf8Length(text: string): number {
-  return new TextEncoder().encode(text).length;
-}
-
-/** Float z protokołu bez szumu pojedynczej precyzji (0.10000000149 → 0.1). */
-export function roundFloat(value: number): number {
-  return Number(value.toPrecision(7));
 }

@@ -13,7 +13,9 @@ import { addIcons } from 'ionicons';
 import { bluetooth, cellular, close } from 'ionicons/icons';
 import { BleLinkService, FoundDevice } from '../../core/ble/ble-link.service';
 import { DesktopBluetoothService } from '../../core/ble/desktop-bluetooth.service';
-import { DEFAULT_DEVICE_NAME } from '../../core/connection.service';
+import { defaultDeviceName } from '../../core/connection.service';
+import { t } from '../../core/i18n/i18n';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 
 const SCAN_DURATION_MS = 15_000;
 
@@ -27,7 +29,16 @@ const SCAN_DURATION_MS = 15_000;
   selector: 'app-device-picker',
   templateUrl: './device-picker.component.html',
   styleUrls: ['./device-picker.component.scss'],
-  imports: [IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonSpinner],
+  imports: [
+    IonHeader,
+    IonToolbar,
+    IonButtons,
+    IonButton,
+    IonIcon,
+    IonContent,
+    IonSpinner,
+    TranslatePipe,
+  ],
 })
 export class DevicePickerComponent implements OnInit, OnDestroy {
   private readonly modalController = inject(ModalController);
@@ -40,7 +51,7 @@ export class DevicePickerComponent implements OnInit, OnDestroy {
   protected readonly devices = signal<FoundDevice[]>([]);
   protected readonly scanning = signal(false);
   protected readonly error = signal<string | null>(null);
-  protected readonly defaultName = DEFAULT_DEVICE_NAME;
+  protected readonly defaultName = defaultDeviceName;
 
   private scanTimer: ReturnType<typeof setTimeout> | null = null;
   private unsubscribeDesktop: (() => void) | null = null;
@@ -129,10 +140,10 @@ export class DevicePickerComponent implements OnInit, OnDestroy {
 function describeScanError(error: unknown): string {
   const message = error instanceof Error ? error.message : String(error);
   if (/permission/i.test(message)) {
-    return 'Brak uprawnień do Bluetooth. Zezwól aplikacji na wyszukiwanie urządzeń w pobliżu.';
+    return t('picker.error.permission');
   }
   if (/enable|disabled/i.test(message)) {
-    return 'Bluetooth jest wyłączony. Włącz go i spróbuj ponownie.';
+    return t('picker.error.disabled');
   }
-  return `Nie udało się wyszukać urządzeń: ${message}`;
+  return t('picker.error.other', { message });
 }

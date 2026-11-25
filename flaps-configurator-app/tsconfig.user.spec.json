@@ -1,0 +1,15 @@
+/* Testy aplikacji użytkownika (ng test user). */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/user-spec",
+    "rootDir": ".",
+    "types": ["vitest/globals"]
+  },
+  "include": [
+    "user-app/src/**/*.spec.ts",
+    "user-app/src/**/*.d.ts",
+    "src/**/testing/**/*.ts",
+    "src/test-setup.ts"
+  ]
+}

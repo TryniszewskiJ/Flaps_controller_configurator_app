@@ -1,11 +1,31 @@
 // Wspólne elementy UI używane przez strony aplikacji
 
 // --- Nagłówek strony: duży tytuł po lewej, akcje po prawej ---
+// Szerokość treści strony (.page); nagłówek wyrównany do niej w szerokim oknie
+// Skala rozmiarów: tekst i wysokość przycisków. Domyślnie gęsto (aplikacja technika);
+// aplikacja kierowcy nadpisuje ją większymi wartościami (user-app/src/theme/driver.scss).
+:root {
+  --app-page-max-width: 1040px;
+
+  --app-fs-label: 10px; // etykiety kart, znaczniki
+  --app-fs-xs: 11px; // tekst pomocniczy
+  --app-fs-sm: 12px; // wiersze, podpowiedzi
+  --app-fs-md: 13px;
+  --app-fs-lg: 14px; // tekst główny
+
+  --app-control-xs: 26px; // mały przycisk (np. „+ Nowa”)
+  --app-control-sm: 30px;
+  --app-control: 34px; // przyciski w nagłówku i banerze
+  --app-control-md: 38px;
+  --app-control-lg: 40px; // segmenty
+}
+
 .page-toolbar {
+  --page-inset: max(0px, calc((100vw - var(--app-page-max-width)) / 2));
   --background: var(--app-bg);
   --border-width: 0;
-  --padding-start: 16px;
-  --padding-end: 12px;
+  --padding-start: calc(16px + var(--page-inset));
+  --padding-end: calc(12px + var(--page-inset));
   --padding-top: 12px;
   --padding-bottom: 4px;
   --min-height: 56px;
@@ -32,6 +52,13 @@ ion-button {
   }
 }
 
+// Segmenty (np. czas sterowania, motyw) też bez wersalików
+ion-segment-button {
+  min-height: var(--app-control-lg);
+  letter-spacing: normal;
+  text-transform: none;
+}
+
 // Zaokrąglone przyciski w nagłówku — ion-buttons w trybie md wymusza własny promień
 .page-toolbar ion-buttons ion-button:not(.button-round) {
   --border-radius: 8px;
@@ -43,7 +70,7 @@ ion-button.icon-btn {
   --padding-end: 0;
   --border-radius: 8px;
   width: 34px;
-  height: 34px;
+  height: var(--app-control);
   margin: 0;
 }
 
@@ -56,9 +83,9 @@ ion-button.btn-tint {
   --border-radius: 6px;
   --padding-start: 10px;
   --padding-end: 10px;
-  height: 26px;
+  height: var(--app-control-xs);
   margin: 0;
-  font-size: 11px;
+  font-size: var(--app-fs-xs);
   font-weight: 600;
   text-transform: none;
 }
@@ -72,6 +99,9 @@ ion-content {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  // Szerokie okno (komputer, tablet): treść na środku, karty nie rozciągają się na cały ekran
+  max-width: var(--app-page-max-width);
+  margin: 0 auto;
   padding: 4px 16px 16px;
 }
 
@@ -109,7 +139,7 @@ ion-content {
 
 .card-label {
   margin: 0 0 8px;
-  font-size: 10px;
+  font-size: var(--app-fs-label);
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -131,7 +161,7 @@ ion-content {
   cursor: pointer;
 
   ion-icon {
-    font-size: 13px;
+    font-size: var(--app-fs-md);
     transition: transform 0.15s ease;
   }
 
@@ -151,7 +181,7 @@ ion-content {
   padding: 1px 6px;
   border-radius: 999px;
   background: var(--app-code-bg);
-  font-size: 10px;
+  font-size: var(--app-fs-label);
   letter-spacing: 0;
   color: var(--app-muted);
 }
@@ -160,7 +190,7 @@ ion-content {
   padding: 16px 12px;
   border-style: dashed;
   background: transparent;
-  font-size: 12px;
+  font-size: var(--app-fs-sm);
   text-align: center;
   color: var(--app-muted);
 }
@@ -181,7 +211,7 @@ ion-content {
   justify-content: space-between;
   gap: 12px;
   padding: 3px 0;
-  font-size: 12px;
+  font-size: var(--app-fs-sm);
   color: var(--app-text);
 }
 

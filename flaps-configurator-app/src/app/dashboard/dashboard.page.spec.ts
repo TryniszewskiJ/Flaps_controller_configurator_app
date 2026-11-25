@@ -4,6 +4,7 @@ import { create } from '@bufbuild/protobuf';
 import { ActionSheetController } from '@ionic/angular';
 import { ConfigurationService } from '../core/configuration.service';
 import { ConnectionService, ConnectionStatus } from '../core/connection.service';
+import { DevTelemetryService } from '../core/dev-telemetry.service';
 import { DeviceStateService } from '../core/device-state.service';
 import {
   ConfigurationSchema,
@@ -11,7 +12,7 @@ import {
   DeviceStateSchema,
   FlapPosition,
   FlapsState,
-} from '../core/protocol/gen/flaps_pb';
+} from '../core/protocol/messages';
 import { defaultConfiguration } from '../core/testing/fake-device';
 import { DashboardLayoutService } from './dashboard-layout.service';
 import { DashboardPage } from './dashboard.page';
@@ -21,6 +22,7 @@ describe('DashboardPage', () => {
   const status = signal<ConnectionStatus>('connected');
   const state = signal<DeviceState | null>(null);
   const overrideUntil = signal<number | null>(null);
+  const permanentSupported = signal(true);
   const setOverride = vi.fn(() => Promise.resolve());
   const releaseOverride = vi.fn(() => Promise.resolve());
   const device = signal(defaultConfiguration());
@@ -36,6 +38,7 @@ describe('DashboardPage', () => {
     localStorage.clear();
     status.set('connected');
     overrideUntil.set(null);
+    permanentSupported.set(true);
     device.set(defaultConfiguration());
     state.set(
       create(DeviceStateSchema, {
@@ -54,6 +57,7 @@ describe('DashboardPage', () => {
         {
           provide: ConnectionService,
           useValue: {
+            device: signal(null),
             status,
             connected: computed(() => status() === 'connected'),
             inBootloader: signal(false),
@@ -73,11 +77,15 @@ describe('DashboardPage', () => {
               const s = state();
               return s && s.overrideState !== FlapsState.UNSPECIFIED ? s.overrideState : null;
             }),
+            overridePermanent: computed(() => !!state()?.overridePermanent),
+            permanentOverrideSupported: permanentSupported,
             setOverride,
             releaseOverride,
-            logs: signal([]),
-            droppedLogs: signal(0),
           },
+        },
+        {
+          provide: DevTelemetryService,
+          useValue: { logs: signal([]), droppedLogs: signal(0), clearLogs: vi.fn() },
         },
         { provide: ActionSheetController, useValue: { create: createSheet } },
       ],
@@ -168,8 +176,14 @@ describe('DashboardPage', () => {
     expect(text()).toContain('Sport');
     expect(text()).toContain('Zamknięta');
     expect(text()).toContain('RPM');
-    expect(text()).toContain('3125.5');
-    expect(text()).toContain('1 (brak danych)');
+    const tiles = Array.from(
+      fixture.nativeElement.querySelectorAll('.tile') as NodeListOf<HTMLElement>,
+    );
+    expect(tiles.map((tile) => tile.querySelector('.tile__value')!.textContent!.trim())).toEqual([
+      '3125.5',
+      '1',
+    ]);
+    expect(tiles.map((tile) => tile.classList.contains('tile--stale'))).toEqual([false, true]);
   });
 
   it('opens closed flaps for the chosen time', () => {
@@ -200,6 +214,17 @@ describe('DashboardPage', () => {
 
     (fixture.nativeElement.querySelector('.override ion-button') as HTMLElement).click();
     expect(releaseOverride).toHaveBeenCalled();
+  });
+
+  it('shows a permanent manual control without a countdown', () => {
+    state.set(
+      create(DeviceStateSchema, { overrideState: FlapsState.CLOSED, overridePermanent: true }),
+    );
+    fixture.detectChanges();
+
+    expect(text()).toContain('Sterowanie ręczne: zamknięte');
+    expect(text()).toContain('Na stałe');
+    expect(text()).not.toMatch(/za \d+:\d{2}/);
   });
 
   it('shows the fail-safe state', () => {

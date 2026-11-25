@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { formatAmpOutMillivolts } from '../../core/amp-out';
-import { DeviceStateService } from '../../core/device-state.service';
-import { FlapPosition, FlapStopReason } from '../../core/protocol/gen/flaps_pb';
+import { DevTelemetryService } from '../../core/dev-telemetry.service';
+import { FlapPosition, FlapStopReason } from '../../core/protocol/messages';
 
 const STOP_REASONS: Partial<Record<FlapStopReason, string>> = {
   [FlapStopReason.MOVE_TIME]: 'po czasie',
@@ -20,7 +20,7 @@ const STOP_REASONS: Partial<Record<FlapStopReason, string>> = {
   styleUrls: ['./flap-moves-table.component.scss'],
 })
 export class FlapMovesTableComponent {
-  protected readonly moves = inject(DeviceStateService).moves;
+  protected readonly moves = inject(DevTelemetryService).moves;
   protected readonly StopReason = FlapStopReason;
 
   /** UNSPECIFIED (urządzenie < 1.11) = „—”. */

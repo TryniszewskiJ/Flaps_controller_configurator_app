@@ -9,9 +9,9 @@ import {
   CanSniffStartResponseSchema,
   CanSniffStopRequestSchema,
   CanSniffStopResponseSchema,
-  Command,
   Status,
-} from './protocol/gen/flaps_pb';
+  TechnicianCommand,
+} from './protocol/messages';
 import { ProtocolError, ProtocolTimeoutError } from './protocol/protocol-client';
 
 /** Podsłuch CAN jest od protokołu 1.14. */
@@ -104,7 +104,7 @@ export class CanSniffService {
     this._error.set(null);
     try {
       const reply = await this.connection.request(
-        Command.CAN_SNIFF_START,
+        TechnicianCommand.CAN_SNIFF_START,
         CanSniffStartRequestSchema,
         { allFrames, durationMs: 0 },
         CanSniffStartResponseSchema,
@@ -130,7 +130,7 @@ export class CanSniffService {
     this._error.set(null);
     try {
       const reply = await this.connection.request(
-        Command.CAN_SNIFF_STOP,
+        TechnicianCommand.CAN_SNIFF_STOP,
         CanSniffStopRequestSchema,
         {},
         CanSniffStopResponseSchema,
@@ -145,7 +145,7 @@ export class CanSniffService {
   }
 
   private handle(frame: Frame): void {
-    if (frame.command !== Command.CAN_SNIFF || !this._active()) {
+    if (frame.command !== TechnicianCommand.CAN_SNIFF || !this._active()) {
       return;
     }
     let message: CanSniff;

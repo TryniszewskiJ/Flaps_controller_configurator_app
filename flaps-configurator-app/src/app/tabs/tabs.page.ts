@@ -7,6 +7,7 @@ import {
   gridOutline,
   optionsOutline,
   pulseOutline,
+  settingsOutline,
   terminalOutline,
 } from 'ionicons/icons';
 import { ConnectionService } from '../core/connection.service';
@@ -20,7 +21,14 @@ import { ConnectionService } from '../core/connection.service';
 })
 export class TabsPage {
   constructor() {
-    addIcons({ gridOutline, optionsOutline, pulseOutline, terminalOutline, cloudUploadOutline });
+    addIcons({
+      gridOutline,
+      optionsOutline,
+      pulseOutline,
+      terminalOutline,
+      cloudUploadOutline,
+      settingsOutline,
+    });
 
     // Bootloader (tryb ratunkowy) obsługuje tylko aktualizację — od razu do niej
     const connection = inject(ConnectionService);

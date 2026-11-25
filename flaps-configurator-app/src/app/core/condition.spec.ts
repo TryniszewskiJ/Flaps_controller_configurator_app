@@ -9,11 +9,7 @@ import {
   conditionUsesHysteresis,
   conditionUsesSignal,
 } from './condition';
-import {
-  ConditionNode,
-  ConditionNodeSchema,
-  ConditionNodeType as T,
-} from './protocol/gen/flaps_pb';
+import { ConditionNode, ConditionNodeSchema, ConditionNodeType as T } from './protocol/messages';
 
 const NAMES = ['RPM', 'pedał', 'tryb'];
 const name = (i: number): string => NAMES[i] ?? '?';

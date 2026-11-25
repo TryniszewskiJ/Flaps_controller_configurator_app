@@ -5,12 +5,12 @@
   "homepage": "https://ionicframework.com/",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "lint": "ng lint",
-    "lint:fix": "ng lint --fix",
+    "start": "ng serve app",
+    "build": "ng build app",
+    "watch": "ng build app --watch --configuration development",
+    "test": "ng test app",
+    "lint": "ng lint app && ng lint user",
+    "lint:fix": "ng lint app --fix && ng lint user --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "cd .. && husky flaps-configurator-app/.husky",
@@ -19,7 +19,11 @@
     "electron:start": "npm run build && electron .",
     "electron:dist:win": "npm run build && electron-builder --win",
     "electron:dist:mac": "npm run build && electron-builder --mac",
-    "electron:dev": "node electron/dev.cjs"
+    "electron:dev": "node electron/dev.cjs",
+    "user:start": "ng serve user --port 4201",
+    "user:build": "ng build user && node scripts/check-user-bundle.mjs",
+    "user:test": "ng test user",
+    "user:cap": "node scripts/cap-user.mjs"
   },
   "private": true,
   "dependencies": {
@@ -38,6 +42,7 @@
     "@capacitor/haptics": "8.0.2",
     "@capacitor/ios": "^8.5.3",
     "@capacitor/keyboard": "8.0.6",
+    "@capacitor/preferences": "^8.0.1",
     "@capacitor/share": "^8.0.3",
     "@capacitor/status-bar": "8.0.4",
     "@ionic/angular": "^9.0.0",
@@ -74,6 +79,9 @@
   "description": "An Ionic project",
   "lint-staged": {
     "src/**/*.{ts,html}": [
+      "eslint --fix"
+    ],
+    "user-app/src/**/*.{ts,html}": [
       "eslint --fix"
     ],
     "*.{js,json,scss,css,md}": [

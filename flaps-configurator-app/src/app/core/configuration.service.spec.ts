@@ -20,7 +20,7 @@ import {
   LogLevel,
   SignalSchema,
   Status,
-} from './protocol/gen/flaps_pb';
+} from './protocol/messages';
 import { FakeBleLink } from './testing/fake-ble-link';
 
 describe('ConfigurationService', () => {

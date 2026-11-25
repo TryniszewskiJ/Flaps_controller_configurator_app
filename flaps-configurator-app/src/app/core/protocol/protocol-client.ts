@@ -6,14 +6,14 @@ import {
   MessageShape,
   toBinary,
 } from '@bufbuild/protobuf';
-import { RESPONSE_BIT } from './commands';
 import { encodeFrame, Frame } from './frame';
-import { Command, ErrorResponseSchema, Status } from './gen/flaps_pb';
+import { Command, ErrorResponseSchema, Status } from './gen/flaps_common_pb';
 
-/** Stała aplikacji w StartSessionRequest ("FLAP"). */
-export const APP_ID = 0x464c4150;
 export const PROTOCOL_VERSION_MAJOR = 1;
-export const PROTOCOL_VERSION_MINOR = 14;
+export const PROTOCOL_VERSION_MINOR = 15;
+
+/** Bit odpowiedzi w CMD (START_SESSION 0x01 -> 0x81). */
+export const RESPONSE_BIT = 0x80;
 
 const UNSOLICITED_FIRST = 0x70;
 const UNSOLICITED_LAST = 0x7f;
@@ -28,8 +28,9 @@ export class ProtocolError extends Error {
 
 /** Brak odpowiedzi mimo ponowień. */
 export class ProtocolTimeoutError extends Error {
-  constructor(readonly command: Command) {
-    super(`No response to ${Command[command] ?? command}`);
+  /** Numer komendy (Command albo TechnicianCommand aplikacji technika). */
+  constructor(readonly command: number) {
+    super(`No response to ${Command[command] ?? `0x${command.toString(16)}`}`);
     this.name = 'ProtocolTimeoutError';
   }
 }
@@ -44,7 +45,7 @@ export interface ProtocolClientOptions {
 }
 
 interface PendingRequest {
-  command: Command;
+  command: number;
   resolve: (payload: Uint8Array) => void;
   reject: (error: Error) => void;
   timer?: ReturnType<typeof setTimeout>;
@@ -72,7 +73,7 @@ export class ProtocolClient {
   }
 
   async request<Req extends DescMessage, Res extends DescMessage>(
-    command: Command,
+    command: number,
     requestSchema: Req,
     request: MessageInitShape<Req>,
     responseSchema: Res,
@@ -123,7 +124,7 @@ export class ProtocolClient {
     }
   }
 
-  private sendOnce(command: Command, payload: Uint8Array, timeoutMs: number): Promise<Uint8Array> {
+  private sendOnce(command: number, payload: Uint8Array, timeoutMs: number): Promise<Uint8Array> {
     const seq = this.nextSeq();
 
     return new Promise<Uint8Array>((resolve, reject) => {

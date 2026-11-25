@@ -2,8 +2,8 @@ import { Component, inject, signal } from '@angular/core';
 import { IonButton, IonIcon } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { chevronDown } from 'ionicons/icons';
-import { DeviceStateService } from '../../core/device-state.service';
-import { LogLevel } from '../../core/protocol/gen/flaps_pb';
+import { DevTelemetryService } from '../../core/dev-telemetry.service';
+import { LogLevel } from '../../core/protocol/messages';
 import { StickToBottomDirective } from '../../shared/stick-to-bottom.directive';
 
 const LEVEL_LABELS: Record<LogLevel, string> = {
@@ -22,10 +22,10 @@ const LEVEL_LABELS: Record<LogLevel, string> = {
   imports: [IonButton, IonIcon, StickToBottomDirective],
 })
 export class DeviceLogCardComponent {
-  private readonly deviceState = inject(DeviceStateService);
+  private readonly devTelemetry = inject(DevTelemetryService);
 
-  protected readonly logs = this.deviceState.logs;
-  protected readonly dropped = this.deviceState.droppedLogs;
+  protected readonly logs = this.devTelemetry.logs;
+  protected readonly dropped = this.devTelemetry.droppedLogs;
   protected readonly open = signal(true);
   protected readonly LogLevel = LogLevel;
 
@@ -43,6 +43,6 @@ export class DeviceLogCardComponent {
   }
 
   protected clear(): void {
-    this.deviceState.clearLogs();
+    this.devTelemetry.clearLogs();
   }
 }

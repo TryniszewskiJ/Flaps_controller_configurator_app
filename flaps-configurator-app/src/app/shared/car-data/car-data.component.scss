@@ -1,0 +1,53 @@
+:host {
+  display: block;
+}
+
+// Kafelki: na telefonie 2 w rzędzie, w szerokim oknie więcej. Rozmiary ze skali
+// (components.scss; aplikacja użytkownika powiększa je w driver.scss).
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--app-tile-min-width, 140px), 1fr));
+  gap: 8px;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: var(--app-tile-padding, 10px);
+  border: 1px solid var(--app-border);
+  border-radius: 10px;
+  background: var(--app-bg);
+  transition: opacity 0.2s ease;
+}
+
+.tile__value {
+  overflow: hidden;
+  font-size: var(--app-tile-value, 20px);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--app-text);
+}
+
+.tile__name {
+  overflow: hidden;
+  font-size: var(--app-fs-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--app-muted);
+}
+
+// Wartość nieaktualna (sygnał przestał przychodzić) — wyszarzona
+.tile--stale {
+  opacity: 0.4;
+}
+
+.muted-text {
+  margin: 0;
+  font-size: var(--app-fs-sm);
+  color: var(--app-muted);
+}

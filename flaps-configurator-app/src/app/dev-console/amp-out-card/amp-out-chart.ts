@@ -1,6 +1,6 @@
 import { ampOutMillivolts } from '../../core/amp-out';
-import { AmpOutSample, FlapMoveMark } from '../../core/device-state.service';
-import { FlapPosition } from '../../core/protocol/gen/flaps_pb';
+import { AmpOutSample, FlapMoveMark } from '../../core/dev-telemetry.service';
+import { FlapPosition } from '../../core/protocol/messages';
 
 /** Marginesy obszaru wykresu w px (miejsce na osie i etykiety znaczników). */
 export const CHART_MARGIN = { top: 30, right: 10, bottom: 22, left: 44 };

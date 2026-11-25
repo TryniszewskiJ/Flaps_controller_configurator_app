@@ -1,6 +1,6 @@
 .muted-text {
   margin: 0;
-  font-size: 12px;
+  font-size: var(--app-fs-sm);
   color: var(--app-muted);
 }
 
@@ -30,7 +30,7 @@
   display: flex;
   justify-content: space-between;
   gap: 8px;
-  font-size: 13px;
+  font-size: var(--app-fs-md);
   color: var(--app-text);
 }
 
@@ -44,7 +44,7 @@ ion-progress-bar {
   padding: 8px 10px;
   border: 1px solid;
   border-radius: 8px;
-  font-size: 12px;
+  font-size: var(--app-fs-sm);
 }
 
 .message--warning {

@@ -1,6 +1,6 @@
 import { Component, input, model } from '@angular/core';
 import { formatAmpOutMillivolts } from '../../core/amp-out';
-import { AmpOutSample } from '../../core/device-state.service';
+import { AmpOutSample } from '../../core/dev-telemetry.service';
 
 /** Legenda wykresu AMP_OUT: klapy z ostatnim napięciem (klik ukrywa linię) i znaczniki ruchów. */
 @Component({

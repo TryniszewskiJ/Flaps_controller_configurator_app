@@ -19,7 +19,11 @@
     "module": "es2020",
     "lib": ["es2022", "dom"],
     "skipLibCheck": true,
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    // Kod wspólny aplikacji technika (src/app) używany przez aplikację użytkownika (user-app)
+    "paths": {
+      "@flaps/*": ["./src/app/*"]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
@@ -29,5 +33,10 @@
   },
   // Edytor i ESLint wybierają właściwy projekt (app / spec) na podstawie tych referencji
   "files": [],
-  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.spec.json" }]
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.spec.json" },
+    { "path": "./tsconfig.user.json" },
+    { "path": "./tsconfig.user.spec.json" }
+  ]
 }

@@ -21,6 +21,13 @@ const CONNECT_TIMEOUT_MS = 15_000;
 // Włączenie notyfikacji wymaga sparowania z kluczem — czas na wpisanie go przez użytkownika
 const PAIRING_TIMEOUT_MS = 60_000;
 
+/** Sterownik nie dokończył parowania / szyfrowania w czasie (Electron). */
+export class PairingTimeoutError extends Error {
+  constructor() {
+    super('Pairing timeout');
+  }
+}
+
 export interface FoundDevice {
   deviceId: string;
   name?: string;
@@ -106,12 +113,17 @@ export class BleLinkService {
     onDisconnect: () => void,
   ): Promise<void> {
     await this.prepare();
+    if (Capacitor.getPlatform() === 'ios') {
+      // iOS łączy tylko z urządzeniem znanym wtyczce — po starcie aplikacji (automatyczne
+      // łączenie z ostatnim sterownikiem) nie było skanowania, więc pobieramy je po UUID
+      await BleClient.getDevices([deviceId]).catch(() => undefined);
+    }
     await BleClient.connect(deviceId, () => onDisconnect(), { timeout: CONNECT_TIMEOUT_MS });
     this.deviceId = deviceId;
     this.chunkSize = DEFAULT_ATT_MTU - 3;
 
     try {
-      await BleClient.startNotifications(
+      const notifications = BleClient.startNotifications(
         deviceId,
         BRIDGE_SERVICE_UUID,
         BRIDGE_TX_CHARACTERISTIC_UUID,
@@ -121,6 +133,11 @@ export class BleLinkService {
         },
         { timeout: PAIRING_TIMEOUT_MS },
       );
+      // Web Bluetooth (Electron) nie ma limitu czasu na włączenie notyfikacji — Windows ze starym
+      // sparowaniem (klucze, których mostek już nie zna) czeka na szyfrowanie w nieskończoność
+      await (this.usesBrowserPicker
+        ? withTimeout(notifications, PAIRING_TIMEOUT_MS, () => new PairingTimeoutError())
+        : notifications);
       this.chunkSize = (await this.readMtu(deviceId)) - 3;
     } catch (error) {
       await this.disconnect();
@@ -131,8 +148,16 @@ export class BleLinkService {
   async disconnect(): Promise<void> {
     const deviceId = this.deviceId;
     this.deviceId = null;
-    if (deviceId) {
+    if (!deviceId) {
+      return;
+    }
+    // Wtyczka wykonuje operacje po kolei — rozłączenie nie może czekać za zawieszoną (np.
+    // włączaniem notyfikacji bez odpowiedzi). Poza kolejką, potem nowa, pusta kolejka.
+    BleClient.disableQueue();
+    try {
       await BleClient.disconnect(deviceId);
+    } finally {
+      BleClient.enableQueue();
     }
   }
 
@@ -196,4 +221,20 @@ export class BleLinkService {
       return DEFAULT_ATT_MTU; // getMtu nie jest dostępne na każdej platformie
     }
   }
+}
+
+function withTimeout<T>(promise: Promise<T>, ms: number, error: () => Error): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(error()), ms);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (reason: unknown) => {
+        clearTimeout(timer);
+        reject(reason instanceof Error ? reason : new Error(String(reason)));
+      },
+    );
+  });
 }

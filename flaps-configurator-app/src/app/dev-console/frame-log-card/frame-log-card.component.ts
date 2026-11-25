@@ -4,7 +4,7 @@ import { addIcons } from 'ionicons';
 import { chevronDown } from 'ionicons/icons';
 import { FrameLogService } from '../../core/frame-log.service';
 import { commandName, REQUEST_COMMANDS } from '../../core/protocol/commands';
-import { Command } from '../../core/protocol/gen/flaps_pb';
+import { Command } from '../../core/protocol/messages';
 import { StickToBottomDirective } from '../../shared/stick-to-bottom.directive';
 
 interface CommandFilter {

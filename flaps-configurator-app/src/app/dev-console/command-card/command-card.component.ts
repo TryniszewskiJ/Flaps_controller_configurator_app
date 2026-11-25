@@ -4,13 +4,14 @@ import { JsonValue } from '@bufbuild/protobuf';
 import { addIcons } from 'ionicons';
 import { chevronDown } from 'ionicons/icons';
 import { ConnectionService } from '../../core/connection.service';
+import { DevCommandService } from '../../core/dev-command.service';
 import {
   commandName,
   commandTemplate,
   parseCommand,
   REQUEST_COMMANDS,
 } from '../../core/protocol/commands';
-import { Command } from '../../core/protocol/gen/flaps_pb';
+import { Command } from '../../core/protocol/messages';
 
 /** Wysyłanie dowolnej komendy: "NAZWA {json}" z podpowiedziami szablonów. */
 @Component({
@@ -21,6 +22,7 @@ import { Command } from '../../core/protocol/gen/flaps_pb';
 })
 export class CommandCardComponent {
   private readonly connection = inject(ConnectionService);
+  private readonly devCommand = inject(DevCommandService);
 
   protected readonly connected = this.connection.connected;
   protected readonly requestCommands = REQUEST_COMMANDS.map((command) => ({
@@ -83,7 +85,7 @@ export class CommandCardComponent {
     this.sending.set(true);
     this.sendError.set(null);
     try {
-      await this.connection.sendCommand(command, payload);
+      await this.devCommand.send(command, payload);
     } catch (error) {
       this.sendError.set(error instanceof Error ? error.message : String(error));
     } finally {

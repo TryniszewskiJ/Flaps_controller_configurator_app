@@ -22,7 +22,7 @@ import {
   MAX_SIGNALS,
 } from '../core/configuration.service';
 import { ConnectionService } from '../core/connection.service';
-import { CanFrame, Logic, Signal } from '../core/protocol/gen/flaps_pb';
+import { CanFrame, Logic, Signal } from '../core/protocol/messages';
 import { ConnectionBannerComponent } from '../shared/connection-banner/connection-banner.component';
 import {
   devModeLabel,
@@ -34,10 +34,9 @@ import {
   stopModeLabel,
 } from './config-format';
 import { FrameEditorComponent } from './frame-editor/frame-editor.component';
-import { LogicEditorComponent } from './logic-editor/logic-editor.component';
+import { LogicEditorComponent } from '../shared/logic-editor/logic-editor.component';
 import { SettingsEditorComponent } from './settings-editor/settings-editor.component';
 import { SignalEditorComponent } from './signal-editor/signal-editor.component';
-import { ThemeToggleComponent } from '../shared/theme-toggle/theme-toggle.component';
 
 type EditorComponent =
   | typeof FrameEditorComponent
@@ -50,7 +49,6 @@ type EditorComponent =
   templateUrl: './config.page.html',
   styleUrls: ['./config.page.scss'],
   imports: [
-    ThemeToggleComponent,
     IonHeader,
     IonToolbar,
     IonButtons,

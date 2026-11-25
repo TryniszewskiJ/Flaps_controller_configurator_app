@@ -1,0 +1,22 @@
+@if (signals().length) {
+  <div class="tiles" role="list">
+    @for (signal of signals(); track signal.index) {
+      <div
+        class="tile"
+        role="listitem"
+        [class.tile--stale]="!signal.fresh"
+        [attr.aria-label]="
+          signal.name +
+          ': ' +
+          signal.value +
+          (signal.fresh ? '' : ' (' + ('dashboard.stale' | t) + ')')
+        "
+      >
+        <span class="tile__value" aria-hidden="true">{{ signal.value }}</span>
+        <span class="tile__name" aria-hidden="true">{{ signal.name }}</span>
+      </div>
+    }
+  </div>
+} @else {
+  <p class="muted-text">{{ 'dashboard.carDataEmpty' | t }}</p>
+}

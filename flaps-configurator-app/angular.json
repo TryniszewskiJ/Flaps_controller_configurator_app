@@ -120,6 +120,129 @@
           }
         }
       }
+    },
+    "user": {
+      "projectType": "application",
+      "schematics": {
+        "@ionic/angular-toolkit:page": {
+          "styleext": "scss",
+          "standalone": true
+        }
+      },
+      "root": "user-app",
+      "sourceRoot": "user-app/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": {
+              "base": "www-user",
+              "browser": ""
+            },
+            "index": "user-app/src/index.html",
+            "polyfills": [],
+            "tsConfig": "tsconfig.user.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "assets"
+              },
+              {
+                "glob": "**/*",
+                "input": "user-app/src/assets",
+                "output": "assets/user"
+              }
+            ],
+            "styles": [
+              "src/global.scss",
+              "src/theme/variables.scss",
+              "src/theme/components.scss",
+              "user-app/src/theme/driver.scss"
+            ],
+            "scripts": [],
+            "browser": "user-app/src/main.ts"
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kb",
+                  "maximumError": "8kb"
+                }
+              ],
+              "fileReplacements": [],
+              "outputHashing": "all",
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              }
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
+            "ci": {
+              "progress": false
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "user:build:production"
+            },
+            "development": {
+              "buildTarget": "user:build:development"
+            },
+            "ci": {
+              "progress": false
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular/build:extract-i18n",
+          "options": {
+            "buildTarget": "user:build"
+          }
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "tsconfig.user.spec.json",
+            "buildTarget": "::development",
+            "setupFiles": ["src/test-setup.ts"]
+          },
+          "configurations": {
+            "ci": {
+              "watch": false
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["user-app/src/**/*.ts", "user-app/src/**/*.html"]
+          }
+        }
+      }
     }
   },
   "cli": {

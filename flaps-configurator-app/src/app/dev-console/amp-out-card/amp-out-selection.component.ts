@@ -1,7 +1,7 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 import { IonButton } from '@ionic/angular';
 import { formatAmpOutMillivolts } from '../../core/amp-out';
-import { AmpOutSample, FlapMoveMark } from '../../core/device-state.service';
+import { AmpOutSample, FlapMoveMark } from '../../core/dev-telemetry.service';
 import { saveTextFile } from '../../core/save-file';
 import { AmpOutRange, ampOutCsv, rangeStats, sampleNotes, samplesInRange } from './amp-out-range';
 

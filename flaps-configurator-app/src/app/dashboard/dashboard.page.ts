@@ -14,49 +14,32 @@ import { addIcons } from 'ionicons';
 import { add, checkmark, createOutline } from 'ionicons/icons';
 import { ConfigurationService } from '../core/configuration.service';
 import { ConnectionService } from '../core/connection.service';
-import { DeviceStateService } from '../core/device-state.service';
-import { FlapPosition, FlapsState } from '../core/protocol/gen/flaps_pb';
+import { DeviceStateService, OverrideDuration } from '../core/device-state.service';
+import { FlapsState } from '../core/protocol/messages';
 import { AmpOutCardComponent } from '../dev-console/amp-out-card/amp-out-card.component';
 import { CommandCardComponent } from '../dev-console/command-card/command-card.component';
 import { DeviceLogCardComponent } from '../dev-console/device-log-card/device-log-card.component';
 import { FrameLogCardComponent } from '../dev-console/frame-log-card/frame-log-card.component';
 import { ConnectionBannerComponent } from '../shared/connection-banner/connection-banner.component';
+import { CarDataComponent } from '../shared/car-data/car-data.component';
 import { DashboardLayoutService, widgetTitle } from './dashboard-layout.service';
 import { WidgetFrameComponent } from './widget-frame/widget-frame.component';
-import { ThemeToggleComponent } from '../shared/theme-toggle/theme-toggle.component';
-
-interface FlapView {
-  name: string;
-  label: string;
-  tone: 'open' | 'closed' | 'moving' | 'unknown' | 'off';
-}
-
-interface SignalView {
-  index: number;
-  name: string;
-  value: string;
-  fresh: boolean;
-}
-
-const FLAP_LABELS: Record<FlapPosition, string> = {
-  [FlapPosition.UNSPECIFIED]: '—',
-  [FlapPosition.UNKNOWN]: 'Nieznana (bez ruchu od startu)',
-  [FlapPosition.OPENING]: 'Otwieranie…',
-  [FlapPosition.OPEN]: 'Otwarta',
-  [FlapPosition.CLOSING]: 'Zamykanie…',
-  [FlapPosition.CLOSED]: 'Zamknięta',
-  [FlapPosition.NOT_CONNECTED]: 'Niepodłączona',
-};
-
-/** Czas ręcznego sterowania do wyboru (firmware przyjmuje do 10 min). */
-const OVERRIDE_MINUTES = [1, 5, 10];
+import { OVERRIDE_OPTIONS, overrideRemainingLabel } from '../shared/flaps-override';
+import {
+  activeLogicLabel,
+  DeviceNames,
+  FlapView,
+  flapView,
+  isOpening,
+  signalViews,
+  SignalView,
+} from '../shared/device-state-format';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
   imports: [
-    ThemeToggleComponent,
     IonHeader,
     IonToolbar,
     IonButtons,
@@ -66,6 +49,7 @@ const OVERRIDE_MINUTES = [1, 5, 10];
     IonSelect,
     IonSelectOption,
     ConnectionBannerComponent,
+    CarDataComponent,
     WidgetFrameComponent,
     CommandCardComponent,
     AmpOutCardComponent,
@@ -89,10 +73,12 @@ export class DashboardPage {
   protected readonly connected = inject(ConnectionService).connected;
   protected readonly state = this.deviceState.state;
   protected readonly override = this.deviceState.override;
+  protected readonly overridePermanent = this.deviceState.overridePermanent;
+  protected readonly permanentSupported = this.deviceState.permanentOverrideSupported;
   protected readonly FlapsState = FlapsState;
-  protected readonly overrideMinutesOptions = OVERRIDE_MINUTES;
+  protected readonly overrideOptions = OVERRIDE_OPTIONS;
 
-  protected readonly overrideMinutes = signal(5);
+  protected readonly overrideDuration = signal<OverrideDuration>(5 * 60_000);
   protected readonly busy = signal(false);
   protected readonly actionError = signal<string | null>(null);
 
@@ -100,34 +86,27 @@ export class DashboardPage {
   private readonly now = signal(Date.now());
 
   /** Aktywna logika (tryb jazdy) z nazwą z konfiguracji; -1 = stan bezpieczny. */
-  protected readonly activeLogic = computed(() => {
-    const state = this.state();
-    if (!state) {
-      return null;
-    }
-    if (state.activeLogic < 0) {
-      return 'Stan bezpieczny';
-    }
-    const logic = this.configuration.device()?.logics[state.activeLogic];
-    return logic?.description || `Logika ${state.activeLogic + 1}`;
+  /** Nazwy logik i sygnałów z konfiguracji urządzenia. */
+  private readonly names = computed<DeviceNames | null>(() => {
+    const config = this.configuration.device();
+    return config
+      ? {
+          logics: config.logics.map((logic) => logic.description),
+          signals: config.signals.map((signal) => signal.name),
+        }
+      : null;
   });
+
+  protected readonly activeLogic = computed(() => activeLogicLabel(this.state(), this.names()));
 
   protected readonly flaps = computed<FlapView[]>(() => {
     const state = this.state();
     return state ? [flapView('Klapa 1', state.flap1), flapView('Klapa 2', state.flap2)] : [];
   });
 
-  protected readonly signals = computed<SignalView[]>(() => {
-    const names = this.configuration.device()?.signals ?? [];
-    return [...(this.state()?.signals ?? [])]
-      .sort((a, b) => a.index - b.index)
-      .map((s) => ({
-        index: s.index,
-        name: names[s.index]?.name || `Sygnał ${s.index + 1}`,
-        value: formatValue(s.value),
-        fresh: s.fresh,
-      }));
-  });
+  protected readonly signals = computed<SignalView[]>(() =>
+    signalViews(this.state(), this.names()),
+  );
 
   /** Tryb demo: sterownik odtwarza przejazd zamiast CAN auta (demo i tryb dev w konfiguracji). */
   protected readonly demo = computed(() => {
@@ -142,14 +121,9 @@ export class DashboardPage {
   });
 
   /** Pozostały czas ręcznego sterowania, np. "4:32". */
-  protected readonly overrideRemaining = computed(() => {
-    const until = this.deviceState.overrideUntil();
-    if (until === null) {
-      return null;
-    }
-    const seconds = Math.max(0, Math.ceil((until - this.now()) / 1000));
-    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
-  });
+  protected readonly overrideRemaining = computed(() =>
+    overrideRemainingLabel(this.deviceState.overrideUntil(), this.now()),
+  );
 
   constructor() {
     addIcons({ add, checkmark, createOutline });
@@ -175,15 +149,15 @@ export class DashboardPage {
   /** Otwiera albo zamyka klapy na wybrany czas zamiast logiki. */
   protected toggleFlaps(): void {
     const target = this.flapsOpen() ? FlapsState.CLOSED : FlapsState.OPEN;
-    void this.run(() => this.deviceState.setOverride(target, this.overrideMinutes() * 60_000));
+    void this.run(() => this.deviceState.setOverride(target, this.overrideDuration()));
   }
 
   protected releaseOverride(): void {
     void this.run(() => this.deviceState.releaseOverride());
   }
 
-  protected onMinutesChange(value: number | null | undefined): void {
-    this.overrideMinutes.set(value ?? 5);
+  protected onDurationChange(value: OverrideDuration | null | undefined): void {
+    this.overrideDuration.set(value ?? 5 * 60_000);
   }
 
   private async run(action: () => Promise<void>): Promise<void> {
@@ -197,27 +171,4 @@ export class DashboardPage {
       this.busy.set(false);
     }
   }
-}
-
-function isOpening(position: FlapPosition): boolean {
-  return position === FlapPosition.OPEN || position === FlapPosition.OPENING;
-}
-
-function flapView(name: string, position: FlapPosition): FlapView {
-  const tone =
-    position === FlapPosition.OPEN
-      ? 'open'
-      : position === FlapPosition.CLOSED
-        ? 'closed'
-        : position === FlapPosition.OPENING || position === FlapPosition.CLOSING
-          ? 'moving'
-          : position === FlapPosition.NOT_CONNECTED
-            ? 'off'
-            : 'unknown';
-  return { name, label: FLAP_LABELS[position] ?? '—', tone };
-}
-
-/** Wartość sygnału: całkowite bez części ułamkowej, reszta do 3 miejsc. */
-function formatValue(value: number): string {
-  return Number.isInteger(value) ? String(value) : String(Number(value.toFixed(3)));
 }

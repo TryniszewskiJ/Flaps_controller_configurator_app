@@ -18,7 +18,7 @@ import {
   MAX_FRAME_TIMEOUT_MS,
   MAX_STANDARD_ID,
 } from '../../core/configuration.service';
-import { CanFrame, CanFrameSchema } from '../../core/protocol/gen/flaps_pb';
+import { CanFrame, CanFrameSchema } from '../../core/protocol/messages';
 import { frameId } from '../config-format';
 
 /**

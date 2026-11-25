@@ -7,8 +7,9 @@ import {
   StartSessionRequestSchema,
   StartSessionResponseSchema,
   Status,
-} from './gen/flaps_pb';
-import { APP_ID, ProtocolClient, ProtocolError, ProtocolTimeoutError } from './protocol-client';
+} from './messages';
+import { TECHNICIAN_APP_ID as APP_ID } from '../../technician-app';
+import { ProtocolClient, ProtocolError, ProtocolTimeoutError } from './protocol-client';
 
 describe('ProtocolClient', () => {
   let device: FakeDevice;

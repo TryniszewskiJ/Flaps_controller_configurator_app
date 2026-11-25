@@ -25,6 +25,10 @@ export const routes: Routes = [
         path: 'update',
         loadComponent: () => import('./update/update.page').then((m) => m.UpdatePage),
       },
+      {
+        path: 'settings',
+        loadComponent: () => import('./shared/settings/settings.page').then((m) => m.SettingsPage),
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },

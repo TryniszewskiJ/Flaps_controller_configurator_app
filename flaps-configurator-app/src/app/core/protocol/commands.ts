@@ -30,6 +30,8 @@ import {
   GetConfigurationResponseSchema,
   GetDeviceInfoRequestSchema,
   GetDeviceInfoResponseSchema,
+  GetLogicsRequestSchema,
+  GetLogicsResponseSchema,
   GetStateRequestSchema,
   GetStateResponseSchema,
   LogSchema,
@@ -43,12 +45,16 @@ import {
   SetConfigurationResponseSchema,
   SetFlapsOverrideRequestSchema,
   SetFlapsOverrideResponseSchema,
+  SetLogicsRequestSchema,
+  SetLogicsResponseSchema,
   StartSessionRequestSchema,
   StartSessionResponseSchema,
+  TechnicianCommand,
   TelemetrySchema,
-} from './gen/flaps_pb';
+} from './messages';
+import { RESPONSE_BIT } from './protocol-client';
 
-export const RESPONSE_BIT = 0x80;
+export { RESPONSE_BIT };
 
 interface CommandSchemas {
   request: DescMessage;
@@ -56,7 +62,8 @@ interface CommandSchemas {
 }
 
 /** Modele żądania i odpowiedzi każdej komendy (tabela komend w README firmware). */
-export const COMMAND_SCHEMAS: Partial<Record<Command, CommandSchemas>> = {
+/** Klucz: Command albo TechnicianCommand (numery się nie pokrywają). */
+export const COMMAND_SCHEMAS: Partial<Record<number, CommandSchemas>> = {
   [Command.START_SESSION]: {
     request: StartSessionRequestSchema,
     response: StartSessionResponseSchema,
@@ -70,15 +77,15 @@ export const COMMAND_SCHEMAS: Partial<Record<Command, CommandSchemas>> = {
     request: CloseSessionRequestSchema,
     response: CloseSessionResponseSchema,
   },
-  [Command.GET_CONFIGURATION]: {
+  [TechnicianCommand.GET_CONFIGURATION]: {
     request: GetConfigurationRequestSchema,
     response: GetConfigurationResponseSchema,
   },
-  [Command.SET_CONFIGURATION]: {
+  [TechnicianCommand.SET_CONFIGURATION]: {
     request: SetConfigurationRequestSchema,
     response: SetConfigurationResponseSchema,
   },
-  [Command.SAVE_CONFIGURATION]: {
+  [TechnicianCommand.SAVE_CONFIGURATION]: {
     request: SaveConfigurationRequestSchema,
     response: SaveConfigurationResponseSchema,
   },
@@ -104,27 +111,29 @@ export const COMMAND_SCHEMAS: Partial<Record<Command, CommandSchemas>> = {
     response: FirmwareUpdateAbortResponseSchema,
   },
   [Command.REBOOT]: { request: RebootRequestSchema, response: RebootResponseSchema },
-  [Command.CAN_SNIFF_START]: {
+  [Command.GET_LOGICS]: { request: GetLogicsRequestSchema, response: GetLogicsResponseSchema },
+  [Command.SET_LOGICS]: { request: SetLogicsRequestSchema, response: SetLogicsResponseSchema },
+  [TechnicianCommand.CAN_SNIFF_START]: {
     request: CanSniffStartRequestSchema,
     response: CanSniffStartResponseSchema,
   },
-  [Command.CAN_SNIFF_STOP]: {
+  [TechnicianCommand.CAN_SNIFF_STOP]: {
     request: CanSniffStopRequestSchema,
     response: CanSniffStopResponseSchema,
   },
 };
 
 /** Modele wiadomości wysyłanych przez urządzenie bez żądania (0x70–0x7F, SEQ = 0). */
-export const UNSOLICITED_SCHEMAS: Partial<Record<Command, DescMessage>> = {
+export const UNSOLICITED_SCHEMAS: Partial<Record<number, DescMessage>> = {
   [Command.TELEMETRY]: TelemetrySchema,
   [Command.EVENT]: EventSchema,
-  [Command.LOG]: LogSchema,
-  [Command.AMP_OUT]: AmpOutSchema,
-  [Command.CAN_SNIFF]: CanSniffSchema,
+  [TechnicianCommand.LOG]: LogSchema,
+  [TechnicianCommand.AMP_OUT]: AmpOutSchema,
+  [TechnicianCommand.CAN_SNIFF]: CanSniffSchema,
 };
 
 /** Komendy, które aplikacja może wysłać (do podpowiedzi i filtra). */
-export const REQUEST_COMMANDS = Object.keys(COMMAND_SCHEMAS).map(Number) as Command[];
+export const REQUEST_COMMANDS = Object.keys(COMMAND_SCHEMAS).map(Number);
 
 /**
  * Komenda, do której należy ramka: odpowiedź (0x81) -> żądanie (0x01).
@@ -138,16 +147,19 @@ export function baseCommand(command: number): number {
 }
 
 export function commandName(command: number): string {
-  const name = Command[command] as string | undefined;
+  const name =
+    (Command[command] as string | undefined) ?? (TechnicianCommand[command] as string | undefined);
   return name && command !== Command.UNSPECIFIED ? name : hexByte(command);
 }
 
 /** Komenda po nazwie (PING, ping) albo numerze (0x03, 3). */
-export function parseCommand(text: string): Command | null {
+export function parseCommand(text: string): number | null {
+  const name = text.toUpperCase();
   const value = /^(0x[0-9a-f]+|\d+)$/i.test(text)
     ? Number(text)
-    : (Command as unknown as Record<string, number | undefined>)[text.toUpperCase()];
-  return value !== undefined && COMMAND_SCHEMAS[value as Command] ? (value as Command) : null;
+    : ((Command as unknown as Record<string, number | undefined>)[name] ??
+      (TechnicianCommand as unknown as Record<string, number | undefined>)[name]);
+  return value !== undefined && COMMAND_SCHEMAS[value] ? value : null;
 }
 
 /**
@@ -167,7 +179,7 @@ export function decodePayload(command: number, payload: Uint8Array): JsonObject 
 }
 
 /** Komenda do wpisania w konsoli: nazwa i JSON z wszystkimi polami modelu żądania. */
-export function commandTemplate(command: Command): string {
+export function commandTemplate(command: number): string {
   const schemas = COMMAND_SCHEMAS[command];
   const name = commandName(command);
   if (!schemas || schemas.request.fields.length === 0) {
@@ -190,11 +202,11 @@ function payloadSchema(command: number): DescMessage | null {
   if (command === Command.ERROR) {
     return ErrorResponseSchema;
   }
-  const unsolicited = UNSOLICITED_SCHEMAS[command as Command];
+  const unsolicited = UNSOLICITED_SCHEMAS[command];
   if (unsolicited) {
     return unsolicited;
   }
-  const schemas = COMMAND_SCHEMAS[baseCommand(command) as Command];
+  const schemas = COMMAND_SCHEMAS[baseCommand(command)];
   if (!schemas) {
     return null;
   }

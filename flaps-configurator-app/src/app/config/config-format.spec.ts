@@ -4,7 +4,7 @@ import {
   ConfigurationSchema,
   FlapStopMode,
   LogicSchema,
-} from '../core/protocol/gen/flaps_pb';
+} from '../core/protocol/messages';
 import { defaultConfiguration } from '../core/testing/fake-device';
 import { logicSummary, stopModeLabel } from './config-format';
 

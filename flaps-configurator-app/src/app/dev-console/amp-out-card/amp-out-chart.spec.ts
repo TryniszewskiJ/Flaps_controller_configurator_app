@@ -1,5 +1,5 @@
-import { AmpOutSample, FlapMoveMark } from '../../core/device-state.service';
-import { FlapPosition } from '../../core/protocol/gen/flaps_pb';
+import { AmpOutSample, FlapMoveMark } from '../../core/dev-telemetry.service';
+import { FlapPosition } from '../../core/protocol/messages';
 import { CHART_MARGIN, buildChart, nearestSample } from './amp-out-chart';
 
 const sample = (uptimeMs: number, flap1: number, flap2 = 0, gap = false): AmpOutSample => ({

@@ -1,0 +1,58 @@
+ion-segment {
+  margin-top: 2px;
+}
+
+.setting-toggle {
+  width: 100%;
+  font-size: var(--app-fs-lg);
+  color: var(--app-text);
+}
+
+.setting-toggle__label {
+  white-space: normal;
+}
+
+.hint {
+  margin: 6px 0 0;
+  font-size: var(--app-fs-sm);
+  color: var(--app-muted);
+}
+
+.device {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--app-border);
+  font-size: var(--app-fs-sm);
+}
+
+.device__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+
+  strong {
+    font-size: var(--app-fs-lg);
+    color: var(--app-text);
+  }
+
+  .mono {
+    font-size: var(--app-fs-xs);
+    overflow-wrap: anywhere;
+  }
+}
+
+.link-button {
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--ion-color-danger);
+  cursor: pointer;
+}

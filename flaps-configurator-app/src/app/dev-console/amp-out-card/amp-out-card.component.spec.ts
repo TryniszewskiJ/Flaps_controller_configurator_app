@@ -4,17 +4,17 @@ import { create } from '@bufbuild/protobuf';
 import { ConfigurationService } from '../../core/configuration.service';
 import {
   AmpOutSample,
-  DeviceStateService,
+  DevTelemetryService,
   FlapMove,
   FlapMoveMark,
-} from '../../core/device-state.service';
+} from '../../core/dev-telemetry.service';
 import {
   Configuration,
   ConfigurationSchema,
   FlapPosition,
   FlapStopMode,
   FlapStopReason,
-} from '../../core/protocol/gen/flaps_pb';
+} from '../../core/protocol/messages';
 import { AmpOutCardComponent } from './amp-out-card.component';
 import { CHART_MARGIN, ChartSize } from './amp-out-chart';
 import { AmpOutRange } from './amp-out-range';
@@ -49,7 +49,7 @@ describe('AmpOutCardComponent', () => {
     TestBed.configureTestingModule({
       providers: [
         {
-          provide: DeviceStateService,
+          provide: DevTelemetryService,
           useValue: { moves, ampOut, moveMarks, clearAmpOut, clearMoves },
         },
         { provide: ConfigurationService, useValue: { device } },

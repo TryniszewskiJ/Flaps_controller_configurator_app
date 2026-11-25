@@ -3,7 +3,7 @@ import { MessageInitShape } from '@bufbuild/protobuf';
 import { BleLinkService } from './ble/ble-link.service';
 import { CAN_SNIFF_HISTORY, CanSniffService } from './can-sniff.service';
 import { ConnectionService } from './connection.service';
-import { CanSniffFrameSchema, CanSniffSchema, Command } from './protocol/gen/flaps_pb';
+import { CanSniffFrameSchema, CanSniffSchema, TechnicianCommand } from './protocol/messages';
 import { FakeBleLink } from './testing/fake-ble-link';
 
 describe('CanSniffService', () => {
@@ -34,7 +34,7 @@ describe('CanSniffService', () => {
     frames: MessageInitShape<typeof CanSniffFrameSchema>[],
     dropped = 0,
   ): Promise<void> => {
-    link.device.sendUnsolicited(Command.CAN_SNIFF, CanSniffSchema, {
+    link.device.sendUnsolicited(TechnicianCommand.CAN_SNIFF, CanSniffSchema, {
       sequence: 1,
       dropped,
       frames,

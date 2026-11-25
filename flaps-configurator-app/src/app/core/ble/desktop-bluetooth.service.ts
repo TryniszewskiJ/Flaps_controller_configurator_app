@@ -5,6 +5,7 @@ import {
   DesktopPairingRequest,
   FlapsDesktopBridge,
 } from './desktop-bridge';
+import { t } from '../i18n/i18n';
 
 /**
  * Bluetooth w aplikacji desktopowej (Electron): lista urządzeń do okna wyboru
@@ -15,6 +16,15 @@ export class DesktopBluetoothService {
   private readonly alerts = inject(AlertController);
   private readonly bridge: FlapsDesktopBridge | undefined = window.flapsDesktop;
   private started = false;
+  private _selectedId: string | null = null;
+
+  /**
+   * Identyfikator urządzenia z ostatniego wyboru (okno wyboru albo autoSelect) — do ponownego
+   * wybrania przy automatycznym łączeniu. Inny niż deviceId z Web Bluetooth (ten jest losowy).
+   */
+  get selectedId(): string | null {
+    return this._selectedId;
+  }
 
   get available(): boolean {
     return this.bridge !== undefined;
@@ -34,7 +44,14 @@ export class DesktopBluetoothService {
   }
 
   selectDevice(deviceId: string): void {
+    this._selectedId = deviceId;
     this.bridge?.bluetooth.selectDevice(deviceId);
+  }
+
+  /** Następny requestDevice() wybierze samo `deviceId` (bez okna wyboru i bez kliknięcia). */
+  async autoSelect(deviceId: string): Promise<void> {
+    this._selectedId = deviceId;
+    await this.bridge?.bluetooth.autoSelect(deviceId);
   }
 
   cancelSelection(): void {
@@ -53,28 +70,28 @@ export class DesktopBluetoothService {
     const alert =
       request.kind === 'providePin'
         ? await this.alerts.create({
-            header: 'Parowanie',
-            message: 'Wpisz kod parowania sterownika.',
+            header: t('pairing.title'),
+            message: t('pairing.enterPin'),
             backdropDismiss: false,
-            inputs: [{ name: 'pin', type: 'number', placeholder: 'Kod parowania' }],
+            inputs: [{ name: 'pin', type: 'number', placeholder: t('pairing.pinPlaceholder') }],
             buttons: [
-              { text: 'Anuluj', role: 'cancel', handler: (): void => respond(false) },
+              { text: t('common.cancel'), role: 'cancel', handler: (): void => respond(false) },
               {
-                text: 'Sparuj',
+                text: t('pairing.pair'),
                 handler: (values: { pin?: string }): void => respond(true, values.pin?.trim()),
               },
             ],
           })
         : await this.alerts.create({
-            header: 'Parowanie',
+            header: t('pairing.title'),
             message:
               request.kind === 'confirmPin'
-                ? `Czy sterownik pokazuje kod ${request.pin}?`
-                : 'Sparować aplikację ze sterownikiem?',
+                ? t('pairing.confirmPin', { pin: request.pin ?? '' })
+                : t('pairing.confirm'),
             backdropDismiss: false,
             buttons: [
-              { text: 'Anuluj', role: 'cancel', handler: (): void => respond(false) },
-              { text: 'Sparuj', handler: (): void => respond(true) },
+              { text: t('common.cancel'), role: 'cancel', handler: (): void => respond(false) },
+              { text: t('pairing.pair'), handler: (): void => respond(true) },
             ],
           });
 

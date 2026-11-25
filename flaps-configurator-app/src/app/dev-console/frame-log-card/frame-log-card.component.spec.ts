@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FrameLogService } from '../../core/frame-log.service';
-import { Command } from '../../core/protocol/gen/flaps_pb';
+import { Command, TechnicianCommand } from '../../core/protocol/messages';
 import { FrameLogCardComponent } from './frame-log-card.component';
 
 // Dostęp do chronionych składowych na potrzeby testu
@@ -53,7 +53,7 @@ describe('FrameLogCardComponent', () => {
   });
 
   it('hides AMP_OUT frames unless they are switched on', () => {
-    const ampOut = { command: Command.AMP_OUT, seq: 0, payload: new Uint8Array() };
+    const ampOut = { command: TechnicianCommand.AMP_OUT, seq: 0, payload: new Uint8Array() };
     frameLog.add('rx', ampOut);
     fixture.detectChanges();
     expect(entries()).toHaveLength(0);

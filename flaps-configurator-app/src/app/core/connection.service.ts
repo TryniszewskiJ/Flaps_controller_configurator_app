@@ -1,14 +1,6 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
-import {
-  DescMessage,
-  fromJson,
-  JsonValue,
-  MessageInitShape,
-  MessageShape,
-} from '@bufbuild/protobuf';
-import { BleLinkService, FoundDevice } from './ble/ble-link.service';
-import { FrameLogService } from './frame-log.service';
-import { COMMAND_SCHEMAS } from './protocol/commands';
+import { Injectable, InjectionToken, computed, inject, signal } from '@angular/core';
+import { DescMessage, MessageInitShape, MessageShape } from '@bufbuild/protobuf';
+import { BleLinkService, FoundDevice, PairingTimeoutError } from './ble/ble-link.service';
 import { Frame, FrameParser } from './protocol/frame';
 import {
   BootloaderReason,
@@ -23,9 +15,8 @@ import {
   StartSessionRequestSchema,
   StartSessionResponseSchema,
   Status,
-} from './protocol/gen/flaps_pb';
+} from './protocol/gen/flaps_common_pb';
 import {
-  APP_ID,
   PROTOCOL_VERSION_MAJOR,
   PROTOCOL_VERSION_MINOR,
   ProtocolClient,
@@ -33,6 +24,23 @@ import {
   ProtocolError,
   ProtocolTimeoutError,
 } from './protocol/protocol-client';
+import { t } from './i18n/i18n';
+
+/**
+ * StartSessionRequest.app_id tej aplikacji — sterownik po nim rozpoznaje aplikację technika
+ * (wszystkie komendy) i użytkownika (tylko jej komendy). Podaje go main.ts każdej aplikacji.
+ */
+export const APP_ID = new InjectionToken<number>('StartSessionRequest.app_id');
+
+/** Podgląd wszystkich ramek (log ramek w Dev console aplikacji technika). */
+export interface FrameObserver {
+  add(direction: 'rx' | 'tx', frame: Frame): void;
+}
+
+export const FRAME_OBSERVER = new InjectionToken<FrameObserver | null>('frame observer', {
+  providedIn: 'root',
+  factory: (): FrameObserver | null => null,
+});
 
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'reconnecting';
 
@@ -52,7 +60,10 @@ export interface DeviceInfo {
   bootloaderReason: BootloaderReason;
 }
 
-export const DEFAULT_DEVICE_NAME = 'Sterownik klap';
+/** Nazwa sterownika, gdy urządzenie jej nie podaje (w bieżącym języku). */
+export function defaultDeviceName(): string {
+  return t('connection.defaultName');
+}
 export const RECONNECT_DELAY_MS = 2000;
 const DEFAULT_SESSION_TIMEOUT_MS = 8000;
 const MIN_PING_INTERVAL_MS = 1000;
@@ -72,7 +83,8 @@ export class ConnectionCancelledError extends Error {}
 @Injectable({ providedIn: 'root' })
 export class ConnectionService {
   private readonly link = inject(BleLinkService);
-  private readonly frameLog = inject(FrameLogService);
+  private readonly appId = inject(APP_ID);
+  private readonly frameObserver = inject(FRAME_OBSERVER);
 
   private readonly _status = signal<ConnectionStatus>('disconnected');
   private readonly _device = signal<ConnectedDevice | null>(null);
@@ -109,7 +121,7 @@ export class ConnectionService {
   private generation = 0;
   private client: ProtocolClient | null = null;
   private readonly parser = new FrameParser((frame) => {
-    this.frameLog.add('rx', frame);
+    this.frameObserver?.add('rx', frame);
     if (isUnsolicited(frame.command)) {
       this.unsolicitedListeners.forEach((listener) => listener(frame));
       return;
@@ -129,7 +141,7 @@ export class ConnectionService {
 
     this.wanted = true;
     this._error.set(null);
-    this._device.set({ deviceId: device.deviceId, name: device.name || DEFAULT_DEVICE_NAME });
+    this._device.set({ deviceId: device.deviceId, name: device.name || defaultDeviceName() });
     this._status.set('connecting');
 
     try {
@@ -171,24 +183,6 @@ export class ConnectionService {
   }
 
   /**
-   * Komenda wpisana w Dev console: payload JSON w formacie modelu żądania z flaps.proto.
-   * Odpowiedź widać w logu ramek; tu tylko błąd (brak połączenia, zły JSON, ERROR, timeout).
-   */
-  async sendCommand(command: Command, payload: JsonValue = {}): Promise<void> {
-    const client = this.client;
-    const schemas = COMMAND_SCHEMAS[command];
-    if (!client || this._status() !== 'connected') {
-      throw new Error('Brak połączenia z urządzeniem.');
-    }
-    if (!schemas) {
-      throw new Error(`Nieznana komenda ${command}.`);
-    }
-
-    const request = fromJson(schemas.request, payload);
-    await client.request(command, schemas.request, request, schemas.response, { retries: 0 });
-  }
-
-  /**
    * Wstrzymuje PING, dopóki nie zostanie wywołana zwrócona funkcja. Aktualizacja firmware wysyła
    * po jednej ramce naraz — ping między kawałkami dużej ramki BLE by ją rozbił.
    */
@@ -219,7 +213,7 @@ export class ConnectionService {
     const generation = this.generation;
     const client = this.client;
     if (!client || this._status() !== 'connected') {
-      throw new Error('Brak połączenia z urządzeniem.');
+      throw new Error(t('common.notConnected'));
     }
 
     this.clearTimers();
@@ -253,7 +247,7 @@ export class ConnectionService {
         if (Date.now() >= deadline) {
           await this.link.disconnect().catch(() => undefined);
           this.onLinkLost(generation);
-          throw new Error('Urządzenie nie odpowiada po restarcie — łączę ponownie.', {
+          throw new Error(t('connection.noRestartResponse'), {
             cause: error,
           });
         }
@@ -272,7 +266,8 @@ export class ConnectionService {
 
   /** Komenda w aktywnej sesji (konfiguracja, stan). Bez połączenia — błąd. */
   async request<Req extends DescMessage, Res extends DescMessage>(
-    command: Command,
+    /** Command albo TechnicianCommand (aplikacja technika). */
+    command: number,
     requestSchema: Req,
     request: MessageInitShape<Req>,
     responseSchema: Res,
@@ -280,7 +275,7 @@ export class ConnectionService {
   ): Promise<MessageShape<Res>> {
     const client = this.client;
     if (!client || this._status() !== 'connected') {
-      throw new Error('Brak połączenia z urządzeniem.');
+      throw new Error(t('common.notConnected'));
     }
     return client.request(command, requestSchema, request, responseSchema, options);
   }
@@ -294,7 +289,7 @@ export class ConnectionService {
 
     this.parser.reset();
     const client = new ProtocolClient((bytes) => this.link.write(bytes), {
-      onSend: (frame): void => this.frameLog.add('tx', frame),
+      onSend: (frame): void => this.frameObserver?.add('tx', frame),
     });
     this.client = client;
 
@@ -353,7 +348,7 @@ export class ConnectionService {
       Command.START_SESSION,
       StartSessionRequestSchema,
       {
-        appId: APP_ID,
+        appId: this.appId,
         protocolVersionMajor: PROTOCOL_VERSION_MAJOR,
         protocolVersionMinor: PROTOCOL_VERSION_MINOR,
       },
@@ -367,15 +362,20 @@ export class ConnectionService {
         return reply.sessionTimeoutMs || DEFAULT_SESSION_TIMEOUT_MS;
       case Status.UNSUPPORTED_VERSION:
         throw new SessionRejectedError(
-          `Niezgodna wersja protokołu: urządzenie ${reply.protocolVersionMajor}.${reply.protocolVersionMinor}, ` +
-            `aplikacja ${PROTOCOL_VERSION_MAJOR}.${PROTOCOL_VERSION_MINOR}. Zaktualizuj ${
-              reply.protocolVersionMajor > PROTOCOL_VERSION_MAJOR ? 'aplikację' : 'firmware'
-            }.`,
+          t('connection.protocolMismatch', {
+            device: `${reply.protocolVersionMajor}.${reply.protocolVersionMinor}`,
+            app: `${PROTOCOL_VERSION_MAJOR}.${PROTOCOL_VERSION_MINOR}`,
+            what: t(
+              reply.protocolVersionMajor > PROTOCOL_VERSION_MAJOR
+                ? 'connection.updateApp'
+                : 'connection.updateFirmware',
+            ),
+          }),
         );
       case Status.UNKNOWN_APP:
-        throw new SessionRejectedError('Urządzenie nie obsługuje tej aplikacji.');
+        throw new SessionRejectedError(t('connection.unknownApp'));
       default:
-        throw new SessionRejectedError('Urządzenie odrzuciło połączenie.');
+        throw new SessionRejectedError(t('connection.rejected'));
     }
   }
 
@@ -529,24 +529,27 @@ function describeError(error: unknown): string {
     return error.message;
   }
   if (error instanceof ProtocolTimeoutError) {
-    return 'Urządzenie nie odpowiada.';
+    return t('common.noResponse');
   }
   if (error instanceof ProtocolError) {
-    return `Urządzenie zwróciło błąd (${Status[error.status] ?? error.status}).`;
+    return t('common.deviceError', { status: Status[error.status] ?? error.status });
   }
   if (error instanceof ConnectionCancelledError) {
-    return 'Połączenie zostało przerwane.';
+    return t('connection.cancelled');
+  }
+  if (error instanceof PairingTimeoutError) {
+    return t('connection.pairingTimeout');
   }
 
   const message = error instanceof Error ? error.message : String(error);
   if (/pair|bond/i.test(message)) {
-    return 'Parowanie nie powiodło się. Spróbuj ponownie i wpisz kod parowania urządzenia.';
+    return t('connection.pairingFailed');
   }
   if (/enable|disabled/i.test(message)) {
-    return 'Włącz Bluetooth, aby połączyć się z urządzeniem.';
+    return t('connection.bluetoothOff');
   }
   if (/timeout/i.test(message)) {
-    return 'Nie udało się połączyć z urządzeniem — jest poza zasięgiem albo wyłączone.';
+    return t('connection.outOfRange');
   }
-  return `Nie udało się połączyć: ${message}`;
+  return t('connection.failed', { message });
 }

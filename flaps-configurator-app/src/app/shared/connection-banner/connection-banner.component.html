@@ -3,20 +3,24 @@
     <div class="banner banner--connected" role="status">
       <span class="banner__dot" aria-hidden="true"></span>
       <div class="banner__text">
-        <strong>Połączono</strong>
+        <strong>{{ 'banner.connected' | t }}</strong>
         <span>
           {{ connection.deviceName() }}
           @if (connection.deviceInfo(); as info) {
-            · {{ info.mode === 'bootloader' ? 'bootloader' : 'FW ' + info.firmwareVersion }}
+            ·
+            {{
+              info.mode === 'bootloader'
+                ? ('banner.bootloader' | t)
+                : ('banner.firmware' | t: { version: info.firmwareVersion })
+            }}
           }
         </span>
       </div>
-      <ion-button color="success" (click)="disconnect()">Rozłącz</ion-button>
+      <ion-button color="success" (click)="disconnect()">{{ 'banner.disconnect' | t }}</ion-button>
     </div>
     @if (connection.inBootloader()) {
       <p class="bootloader-notice" role="alert">
-        <strong>Tryb ratunkowy</strong> — sterownik nie steruje klapami. Wgraj firmware w zakładce
-        Aktualizacja.
+        <strong>{{ 'banner.recoveryTitle' | t }}</strong> {{ 'banner.recoveryText' | t }}
       </p>
     }
   }
@@ -24,36 +28,50 @@
     <div class="banner banner--pending" role="status">
       <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
       <div class="banner__text">
-        <strong>Łączenie z {{ connection.deviceName() }}…</strong>
-        <span>Jeśli telefon poprosi o kod parowania, wpisz kod urządzenia</span>
+        <strong>{{ 'banner.connecting' | t: { name: connection.deviceName() ?? '' } }}</strong>
+        <span>{{ 'banner.pairingHint' | t }}</span>
       </div>
-      <ion-button color="warning" (click)="disconnect()">Anuluj</ion-button>
+      <ion-button color="warning" (click)="disconnect()">{{ 'common.cancel' | t }}</ion-button>
     </div>
   }
   @case ('reconnecting') {
     <div class="banner banner--pending" role="status">
       <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
       <div class="banner__text">
-        <strong>Utracono połączenie</strong>
-        <span>Ponowne łączenie z {{ connection.deviceName() }}…</span>
+        <strong>{{ 'banner.lost' | t }}</strong>
+        <span>{{ 'banner.reconnecting' | t: { name: connection.deviceName() ?? '' } }}</span>
       </div>
-      <ion-button color="warning" (click)="disconnect()">Rozłącz</ion-button>
+      <ion-button color="warning" (click)="disconnect()">{{ 'banner.disconnect' | t }}</ion-button>
     </div>
   }
   @default {
-    <div class="banner banner--disconnected" role="status">
-      <span class="banner__dot" aria-hidden="true"></span>
-      <div class="banner__text">
-        <strong>Brak połączenia</strong>
-        <span>
-          {{
-            pickerError() ??
-              connection.error() ??
-              'Połącz się z urządzeniem, aby korzystać z aplikacji'
-          }}
-        </span>
+    @if (autoConnect.searching(); as device) {
+      <div class="banner banner--pending" role="status">
+        <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+        <div class="banner__text">
+          <strong>{{ 'banner.searching' | t: { name: device.name } }}</strong>
+          <span>{{ 'banner.searchingHint' | t }}</span>
+        </div>
+        <ion-button color="warning" (click)="autoConnect.cancel()">
+          {{ 'common.cancel' | t }}
+        </ion-button>
       </div>
-      <ion-button color="danger" (click)="connect()">Połącz</ion-button>
-    </div>
+    } @else {
+      <div class="banner banner--disconnected" role="status">
+        <span class="banner__dot" aria-hidden="true"></span>
+        <div class="banner__text">
+          <strong>{{ 'banner.disconnected' | t }}</strong>
+          <span>
+            {{
+              pickerError() ??
+                autoConnect.error() ??
+                connection.error() ??
+                ('banner.connectHint' | t)
+            }}
+          </span>
+        </div>
+        <ion-button color="danger" (click)="connect()">{{ 'banner.connect' | t }}</ion-button>
+      </div>
+    }
   }
 }

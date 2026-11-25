@@ -18,8 +18,8 @@ import { addIcons } from 'ionicons';
 import { close } from 'ionicons/icons';
 import { layoutFromRange, signalBits, valueRange } from '../../core/can/signal-layout';
 import { SIGNAL_NAME_MAX_BYTES } from '../../core/configuration.service';
-import { CanFrame, Signal, SignalSchema } from '../../core/protocol/gen/flaps_pb';
-import { BitGridComponent, OccupiedBits } from '../../shared/bit-grid/bit-grid.component';
+import { CanFrame, Signal, SignalSchema } from '../../core/protocol/messages';
+import { BitGridComponent, OccupiedBits } from '../bit-grid/bit-grid.component';
 import { frameLabel, parseInteger, parseNumber, roundFloat, utf8Length } from '../config-format';
 
 /**

@@ -7,3 +7,6 @@ coverage
 package-lock.json
 src/app/core/protocol/gen
 release
+www-user
+user-app/android
+user-app/ios

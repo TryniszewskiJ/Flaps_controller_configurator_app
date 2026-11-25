@@ -1,0 +1,84 @@
+// Aplikacja kierowcy: czytelna przy szybkim spojrzeniu w aucie — tekst co najmniej 14 px,
+// cel dotyku co najmniej 44 px. Nadpisuje skalę z src/theme/components.scss (aplikacja technika
+// zostaje gęsta). Dołączony po components.scss w angular.json (projekt `user`).
+
+:root {
+  --app-fs-label: 12px;
+  --app-fs-xs: 13px;
+  --app-fs-sm: 14px;
+  --app-fs-md: 15px;
+  --app-fs-lg: 16px;
+
+  --app-control-xs: 44px;
+  --app-control-sm: 44px;
+  --app-control: 44px;
+  --app-control-md: 44px;
+  --app-control-lg: 44px;
+
+  --app-tile-value: 26px;
+  --app-tile-padding: 12px;
+  --app-tile-min-width: 150px;
+}
+
+// Każdy przycisk Ionic (domyślnie 36 px w trybie md) — cel dotyku 44 px
+ion-button {
+  min-height: 44px;
+}
+
+// Mały przycisk (np. „+ Nowa”) — wyższy, więc i trochę szerszy
+ion-button.btn-tint {
+  --padding-start: 14px;
+  --padding-end: 14px;
+}
+
+// Kwadratowe przyciski z ikoną
+ion-button.icon-btn {
+  width: 44px;
+}
+
+// Więcej odstępu między wierszami (sygnały, klapy) — łatwiej trafić wzrokiem
+.kv-row {
+  padding: 6px 0;
+}
+
+.card {
+  padding: 16px 14px;
+}
+
+.page-title {
+  font-size: 24px;
+}
+
+// --- Marka DK Customs: czerwień z logo jako kolor akcentu (aplikacja technika zostaje niebieska) ---
+:root {
+  --ion-color-primary: #e32828;
+  --ion-color-primary-rgb: 227, 40, 40;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #c82323;
+  --ion-color-primary-tint: #e63e3e;
+}
+
+// Ciemny motyw: jaśniejsza czerwień — czytelna na ciemnym tle
+:root.ion-palette-dark {
+  --ion-color-primary: #f04444;
+  --ion-color-primary-rgb: 240, 68, 68;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #d33c3c;
+  --ion-color-primary-tint: #f25757;
+}
+
+// Logo w nagłówku (obok tytułu strony)
+.brand-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-logo {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+}

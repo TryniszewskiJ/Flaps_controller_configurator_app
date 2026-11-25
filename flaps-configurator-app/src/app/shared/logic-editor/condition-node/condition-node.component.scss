@@ -1,0 +1,100 @@
+:host {
+  display: block;
+}
+
+.box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+}
+
+.group {
+  border-left: 3px solid var(--ion-color-primary);
+}
+
+.group--or {
+  border-left-color: var(--ion-color-warning);
+}
+
+.group--root {
+  padding: 0;
+  border: none;
+}
+
+.not {
+  border-style: dashed;
+}
+
+// ion-select ma width: 100% — w siatce kolumny się nie rozpychają
+.fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 68px minmax(0, 0.8fr);
+  gap: 6px;
+}
+
+.fields--hysteresis {
+  grid-template-columns: minmax(0, 1fr) 116px;
+}
+
+.fields--pair {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.spacer {
+  flex: 1;
+}
+
+// Klasa + element przebijają .input-fill-outline z Ionic (min. 56 px)
+.box ion-input,
+.box ion-select {
+  --border-radius: 8px;
+  --padding-start: 10px;
+  --padding-end: 10px;
+  min-height: var(--app-control-md);
+  font-size: var(--app-fs-md);
+}
+
+.box ion-input.for {
+  flex: 0 0 64px;
+  width: 64px;
+}
+
+ion-button.btn-remove {
+  --background: rgba(var(--ion-color-danger-rgb), 0.1);
+  --background-hover: rgba(var(--ion-color-danger-rgb), 0.16);
+  --color: var(--ion-color-danger);
+}
+
+.for-label,
+.joiner,
+.empty {
+  margin: 0;
+  font-size: var(--app-fs-xs);
+  color: var(--app-muted);
+}
+
+.joiner,
+.not-label {
+  font-weight: 700;
+}
+
+.not-label {
+  font-size: var(--app-fs-sm);
+}
+
+ion-segment-button {
+  min-height: var(--app-control-sm);
+  font-size: var(--app-fs-xs);
+  letter-spacing: normal;
+  text-transform: none;
+}

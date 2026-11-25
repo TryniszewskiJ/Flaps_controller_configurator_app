@@ -26,13 +26,7 @@ import {
   MAX_MOVE_TIME_MS,
   MIN_MOVE_TIME_MS,
 } from '../../core/configuration.service';
-import {
-  FlapsState,
-  FlapStopMode,
-  Logic,
-  LogLevel,
-  Signal,
-} from '../../core/protocol/gen/flaps_pb';
+import { FlapsState, FlapStopMode, Logic, LogLevel, Signal } from '../../core/protocol/messages';
 import { LOG_LEVELS, parseInteger } from '../config-format';
 
 /** Wartość pola selektora „brak” — ion-select nie rozróżnia undefined. */

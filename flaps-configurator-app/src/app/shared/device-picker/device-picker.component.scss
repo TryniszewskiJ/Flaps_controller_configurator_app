@@ -54,13 +54,13 @@ ion-spinner {
   min-width: 0;
 
   strong {
-    font-size: 14px;
+    font-size: var(--app-fs-lg);
     font-weight: 600;
   }
 
   span {
     overflow: hidden;
-    font-size: 11px;
+    font-size: var(--app-fs-xs);
     text-overflow: ellipsis;
     white-space: nowrap;
     color: var(--app-muted);
@@ -72,13 +72,13 @@ ion-spinner {
   flex: none;
   align-items: center;
   gap: 4px;
-  font-size: 11px;
+  font-size: var(--app-fs-xs);
   color: var(--app-muted);
 }
 
 .picker-empty {
   margin: 8px 0;
-  font-size: 12px;
+  font-size: var(--app-fs-sm);
   line-height: 1.5;
   color: var(--app-muted);
 }

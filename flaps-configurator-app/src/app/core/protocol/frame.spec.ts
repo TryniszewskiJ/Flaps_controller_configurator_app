@@ -1,6 +1,6 @@
 import { create, toBinary } from '@bufbuild/protobuf';
 import { crc16, encodeFrame, Frame, FrameParser } from './frame';
-import { StartSessionRequestSchema } from './gen/flaps_pb';
+import { StartSessionRequestSchema } from './messages';
 
 const hex = (text: string): Uint8Array =>
   Uint8Array.from(text.split(/\s+/).map((byte) => parseInt(byte, 16)));

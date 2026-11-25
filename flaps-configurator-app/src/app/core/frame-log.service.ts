@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { baseCommand, commandName, decodePayload, hexByte, toHex } from './protocol/commands';
 import { Frame } from './protocol/frame';
-import { Command } from './protocol/gen/flaps_pb';
+import { TechnicianCommand } from './protocol/messages';
 
 export type FrameDirection = 'tx' | 'rx';
 
@@ -25,7 +25,7 @@ export interface FrameLogEntry {
 export const FRAME_LOG_LIMIT = 500;
 
 /** Strumienie danych (co 100 ms) — domyślnie poza logiem. */
-const STREAM_COMMANDS: number[] = [Command.AMP_OUT, Command.CAN_SNIFF];
+const STREAM_COMMANDS: number[] = [TechnicianCommand.AMP_OUT, TechnicianCommand.CAN_SNIFF];
 
 /** Wysłane i odebrane ramki protokołu (Dev console). */
 @Injectable({ providedIn: 'root' })

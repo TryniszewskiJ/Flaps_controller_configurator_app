@@ -1,7 +1,8 @@
 import { computed, signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ConnectionService, ConnectionStatus } from '../../core/connection.service';
-import { Command } from '../../core/protocol/gen/flaps_pb';
+import { DevCommandService } from '../../core/dev-command.service';
+import { Command } from '../../core/protocol/messages';
 import { CommandCardComponent } from './command-card.component';
 
 // Dostęp do chronionych składowych na potrzeby testu
@@ -28,9 +29,9 @@ describe('CommandCardComponent', () => {
           useValue: {
             status,
             connected: computed(() => status() === 'connected'),
-            sendCommand,
           },
         },
+        { provide: DevCommandService, useValue: { send: sendCommand } },
       ],
     });
     fixture = TestBed.createComponent(CommandCardComponent);

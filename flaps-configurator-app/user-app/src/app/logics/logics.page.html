@@ -1,0 +1,110 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="page-toolbar">
+    <h1 slot="start" class="page-title">{{ 'modes.title' | t }}</h1>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="page">
+    <app-connection-banner />
+
+    @if (draft(); as draft) {
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-label">{{ 'modes.list' | t }}</h2>
+          @if (hasSelector()) {
+            <ion-button class="btn-tint" [disabled]="!canAddLogic()" (click)="editLogic(null)">
+              {{ 'modes.add' | t }}
+            </ion-button>
+          }
+        </div>
+        <p class="empty-text">
+          @if (selectorName(); as selector) {
+            {{ 'modes.selectorHint' | t: { name: selector } }}
+          } @else {
+            {{ 'modes.single' | t }}
+          }
+        </p>
+        @for (logic of draft.logics; track $index) {
+          <button
+            type="button"
+            class="list-button list-row"
+            [disabled]="!canEdit()"
+            (click)="editLogic($index)"
+          >
+            <span class="row-main">
+              <strong>
+                {{ logic.description || ('state.modeFallback' | t: { n: $index + 1 }) }}
+                @if ($index === draft.defaultLogicIndex) {
+                  <span class="tag">{{ 'modes.default' | t }}</span>
+                }
+              </strong>
+              <span class="row-sub mono">{{
+                logicSummary(logic, signals(), { hideInput: true })
+              }}</span>
+            </span>
+            @if (hasSelector()) {
+              <span class="row-side mono text-muted">= {{ logic.selectorValue }}</span>
+            }
+            <ion-icon name="chevron-forward" aria-hidden="true"></ion-icon>
+          </button>
+        } @empty {
+          <p class="empty-text">{{ 'modes.empty' | t }}</p>
+        }
+      </section>
+
+      <section class="card save-card">
+        <p
+          class="status-text"
+          [class.status-text--pending]="logics.dirty() || logics.unsavedOnDevice()"
+        >
+          {{ status() }}
+        </p>
+        @if (notice(); as notice) {
+          <p class="message message--warning">{{ notice }}</p>
+        }
+        @if (logics.error(); as error) {
+          <p class="message message--danger">{{ error }}</p>
+        }
+        @if (logics.dirty() || logics.unsavedOnDevice()) {
+          <ion-button expand="block" [disabled]="!connected() || !!busy()" (click)="save()">
+            @if (busy() === 'save') {
+              <ion-spinner name="crescent"></ion-spinner>
+            } @else {
+              {{ 'common.save' | t }}
+            }
+          </ion-button>
+        }
+        @if (logics.dirty()) {
+          <div class="secondary-actions">
+            <ion-button fill="clear" [disabled]="!connected() || !!busy()" (click)="apply()">
+              @if (busy() === 'apply') {
+                <ion-spinner name="crescent"></ion-spinner>
+              } @else {
+                {{ 'modes.try' | t }}
+              }
+            </ion-button>
+            <ion-button fill="clear" color="medium" [disabled]="!!busy()" (click)="discard()">
+              {{ 'modes.discard' | t }}
+            </ion-button>
+          </div>
+          <p class="try-hint">{{ 'modes.tryHint' | t }}</p>
+        }
+      </section>
+    } @else {
+      <section class="card card--placeholder">
+        @if (busy() === 'read') {
+          <ion-spinner name="crescent" [attr.aria-label]="'modes.reading' | t"></ion-spinner>
+          <p>{{ 'modes.reading' | t }}</p>
+        } @else if (logics.error(); as error) {
+          <p>{{ error }}</p>
+          @if (connected()) {
+            <ion-button fill="outline" (click)="read()">{{ 'modes.retry' | t }}</ion-button>
+          }
+        } @else {
+          <p>{{ 'modes.connectHint' | t }}</p>
+        }
+      </section>
+    }
+  </div>
+</ion-content>

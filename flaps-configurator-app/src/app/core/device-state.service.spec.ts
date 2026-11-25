@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { BleLinkService } from './ble/ble-link.service';
 import { ConnectionService } from './connection.service';
+import { DevTelemetryService } from './dev-telemetry.service';
 import { DeviceStateService } from './device-state.service';
 import {
   AmpOutSchema,
@@ -11,17 +12,20 @@ import {
   FlapStopReason,
   LogLevel,
   LogSchema,
+  TechnicianCommand,
   TelemetrySchema,
-} from './protocol/gen/flaps_pb';
+} from './protocol/messages';
 import { FakeBleLink } from './testing/fake-ble-link';
 
 describe('DeviceStateService', () => {
   let link: FakeBleLink;
   let connection: ConnectionService;
   let service: DeviceStateService;
+  /** Logi, AMP_OUT i ruchy klap (aplikacja technika). */
+  let dev: DevTelemetryService;
 
-  const commands = (): Command[] => link.device.received.map((frame) => frame.command);
-  const count = (command: Command): number => commands().filter((c) => c === command).length;
+  const commands = (): number[] => link.device.received.map((frame) => frame.command);
+  const count = (command: number): number => commands().filter((c) => c === command).length;
 
   /** Efekty Angulara + odpowiedzi atrapy (mikrozadania). */
   const settle = async (): Promise<void> => {
@@ -37,6 +41,7 @@ describe('DeviceStateService', () => {
     TestBed.configureTestingModule({ providers: [{ provide: BleLinkService, useValue: link }] });
     connection = TestBed.inject(ConnectionService);
     service = TestBed.inject(DeviceStateService);
+    dev = TestBed.inject(DevTelemetryService);
 
     await connection.connect({ deviceId: 'AA:BB' });
     await settle();
@@ -120,26 +125,67 @@ describe('DeviceStateService', () => {
     expect(service.override()).toBeNull();
   });
 
+  it('sets a permanent override without a countdown', async () => {
+    await service.setOverride(FlapsState.CLOSED, 'permanent');
+
+    expect(link.device.state.overrideState).toBe(FlapsState.CLOSED);
+    expect(link.device.state.overridePermanent).toBe(true);
+    expect(service.override()).toBe(FlapsState.CLOSED);
+    expect(service.overridePermanent()).toBe(true);
+    expect(service.overrideUntil()).toBeNull();
+
+    await service.releaseOverride();
+    expect(service.override()).toBeNull();
+    expect(service.overridePermanent()).toBe(false);
+  });
+
+  it('follows a permanent override reported by the device', async () => {
+    link.device.sendUnsolicited(Command.EVENT, EventSchema, {
+      sequence: 11,
+      event: {
+        case: 'flapsOverrideChanged',
+        value: { state: FlapsState.OPEN, remainingMs: 0, permanent: true },
+      },
+    });
+    await settle();
+
+    expect(service.override()).toBe(FlapsState.OPEN);
+    expect(service.overridePermanent()).toBe(true);
+    expect(service.overrideUntil()).toBeNull();
+  });
+
+  it('does not send a permanent override to older firmware', async () => {
+    await connection.disconnect();
+    link.device.protocolMinor = 14;
+    await connection.connect({ deviceId: 'AA:BB' });
+    await settle();
+    link.device.received.length = 0;
+
+    expect(service.permanentOverrideSupported()).toBe(false);
+    await expect(service.setOverride(FlapsState.OPEN, 'permanent')).rejects.toThrow('1.15');
+    expect(count(Command.SET_FLAPS_OVERRIDE)).toBe(0);
+  });
+
   it('reports a rejected override', async () => {
     await expect(service.setOverride(FlapsState.OPEN, 700_000)).rejects.toThrow('odrzucił');
     expect(service.override()).toBeNull();
   });
 
   it('collects AMP_OUT samples and marks gaps between frames', async () => {
-    link.device.sendUnsolicited(Command.AMP_OUT, AmpOutSchema, {
+    link.device.sendUnsolicited(TechnicianCommand.AMP_OUT, AmpOutSchema, {
       uptimeMs: 1000,
       intervalMs: 20,
       flap1: [100, 200],
       flap2: [300, 400],
     });
-    link.device.sendUnsolicited(Command.AMP_OUT, AmpOutSchema, {
+    link.device.sendUnsolicited(TechnicianCommand.AMP_OUT, AmpOutSchema, {
       uptimeMs: 1040,
       intervalMs: 20,
       flap1: [500],
       flap2: [600],
     });
     // 1060 i 1080 zgubione
-    link.device.sendUnsolicited(Command.AMP_OUT, AmpOutSchema, {
+    link.device.sendUnsolicited(TechnicianCommand.AMP_OUT, AmpOutSchema, {
       uptimeMs: 1100,
       intervalMs: 20,
       flap1: [700],
@@ -147,7 +193,7 @@ describe('DeviceStateService', () => {
     });
     await settle();
 
-    expect(service.ampOut()).toEqual([
+    expect(dev.ampOut()).toEqual([
       { uptimeMs: 1000, flap1: 100, flap2: 300, gap: false },
       { uptimeMs: 1020, flap1: 200, flap2: 400, gap: false },
       { uptimeMs: 1040, flap1: 500, flap2: 600, gap: false },
@@ -157,7 +203,7 @@ describe('DeviceStateService', () => {
 
   it('keeps AMP_OUT history for five minutes and starts over after a device reset', async () => {
     const send = (uptimeMs: number): void =>
-      link.device.sendUnsolicited(Command.AMP_OUT, AmpOutSchema, {
+      link.device.sendUnsolicited(TechnicianCommand.AMP_OUT, AmpOutSchema, {
         uptimeMs,
         intervalMs: 20,
         flap1: [1],
@@ -167,11 +213,11 @@ describe('DeviceStateService', () => {
     send(30_000);
     send(302_000);
     await settle();
-    expect(service.ampOut().map((s) => s.uptimeMs)).toEqual([30_000, 302_000]);
+    expect(dev.ampOut().map((s) => s.uptimeMs)).toEqual([30_000, 302_000]);
 
     send(500); // uptime się cofnął
     await settle();
-    expect(service.ampOut().map((s) => s.uptimeMs)).toEqual([500]);
+    expect(dev.ampOut().map((s) => s.uptimeMs)).toEqual([500]);
   });
 
   it('marks flap move starts on the AMP_OUT timeline', async () => {
@@ -188,14 +234,14 @@ describe('DeviceStateService', () => {
     await settle();
 
     expect(service.state()?.flap1).toBe(FlapPosition.OPENING);
-    expect(service.moveMarks()).toMatchObject([
+    expect(dev.moveMarks()).toMatchObject([
       { uptimeMs: 5000, flap: 1, position: FlapPosition.OPENING },
       { uptimeMs: 5400, flap: 2, position: FlapPosition.CLOSING },
     ]);
   });
 
   it('collects device log lines', async () => {
-    link.device.sendUnsolicited(Command.LOG, LogSchema, {
+    link.device.sendUnsolicited(TechnicianCommand.LOG, LogSchema, {
       entries: [
         { uptimeMs: 10, level: LogLevel.INFO, text: 'app: session opened' },
         { uptimeMs: 20, level: LogLevel.WARN, text: 'can: no frames' },
@@ -204,11 +250,8 @@ describe('DeviceStateService', () => {
     });
     await settle();
 
-    expect(service.logs().map((line) => line.text)).toEqual([
-      'app: session opened',
-      'can: no frames',
-    ]);
-    expect(service.droppedLogs()).toBe(3);
+    expect(dev.logs().map((line) => line.text)).toEqual(['app: session opened', 'can: no frames']);
+    expect(dev.droppedLogs()).toBe(3);
   });
 
   it('records a finished move with its AMP_OUT diagnostics', async () => {
@@ -229,8 +272,8 @@ describe('DeviceStateService', () => {
     await settle();
 
     expect(service.state()?.flap2).toBe(FlapPosition.OPEN);
-    expect(service.moves()).toHaveLength(1);
-    expect(service.moves()[0]).toMatchObject({
+    expect(dev.moves()).toHaveLength(1);
+    expect(dev.moves()[0]).toMatchObject({
       flap: 2,
       durationMs: 250,
       peakAmpOut: 41000,
@@ -239,8 +282,8 @@ describe('DeviceStateService', () => {
     });
   });
 
-  it('clears the state after disconnecting but keeps logs and moves', async () => {
-    link.device.sendUnsolicited(Command.LOG, LogSchema, {
+  it('clears the state after disconnecting, the diagnostics stay', async () => {
+    link.device.sendUnsolicited(TechnicianCommand.LOG, LogSchema, {
       entries: [{ uptimeMs: 1, level: LogLevel.INFO, text: 'x' }],
     });
     await settle();
@@ -249,6 +292,6 @@ describe('DeviceStateService', () => {
     await settle();
 
     expect(service.state()).toBeNull();
-    expect(service.logs()).toHaveLength(1);
+    expect(dev.logs()).toHaveLength(1);
   });
 });

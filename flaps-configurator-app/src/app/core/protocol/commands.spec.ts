@@ -7,7 +7,7 @@ import {
   hexByte,
   parseCommand,
 } from './commands';
-import { Command, ErrorResponseSchema, GetDeviceInfoResponseSchema, Status } from './gen/flaps_pb';
+import { Command, ErrorResponseSchema, GetDeviceInfoResponseSchema, Status } from './messages';
 
 const hex = (text: string): Uint8Array =>
   Uint8Array.from(text.split(/\s+/).map((byte) => parseInt(byte, 16)));

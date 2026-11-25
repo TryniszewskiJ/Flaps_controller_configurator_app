@@ -22,7 +22,6 @@
       >
         <ion-icon slot="icon-only" name="add"></ion-icon>
       </ion-button>
-      <app-theme-toggle />
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -77,7 +76,9 @@
                       Sterowanie ręczne:
                       {{ overrideState === FlapsState.OPEN ? 'otwarte' : 'zamknięte' }}
                     </strong>
-                    @if (overrideRemaining(); as remaining) {
+                    @if (overridePermanent()) {
+                      <span>Na stałe — do oddania sterowania albo resetu sterownika</span>
+                    } @else if (overrideRemaining(); as remaining) {
                       <span>Logika przejmie sterowanie za {{ remaining }}</span>
                     }
                   </div>
@@ -91,14 +92,7 @@
           @case ('signals') {
             <section class="card">
               <h2 class="card-label">Stan zmiennych</h2>
-              @for (signal of signals(); track signal.index) {
-                <div class="kv-row mono" [class.signal--stale]="!signal.fresh">
-                  <span>{{ signal.name }}</span>
-                  <span>{{ signal.fresh ? signal.value : signal.value + ' (brak danych)' }}</span>
-                </div>
-              } @empty {
-                <p class="muted-text">Brak sygnałów — połącz się ze sterownikiem.</p>
-              }
+              <app-car-data [signals]="signals()" />
             </section>
           }
           @case ('actions') {
@@ -117,11 +111,16 @@
                   class="duration-select"
                   aria-label="Czas sterowania ręcznego"
                   interface="popover"
-                  [value]="overrideMinutes()"
-                  (ionChange)="onMinutesChange($event.detail.value)"
+                  [value]="overrideDuration()"
+                  (ionChange)="onDurationChange($event.detail.value)"
                 >
-                  @for (minutes of overrideMinutesOptions; track minutes) {
-                    <ion-select-option [value]="minutes">na {{ minutes }} min</ion-select-option>
+                  @for (option of overrideOptions; track option.value) {
+                    <ion-select-option
+                      [value]="option.value"
+                      [disabled]="option.value === 'permanent' && !permanentSupported()"
+                    >
+                      {{ option.label }}
+                    </ion-select-option>
                   }
                 </ion-select>
               </div>

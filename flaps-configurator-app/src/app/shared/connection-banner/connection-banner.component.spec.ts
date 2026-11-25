@@ -1,7 +1,9 @@
 import { computed, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { AutoConnectService } from '../../core/auto-connect.service';
 import { ConnectionService, ConnectionStatus, DeviceInfo } from '../../core/connection.service';
-import { BootloaderReason } from '../../core/protocol/gen/flaps_pb';
+import { RememberedDevice } from '../../core/settings.service';
+import { BootloaderReason } from '../../core/protocol/messages';
 import { ConnectionBannerComponent } from './connection-banner.component';
 
 describe('ConnectionBannerComponent', () => {
@@ -9,12 +11,17 @@ describe('ConnectionBannerComponent', () => {
   const status = signal<ConnectionStatus>('disconnected');
   const error = signal<string | null>(null);
   const deviceInfo = signal<DeviceInfo | null>(null);
+  const searching = signal<RememberedDevice | null>(null);
+  const autoError = signal<string | null>(null);
+  const cancelSearch = vi.fn();
 
   const banner = (): HTMLElement => fixture.nativeElement.querySelector('.banner');
 
   beforeEach(() => {
     status.set('disconnected');
     error.set(null);
+    searching.set(null);
+    autoError.set(null);
     deviceInfo.set({
       firmwareVersion: '1.2.3',
       uid: '',
@@ -26,6 +33,7 @@ describe('ConnectionBannerComponent', () => {
         {
           provide: ConnectionService,
           useValue: {
+            device: signal(null),
             status,
             error,
             deviceName: signal('DK_flaps_controller'),
@@ -34,6 +42,10 @@ describe('ConnectionBannerComponent', () => {
             connect: vi.fn(),
             disconnect: vi.fn(() => Promise.resolve()),
           },
+        },
+        {
+          provide: AutoConnectService,
+          useValue: { searching, error: autoError, cancel: cancelSearch },
         },
       ],
     });
@@ -51,6 +63,24 @@ describe('ConnectionBannerComponent', () => {
     fixture.detectChanges();
 
     expect(banner().textContent).toContain('Urządzenie nie odpowiada.');
+  });
+
+  it('shows the search for the last device and cancels it', () => {
+    searching.set({ deviceId: 'AA:BB', name: 'Moje auto', uid: '' });
+    fixture.detectChanges();
+
+    expect(banner().classList).toContain('banner--pending');
+    expect(banner().textContent).toContain('Szukam sterownika Moje auto');
+    (banner().querySelector('ion-button') as HTMLElement).click();
+    expect(cancelSearch).toHaveBeenCalled();
+  });
+
+  it('says when the last device was not found', () => {
+    autoError.set('Nie znaleziono sterownika „Moje auto”');
+    fixture.detectChanges();
+
+    expect(banner().classList).toContain('banner--disconnected');
+    expect(banner().textContent).toContain('Nie znaleziono sterownika');
   });
 
   it('shows the connecting banner', () => {
@@ -82,7 +112,7 @@ describe('ConnectionBannerComponent', () => {
     deviceInfo.set({ ...deviceInfo()!, mode: 'bootloader' });
     fixture.detectChanges();
 
-    expect(banner().textContent).toContain('bootloader');
+    expect(banner().textContent).toContain('tryb ratunkowy');
     expect(fixture.nativeElement.querySelector('.bootloader-notice')?.textContent).toContain(
       'Tryb ratunkowy',
     );

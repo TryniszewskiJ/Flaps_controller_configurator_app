@@ -34,7 +34,10 @@ import {
   FlapStopMode,
   GetConfigurationResponseSchema,
   GetDeviceInfoResponseSchema,
+  GetLogicsResponseSchema,
   GetStateResponseSchema,
+  LogicError,
+  LogicSchema,
   PingResponseSchema,
   RebootRequestSchema,
   RebootResponseSchema,
@@ -43,9 +46,32 @@ import {
   SetConfigurationResponseSchema,
   SetFlapsOverrideRequestSchema,
   SetFlapsOverrideResponseSchema,
+  SetLogicsRequestSchema,
+  SetLogicsResponseSchema,
+  StartSessionRequestSchema,
   StartSessionResponseSchema,
   Status,
-} from '../protocol/gen/flaps_pb';
+  TechnicianCommand,
+} from '../protocol/messages';
+import { TECHNICIAN_APP_ID } from '../../technician-app';
+
+/** app_id aplikacji użytkownika ("FLPU", user-app/src/app/user-app.ts). */
+export const USER_APP_ID = 0x464c5055;
+
+/** Komendy, które firmware przyjmuje w sesji aplikacji użytkownika (AppProtocol::isUserCommand). */
+const USER_COMMANDS = new Set<number>([
+  Command.GET_DEVICE_INFO,
+  Command.PING,
+  Command.GET_STATE,
+  Command.SET_FLAPS_OVERRIDE,
+  Command.FIRMWARE_UPDATE_BEGIN,
+  Command.FIRMWARE_UPDATE_DATA,
+  Command.FIRMWARE_UPDATE_COMMIT,
+  Command.FIRMWARE_UPDATE_ABORT,
+  Command.REBOOT,
+  Command.GET_LOGICS,
+  Command.SET_LOGICS,
+]);
 
 /** Domyślna konfiguracja firmware (README „Konfiguracja domyślna”), skrócona do dwóch logik. */
 export function defaultConfiguration(): Configuration {
@@ -96,12 +122,20 @@ export class FakeDevice {
   responding = true;
   sessionTimeoutMs = 8000;
   startSessionStatus = Status.OK;
+  /** Wersja minor protokołu z START_SESSION (starszy firmware). */
+  protocolMinor = 15;
+  /** app_id z ostatniego START_SESSION — sesja aplikacji użytkownika ma tylko jej komendy. */
+  sessionAppId: number | null = null;
+  /** app_id, które firmware zna; starszy (< 1.15) zna tylko aplikację technika. */
+  knownAppIds = [TECHNICIAN_APP_ID, USER_APP_ID];
   configuration = defaultConfiguration();
   /** Konfiguracja ustawiona przez SET_CONFIGURATION, jeszcze nie zapisana. */
   unsavedChanges = false;
   /** Błąd, z którym SET_CONFIGURATION odrzuci następną konfigurację. */
   rejectConfiguration = ConfigurationError.UNSPECIFIED;
   saveStatus = Status.OK;
+  /** Błąd, z którym SET_LOGICS odrzuci następne logiki. */
+  rejectLogics = LogicError.UNSPECIFIED;
   /** Stan zwracany przez GET_STATE. */
   state: DeviceState = create(DeviceStateSchema, {
     signals: [
@@ -135,7 +169,7 @@ export class FakeDevice {
 
   /** Ramka bez żądania (TELEMETRY, EVENT, LOG, AMP_OUT) — SEQ = 0 jak w firmware. */
   sendUnsolicited<T extends DescMessage>(
-    command: Command,
+    command: number,
     schema: T,
     message: MessageInitShape<T>,
   ): void {
@@ -155,16 +189,24 @@ export class FakeDevice {
     }
 
     switch (frame.command) {
-      case Command.START_SESSION:
+      case Command.START_SESSION: {
+        const { appId } = fromBinary(StartSessionRequestSchema, frame.payload);
+        if (!this.knownAppIds.includes(appId)) {
+          this.sessionActive = false;
+          this.respond(frame, StartSessionResponseSchema, { status: Status.UNKNOWN_APP });
+          return;
+        }
+        this.sessionAppId = appId;
         this.sessionActive = this.startSessionStatus === Status.OK;
         this.update = null; // nowa sesja kończy aktualizację
         this.respond(frame, StartSessionResponseSchema, {
           status: this.startSessionStatus,
           protocolVersionMajor: 1,
-          protocolVersionMinor: 14,
+          protocolVersionMinor: this.protocolMinor,
           sessionTimeoutMs: this.sessionTimeoutMs,
         });
         return;
+      }
       case Command.CLOSE_SESSION:
         this.respond(frame, CloseSessionResponseSchema, {});
         this.sessionActive = false;
@@ -174,6 +216,12 @@ export class FakeDevice {
 
     if (!this.sessionActive) {
       this.error(frame, Status.NO_SESSION);
+      return;
+    }
+
+    // Jak AppProtocol::isUserCommand(): komendy technika są dla aplikacji użytkownika nieznane
+    if (this.sessionAppId === USER_APP_ID && !USER_COMMANDS.has(frame.command)) {
+      this.error(frame, Status.UNKNOWN_COMMAND);
       return;
     }
 
@@ -207,13 +255,45 @@ export class FakeDevice {
     }
 
     switch (frame.command) {
-      case Command.GET_CONFIGURATION:
+      case Command.GET_LOGICS: {
+        const config = this.configuration;
+        this.respond(frame, GetLogicsResponseSchema, {
+          logics: config.logics.map((logic) => clone(LogicSchema, logic)),
+          defaultLogicIndex: config.defaultLogicIndex,
+          selectorSignal: config.selectorSignal,
+          signalNames: config.signals.map((signal) => signal.name),
+          unsavedChanges: this.unsavedChanges,
+        });
+        return;
+      }
+      case Command.SET_LOGICS: {
+        const request = fromBinary(SetLogicsRequestSchema, frame.payload);
+        if (this.rejectLogics !== LogicError.UNSPECIFIED || request.logics.length === 0) {
+          this.respond(frame, SetLogicsResponseSchema, {
+            status: Status.INVALID_CONFIGURATION,
+            error:
+              this.rejectLogics !== LogicError.UNSPECIFIED
+                ? this.rejectLogics
+                : LogicError.NO_LOGIC,
+          });
+          return;
+        }
+        this.configuration = clone(ConfigurationSchema, this.configuration);
+        this.configuration.logics = request.logics;
+        this.configuration.defaultLogicIndex = request.defaultLogicIndex;
+        this.unsavedChanges = !(request.save && this.saveStatus === Status.OK);
+        this.respond(frame, SetLogicsResponseSchema, {
+          status: request.save ? this.saveStatus : Status.OK,
+        });
+        return;
+      }
+      case TechnicianCommand.GET_CONFIGURATION:
         this.respond(frame, GetConfigurationResponseSchema, {
           configuration: clone(ConfigurationSchema, this.configuration),
           unsavedChanges: this.unsavedChanges,
         });
         return;
-      case Command.SET_CONFIGURATION: {
+      case TechnicianCommand.SET_CONFIGURATION: {
         const { configuration } = fromBinary(SetConfigurationRequestSchema, frame.payload);
         const error =
           configuration?.flap1?.disconnected && configuration.flap2?.disconnected
@@ -232,7 +312,7 @@ export class FakeDevice {
         this.respond(frame, SetConfigurationResponseSchema, { status: Status.OK });
         return;
       }
-      case Command.SAVE_CONFIGURATION:
+      case TechnicianCommand.SAVE_CONFIGURATION:
         if (this.saveStatus === Status.OK) {
           this.unsavedChanges = false;
         }
@@ -245,18 +325,22 @@ export class FakeDevice {
         });
         return;
       case Command.SET_FLAPS_OVERRIDE: {
-        const { state, durationMs } = fromBinary(SetFlapsOverrideRequestSchema, frame.payload);
+        const { state, durationMs, permanent } = fromBinary(
+          SetFlapsOverrideRequestSchema,
+          frame.payload,
+        );
         const ending = state === FlapsState.UNSPECIFIED;
-        if (!ending && (durationMs < 1 || durationMs > 600_000)) {
+        if (!ending && !permanent && (durationMs < 1 || durationMs > 600_000)) {
           this.respond(frame, SetFlapsOverrideResponseSchema, { status: Status.INVALID_OVERRIDE });
           return;
         }
         this.state.overrideState = state;
-        this.state.overrideRemainingMs = ending ? 0 : durationMs;
+        this.state.overrideRemainingMs = ending || permanent ? 0 : durationMs;
+        this.state.overridePermanent = !ending && permanent;
         this.respond(frame, SetFlapsOverrideResponseSchema, { status: Status.OK });
         return;
       }
-      case Command.CAN_SNIFF_START: {
+      case TechnicianCommand.CAN_SNIFF_START: {
         const request = fromBinary(CanSniffStartRequestSchema, frame.payload);
         const valid = request.durationMs <= 3_600_000;
         this.sniff = valid ? { allFrames: request.allFrames } : this.sniff;
@@ -265,7 +349,7 @@ export class FakeDevice {
         });
         return;
       }
-      case Command.CAN_SNIFF_STOP:
+      case TechnicianCommand.CAN_SNIFF_STOP:
         this.sniff = null;
         this.respond(frame, CanSniffStopResponseSchema, { frames: 3, dropped: 1 });
         return;

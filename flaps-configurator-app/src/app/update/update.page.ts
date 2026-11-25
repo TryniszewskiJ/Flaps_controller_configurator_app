@@ -2,7 +2,6 @@ import { Component, computed, inject, signal } from '@angular/core';
 import {
   AlertController,
   IonButton,
-  IonButtons,
   IonContent,
   IonHeader,
   IonIcon,
@@ -27,17 +26,18 @@ import {
   describeBootloaderReason,
 } from '../core/firmware/firmware-update.service';
 import { ConnectionBannerComponent } from '../shared/connection-banner/connection-banner.component';
-import { ThemeToggleComponent } from '../shared/theme-toggle/theme-toggle.component';
+import { TranslationKey, t } from '../core/i18n/i18n';
+import { TranslatePipe } from '../core/i18n/translate.pipe';
 
-const PHASE_LABELS: Record<UpdatePhase, string> = {
-  idle: '',
-  erasing: 'Sterownik przygotowuje pamięć…',
-  sending: 'Wysyłanie obrazu…',
-  verifying: 'Sterownik sprawdza obraz…',
-  restarting: 'Restart — sterownik instaluje nowy firmware…',
-  done: 'Zaktualizowano',
-  failed: 'Aktualizacja nie powiodła się',
-  aborted: 'Aktualizacja przerwana — działa dotychczasowy firmware.',
+const PHASE_LABELS: Record<UpdatePhase, TranslationKey | null> = {
+  idle: null,
+  erasing: 'update.phase.erasing',
+  sending: 'update.phase.sending',
+  verifying: 'update.phase.verifying',
+  restarting: 'update.phase.restarting',
+  done: 'update.phase.done',
+  failed: 'update.phase.failed',
+  aborted: 'update.phase.aborted',
 };
 
 /**
@@ -49,8 +49,6 @@ const PHASE_LABELS: Record<UpdatePhase, string> = {
   templateUrl: './update.page.html',
   styleUrls: ['./update.page.scss'],
   imports: [
-    IonButtons,
-    ThemeToggleComponent,
     IonHeader,
     IonToolbar,
     IonButton,
@@ -59,6 +57,7 @@ const PHASE_LABELS: Record<UpdatePhase, string> = {
     IonProgressBar,
     IonSpinner,
     ConnectionBannerComponent,
+    TranslatePipe,
   ],
 })
 export class UpdatePage {
@@ -73,7 +72,10 @@ export class UpdatePage {
   protected readonly formatSize = formatSize;
   protected readonly describeBootloaderReason = describeBootloaderReason;
 
-  protected readonly phaseLabel = computed(() => PHASE_LABELS[this.update.phase()]);
+  protected readonly phaseLabel = computed(() => {
+    const key = PHASE_LABELS[this.update.phase()];
+    return key ? t(key) : '';
+  });
   protected readonly percent = computed(() => Math.floor(this.update.progress() * 100));
   /** Pasek bez postępu, gdy sterownik pracuje sam (kasowanie, sprawdzanie, restart). */
   protected readonly indeterminate = computed(() =>
@@ -89,9 +91,9 @@ export class UpdatePage {
     }
     const diff = compareVersions(image.versionParts, parseVersion(info.firmwareVersion));
     return diff === 0
-      ? 'Ta sama wersja co na sterowniku.'
+      ? t('update.sameVersion')
       : diff < 0
-        ? `Starsza wersja niż na sterowniku (${info.firmwareVersion}).`
+        ? t('update.olderVersion', { version: info.firmwareVersion })
         : null;
   });
 
@@ -122,7 +124,7 @@ export class UpdatePage {
       this.image.set(parseFirmwareImage(file.name, data));
     } catch (error) {
       this.fileError.set(
-        error instanceof FirmwareImageError ? error.message : 'Nie udało się odczytać pliku.',
+        error instanceof FirmwareImageError ? error.message : t('update.readError'),
       );
     } finally {
       this.reading.set(false);
@@ -136,10 +138,13 @@ export class UpdatePage {
     }
     const info = this.connection.deviceInfo();
     const confirmed = await this.confirm(
-      'Wgrać firmware?',
-      `${image.fileName} (wersja ${image.version}) zastąpi firmware ${info?.firmwareVersion ?? ''} ` +
-        'na sterowniku. Nie rozłączaj się do końca aktualizacji.',
-      'Wgraj',
+      t('update.confirm.title'),
+      t('update.confirm.text', {
+        file: image.fileName,
+        version: image.version,
+        current: info?.firmwareVersion ?? '',
+      }),
+      t('update.confirm.action'),
     );
     if (confirmed) {
       await this.update.start(image);
@@ -152,11 +157,9 @@ export class UpdatePage {
 
   protected async reboot(toBootloader: boolean): Promise<void> {
     const confirmed = await this.confirm(
-      toBootloader ? 'Tryb ratunkowy?' : 'Uruchomić ponownie?',
-      toBootloader
-        ? 'Sterownik uruchomi się w bootloaderze — klapy nie będą sterowane, dopóki nie uruchomisz firmware albo nie wgrasz nowego.'
-        : 'Sterownik uruchomi się ponownie; klapy przez chwilę nie będą sterowane.',
-      'Uruchom',
+      t(toBootloader ? 'update.confirm.recoveryTitle' : 'update.confirm.rebootTitle'),
+      t(toBootloader ? 'update.confirm.recoveryText' : 'update.confirm.rebootText'),
+      t('update.confirm.rebootAction'),
     );
     if (confirmed) {
       await this.update.reboot(toBootloader);
@@ -168,7 +171,7 @@ export class UpdatePage {
       header,
       message,
       buttons: [
-        { text: 'Anuluj', role: 'cancel' },
+        { text: t('common.cancel'), role: 'cancel' },
         { text: action, role: 'confirm' },
       ],
     });

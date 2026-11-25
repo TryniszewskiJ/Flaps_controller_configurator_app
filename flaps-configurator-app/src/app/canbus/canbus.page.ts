@@ -16,7 +16,6 @@ import { CanSniffService, SniffedFrame } from '../core/can-sniff.service';
 import { ConnectionService } from '../core/connection.service';
 import { ConnectionBannerComponent } from '../shared/connection-banner/connection-banner.component';
 import { StickToBottomDirective } from '../shared/stick-to-bottom.directive';
-import { ThemeToggleComponent } from '../shared/theme-toggle/theme-toggle.component';
 
 type SniffView = 'history' | 'latest';
 
@@ -29,7 +28,6 @@ type SniffView = 'history' | 'latest';
   templateUrl: './canbus.page.html',
   styleUrls: ['./canbus.page.scss'],
   imports: [
-    ThemeToggleComponent,
     IonHeader,
     IonToolbar,
     IonButtons,

@@ -1,0 +1,11 @@
+/* Aplikacja użytkownika (user-app) — korzysta z kodu wspólnego w src/app przez alias @flaps/*. */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/user",
+    "rootDir": ".",
+    "types": []
+  },
+  "include": ["user-app/src/**/*.ts"],
+  "exclude": ["user-app/src/**/*.spec.ts"]
+}
